@@ -1,0 +1,20 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ["--unsafe"]
+        exclude: ^(template/CHART_NAME/.*.yaml|helmfile/apps/.*.yaml)
+      - id: check-json
+      - id: check-added-large-files
+        args: ["--maxkb=700"]
+      - id: check-shebang-scripts-are-executable
+      - id: check-merge-conflict
+      - id: no-commit-to-branch
+        args: ["--branch", "main"]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - id: gitleaks
