@@ -1,6 +1,13 @@
-# AIIA PoC – AI Impact Assessment Tool
+# Invulhulp – AI-assisted Government Compliance Forms
 
-A proof-of-concept web application for completing AI Impact Assessments (AIIA) for the Dutch government (Ministerie van Infrastructuur en Waterstaat / IenW). The tool guides users through a structured assessment form and uses a locally running LLM to suggest text improvements.
+A web application that helps Dutch government employees fill in AI-related compliance assessments. It guides users through structured forms and uses a locally running LLM to suggest text improvements and synthesize answers across forms.
+
+Currently supported forms:
+
+- **AIIA** – AI Impact Assessment (Ministerie van Infrastructuur en Waterstaat, v2.0)
+- **DPIA** – Data Protection Impact Assessment (Model DPIA Rijksdienst, v3.0)
+
+The tool also supports **cross-form mapping**: relevant AIIA answers are used to pre-suggest answers for related DPIA questions, reducing duplicate work.
 
 ## Architecture
 
@@ -53,7 +60,9 @@ Available variables:
 
 | Variable | Default | Description |
 |---|---|---|
-| `OLLAMA_MODEL` | `llama3.2` | Ollama model to use for text improvement |
+| `OLLAMA_MODEL` | `llama3.2` | Ollama model to use |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server URL |
+| `CORS_ORIGINS` | `http://localhost:5173` | Allowed CORS origins |
 
 ### 5. Start the backend
 
@@ -71,11 +80,20 @@ npm run dev
 
 The app will be available at `http://localhost:5173`.
 
+## Running with Docker
+
+```bash
+docker compose up
+```
+
+This starts the frontend (nginx, port 80) and backend (FastAPI, port 8000) in containers. Make sure Ollama is reachable from within Docker (configure `OLLAMA_BASE_URL` accordingly).
+
 ## API
 
 | Endpoint | Method | Description |
 |---|---|---|
 | `/api/improve` | `POST` | Suggest an improved version of a text fragment |
+| `/api/synthesize` | `POST` | Synthesize a DPIA answer from AIIA answers |
 
 ### `POST /api/improve`
 
@@ -97,14 +115,34 @@ The app will be available at `http://localhost:5173`.
 }
 ```
 
-## Source documents
+### `POST /api/synthesize`
 
-The assessment form is based on the following official documents:
+**Request body:**
+
+```json
+{
+  "aiia_answers": { "q1": "antwoord..." },
+  "aiia_questions": { "q1": "Vraag tekst..." },
+  "dpia_question": "DPIA-vraag waarvoor een suggestie nodig is",
+  "synthesis_hint": "Optionele extra context"
+}
+```
+
+**Response:**
+
+```json
+{
+  "suggestion": "Suggestie voor de DPIA",
+  "rationale": "Één zin toelichting"
+}
+```
+
+## Source documents
 
 | Document | Source |
 |---|---|
 | AI Impact Assessment (IenW, v2.0) | [rijksoverheid.nl](https://www.rijksoverheid.nl/documenten/rapporten/2022/11/30/ai-impact-assessment-ministerie-van-infrastructuur-en-waterstaat) |
-| Model DPIA Rijksdienst (v3.0) | [kcbr.nl](https://www.kcbr.nl/sites/default/files/2023-09/Model%20DPIA%20Rijksdienst%20v3.0.pdf) |can you al
+| Model DPIA Rijksdienst (v3.0) | [kcbr.nl](https://www.kcbr.nl/sites/default/files/2023-09/Model%20DPIA%20Rijksdienst%20v3.0.pdf) |
 
 ## License
 
