@@ -97,6 +97,15 @@ The app will be available at `http://localhost:5173`.
 }
 ```
 
+## Source documents
+
+The assessment form is based on the following official documents:
+
+| Document | Source |
+|---|---|
+| AI Impact Assessment (IenW, v2.0) | [rijksoverheid.nl](https://www.rijksoverheid.nl/documenten/rapporten/2022/11/30/ai-impact-assessment-ministerie-van-infrastructuur-en-waterstaat) |
+| Model DPIA Rijksdienst (v3.0) | [kcbr.nl](https://www.kcbr.nl/sites/default/files/2023-09/Model%20DPIA%20Rijksdienst%20v3.0.pdf) |can you al
+
 ## License
 
 Licensed under the [European Union Public Licence v1.2 (EUPL-1.2)](LICENSE).

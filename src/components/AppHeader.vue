@@ -1,15 +1,16 @@
 <template>
   <header style="background: #154273; color: white; padding: 0;">
     <div class="rvo-max-width-layout rvo-max-width-layout--lg rvo-max-width-layout-inline-padding--sm">
+      <!-- Top bar: logo + reset button -->
       <div class="rvo-layout-row rvo-layout-gap--md" style="padding: 12px 0; align-items: center; justify-content: space-between;">
-        <div class="rvo-layout-row rvo-layout-gap--md" style="align-items: center;">
-          <div>
-            <div style="font-size: 0.75rem; opacity: 0.8; letter-spacing: 0.5px; text-transform: uppercase;">Ministerie van</div>
-            <div style="font-weight: bold; font-size: 1rem;">Infrastructuur en Waterstaat</div>
+        <a href="#" class="rvo-header__logo-link">
+          <div class="rvo-logo" style="--rvo-logo-color: white; --rvo-logo-font-family: inherit; --rvo-logo-font-weight: bold;">
+            <img class="rvo-logo__emblem" :src="emblemUrl" alt="" />
+            <div class="rvo-logo__wordmark">
+              <p class="rvo-logo__title">Ministerie van&#10;Financiën</p>
+            </div>
           </div>
-          <div style="width: 1px; height: 32px; background: rgba(255,255,255,0.4);"></div>
-          <div style="font-weight: 600; font-size: 1rem;">AI Impact Assessment</div>
-        </div>
+        </a>
         <button
           v-if="store.currentView !== 'home'"
           @click="confirmReset"
@@ -19,18 +20,56 @@
           Opnieuw beginnen
         </button>
       </div>
+
+      <!-- Assessment type tabs -->
+      <div style="display: flex; border-top: 1px solid rgba(255,255,255,0.2); margin: 0 -16px; padding: 0 16px;">
+        <button
+          @click="switchTo('aiia')"
+          :style="tabStyle(store.activeAssessment === 'aiia')"
+        >
+          AI Impact Assessment
+        </button>
+        <button
+          @click="switchTo('dpia')"
+          :style="tabStyle(store.activeAssessment === 'dpia')"
+        >
+          DPIA
+        </button>
+      </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
+import emblemUrl from '@nl-rvo/assets/images/emblem.svg'
+import type { AssessmentType } from '../stores/assessmentStore'
 import { useAssessmentStore } from '../stores/assessmentStore'
 
 const store = useAssessmentStore()
 
+function tabStyle(active: boolean) {
+  return {
+    background: 'transparent',
+    border: 'none',
+    color: active ? 'white' : 'rgba(255,255,255,0.65)',
+    fontWeight: active ? '600' : '400',
+    fontSize: '0.9rem',
+    padding: '10px 16px',
+    cursor: 'pointer',
+    borderBottom: active ? '3px solid white' : '3px solid transparent',
+    marginBottom: '-1px',
+    transition: 'color 0.15s, border-color 0.15s',
+  }
+}
+
+function switchTo(type: AssessmentType) {
+  store.setActiveAssessment(type)
+}
+
 function confirmReset() {
-  if (confirm('Weet u zeker dat u opnieuw wilt beginnen? Al uw antwoorden worden gewist.')) {
-    store.reset()
+  const label = store.activeAssessment === 'dpia' ? 'DPIA' : 'AI Impact Assessment'
+  if (confirm(`Weet u zeker dat u de ${label} opnieuw wilt beginnen? Al uw antwoorden worden gewist.`)) {
+    store.resetActive()
   }
 }
 </script>

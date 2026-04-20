@@ -21,7 +21,7 @@ export interface Subsection {
 export interface Section {
   id: string
   title: string
-  part: 'A' | 'B' | 'summary'
+  part: 'A' | 'B' | 'C' | 'D' | 'summary'
   subsections: Subsection[]
 }
 

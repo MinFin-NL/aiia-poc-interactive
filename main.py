@@ -55,6 +55,75 @@ class ImproveResponse(BaseModel):
     rationale: str
 
 
+class SynthesizeRequest(BaseModel):
+    aiia_answers: dict[str, str]
+    aiia_questions: dict[str, str]
+    dpia_question: str
+    synthesis_hint: str = ""
+
+
+SYNTHESIZE_SYSTEM_PROMPT = (
+    "Je bent een assistent die helpt bij het invullen van een DPIA (Data Protection Impact Assessment) "
+    "voor de Nederlandse overheid (Ministerie van Infrastructuur en Waterstaat).\n\n"
+    "Je taak is om informatie uit een ingevulde AIIA (AI Impact Assessment) te gebruiken als basis "
+    "voor een antwoord op een DPIA-vraag. Houd de feitelijke inhoud intact, maar herformuleer "
+    "de tekst zodat deze past bij de context van een DPIA (gegevensbescherming, AVG, privacyrisico's).\n\n"
+    "Voeg GEEN nieuwe feiten toe die niet in de AIIA-antwoorden staan. "
+    "Schrijf in het Nederlands. Houd de lengte beknopt en passend bij het antwoord.\n\n"
+    "Reageer uitsluitend in dit XML-formaat:\n"
+    "<suggestie>jouw suggestie voor de DPIA hier</suggestie>\n"
+    "<toelichting>één zin over hoe je de AIIA-informatie hebt aangepast voor de DPIA</toelichting>"
+)
+
+
+@app.post("/api/synthesize", response_model=ImproveResponse)
+async def synthesize_from_aiia(req: SynthesizeRequest) -> ImproveResponse:
+    if not req.aiia_answers:
+        raise HTTPException(status_code=400, detail="Geen AIIA-antwoorden opgegeven.")
+
+    context_parts = []
+    for qid, answer in req.aiia_answers.items():
+        q_text = req.aiia_questions.get(qid, qid)
+        context_parts.append(f"AIIA-vraag: {q_text}\nAntwoord: {answer}")
+
+    context = "\n\n".join(context_parts)
+    hint = f"\nExtra context: {req.synthesis_hint}" if req.synthesis_hint else ""
+
+    user_message = (
+        f"DPIA-vraag waarvoor een suggestie nodig is:\n{req.dpia_question}\n\n"
+        f"Beschikbare AIIA-informatie:{hint}\n\n{context}"
+    )
+
+    try:
+        response = ollama.chat(
+            model=MODEL,
+            messages=[
+                {"role": "system", "content": SYNTHESIZE_SYSTEM_PROMPT},
+                {"role": "user", "content": user_message},
+            ],
+        )
+    except ollama.ResponseError as e:
+        raise HTTPException(status_code=502, detail=f"Ollama fout: {e.error}") from e
+
+    raw = response.message.content
+
+    suggestion = ""
+    rationale = ""
+
+    m_suggestion = re.search(r"<suggestie>(.*?)</suggestie>", raw, re.DOTALL | re.IGNORECASE)
+    m_rationale = re.search(r"<toelichting>(.*?)</toelichting>", raw, re.DOTALL | re.IGNORECASE)
+
+    if m_suggestion:
+        suggestion = m_suggestion.group(1).strip()
+    if m_rationale:
+        rationale = m_rationale.group(1).strip()
+
+    if not suggestion:
+        raise HTTPException(status_code=500, detail="Kon geen suggestie genereren.")
+
+    return ImproveResponse(suggestion=suggestion, rationale=rationale)
+
+
 @app.post("/api/improve", response_model=ImproveResponse)
 async def improve_text(req: ImproveRequest) -> ImproveResponse:
     text = req.text.strip()

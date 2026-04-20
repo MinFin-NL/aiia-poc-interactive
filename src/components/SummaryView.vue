@@ -7,8 +7,8 @@
         <p class="rvo-text" style="color: #555; margin: 0;">Overzicht van alle ingevulde antwoorden.</p>
       </div>
 
-      <!-- Risk level -->
-      <div v-if="store.riskLevel" :class="`rvo-alert rvo-alert--${alertType}`" style="border-radius: 4px;">
+      <!-- AIIA-only: Risk level -->
+      <div v-if="!isDpia && store.riskLevel" :class="`rvo-alert rvo-alert--${alertType}`" style="border-radius: 4px;">
         <div class="rvo-alert__content">
           <strong>Risicoclassificatie: {{ riskInfo?.label }}</strong><br />
           {{ riskInfo?.description }}
@@ -28,25 +28,43 @@
         </div>
       </div>
 
-      <!-- System name input -->
+      <!-- Name input -->
       <div>
         <label class="rvo-text rvo-text--md" style="font-weight: 500; display: block; margin-bottom: 6px;">
-          Naam van het AI-systeem (voor export)
+          {{ isDpia ? 'Naam van het project / de verwerking (voor export)' : 'Naam van het AI-systeem (voor export)' }}
         </label>
         <input
           v-model="systemName"
           type="text"
           class="aiia-textarea"
           style="min-height: unset; padding: 10px 12px; resize: none; height: auto;"
-          placeholder="Bijv. Verkeersprognosemodel v2"
+          :placeholder="isDpia ? 'Bijv. Klantportaal persoonsgegevens v1' : 'Bijv. Verkeersprognosemodel v2'"
         />
       </div>
 
-      <!-- Export button -->
-      <div class="rvo-layout-row rvo-layout-gap--md">
+      <!-- Export buttons -->
+      <div class="rvo-layout-row rvo-layout-gap--md" style="flex-wrap: wrap;">
         <button @click="exportPdf" class="rvo-button rvo-button--primary">
           Download PDF rapport
         </button>
+        <button @click="doExportJson" class="rvo-button rvo-button--secondary">
+          Download JSON (hervatten)
+        </button>
+      </div>
+
+      <!-- Import -->
+      <div>
+        <p class="rvo-text rvo-text--sm" style="color: #555; margin: 0 0 8px 0;">
+          Of laad een eerder opgeslagen JSON-bestand om verder te gaan waar u gebleven was:
+        </p>
+        <div class="rvo-layout-row rvo-layout-gap--sm" style="align-items: center; flex-wrap: wrap;">
+          <input ref="fileInput" type="file" accept=".json" style="display:none" @change="handleImport" />
+          <button @click="fileInput?.click()" class="rvo-button rvo-button--tertiary">
+            JSON importeren
+          </button>
+          <span v-if="importError" class="rvo-text rvo-text--sm" style="color: #c0392b;">{{ importError }}</span>
+          <span v-if="importSuccess" class="rvo-text rvo-text--sm" style="color: #27ae60;">Gegevens hersteld!</span>
+        </div>
       </div>
 
       <!-- Answers by section -->
@@ -83,17 +101,27 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { assessmentData, riskLevelInfo } from '../data/assessment'
+import { riskLevelInfo } from '../data/assessment'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { exportToPdf } from '../services/pdfExport'
-import type { Question } from '../models/Assessment'
+import { exportToJson, importFromJson } from '../services/dataExport'
+import type { AssessmentData, Question } from '../models/Assessment'
+
+const props = defineProps<{
+  assessmentData: AssessmentData
+}>()
 
 const store = useAssessmentStore()
 const systemName = ref('')
+const fileInput = ref<HTMLInputElement | null>(null)
+const importError = ref('')
+const importSuccess = ref(false)
+
+const isDpia = computed(() => store.activeAssessment === 'dpia')
 
 const visibleSections = computed(() =>
-  assessmentData.sections.filter((s) => {
-    if (s.part === 'B' && !store.showPartB) return false
+  props.assessmentData.sections.filter((s) => {
+    if (!isDpia.value && s.part === 'B' && !store.showPartB) return false
     return true
   }),
 )
@@ -143,6 +171,54 @@ function formattedAnswer(id: string): string {
 }
 
 function exportPdf() {
-  exportToPdf(store.answers, store.riskLevel, store.goDecision, systemName.value || undefined)
+  exportToPdf(
+    store.answers,
+    store.activeAssessment,
+    props.assessmentData,
+    store.riskLevel,
+    store.goDecision,
+    systemName.value || undefined,
+  )
+}
+
+function doExportJson() {
+  exportToJson(
+    store.answers,
+    store.activeAssessment,
+    store.riskLevel,
+    store.goDecision,
+    store[store.activeAssessment].completedSections,
+    systemName.value,
+  )
+}
+
+async function handleImport(event: Event) {
+  importError.value = ''
+  importSuccess.value = false
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  try {
+    const data = await importFromJson(file)
+    store.setActiveAssessment(data.assessmentType)
+    // Restore answers
+    store[data.assessmentType].answers = data.answers
+    // Restore metadata
+    if (data.assessmentType === 'aiia') {
+      store.aiia.riskLevel = data.riskLevel
+      store.aiia.goDecision = data.goDecision
+      store.aiia.completedSections = data.completedSections
+    } else {
+      store.dpia.completedSections = data.completedSections
+    }
+    systemName.value = data.systemName || ''
+    importSuccess.value = true
+    // Reset file input so same file can be re-imported
+    input.value = ''
+  } catch (e: unknown) {
+    importError.value = e instanceof Error ? e.message : 'Import mislukt'
+    input.value = ''
+  }
 }
 </script>

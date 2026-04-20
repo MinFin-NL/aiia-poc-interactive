@@ -73,6 +73,16 @@
         <span class="rvo-text">{{ option }}</span>
       </div>
     </div>
+
+    <!-- Cross-form suggestion panel (DPIA only, when AIIA answers are available) -->
+    <CrossFormSuggestion
+      v-if="showCrossFormSuggestion"
+      :dpia-question-id="question.id"
+      :dpia-question-text="question.text"
+      :question-type="question.type"
+      :current-value="textModel"
+      @apply-suggestion="onApplySuggestion"
+    />
   </div>
 </template>
 
@@ -80,6 +90,9 @@
 import { computed } from 'vue'
 import type { Question } from '../models/Assessment'
 import TiptapEditor from './TiptapEditor.vue'
+import CrossFormSuggestion from './CrossFormSuggestion.vue'
+import { getMappingForDpiaQuestion } from '../data/crossFormMappings'
+import { useAssessmentStore } from '../stores/assessmentStore'
 
 const props = defineProps<{
   question: Question
@@ -89,6 +102,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [value: string | string[]]
 }>()
+
+const store = useAssessmentStore()
+
+const showCrossFormSuggestion = computed(() => {
+  if (store.activeAssessment !== 'dpia') return false
+  return getMappingForDpiaQuestion(props.question.id) !== undefined
+})
 
 // ── Plain text value (for text-type questions) ────────────────────────────────
 
@@ -126,6 +146,10 @@ function onRadioSelect(option: string) {
   const current = typeof props.modelValue === 'string' ? props.modelValue : ''
   const followUp = current.split('\n---\n')[1] ?? ''
   emit('update:modelValue', followUp ? `${option}\n---\n${followUp}` : option)
+}
+
+function onApplySuggestion(value: string) {
+  emit('update:modelValue', value)
 }
 
 // ── Checkbox helpers ──────────────────────────────────────────────────────────

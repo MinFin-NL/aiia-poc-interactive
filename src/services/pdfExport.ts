@@ -1,6 +1,7 @@
 import type { TDocumentDefinitions, Content } from 'pdfmake/interfaces'
-import { assessmentData, riskLevelInfo } from '../data/assessment'
-import type { Answers, RiskLevelValue } from '../models/Assessment'
+import { riskLevelInfo } from '../data/assessment'
+import type { Answers, AssessmentData, RiskLevelValue } from '../models/Assessment'
+import type { AssessmentType } from '../stores/assessmentStore'
 
 function formatAnswer(value: string | string[] | undefined): string {
   if (!value) return '(niet ingevuld)'
@@ -10,10 +11,13 @@ function formatAnswer(value: string | string[] | undefined): string {
 
 export function exportToPdf(
   answers: Answers,
+  assessmentType: AssessmentType,
+  assessmentData: AssessmentData,
   riskLevel: RiskLevelValue,
   goDecision: boolean | null,
   systemName?: string,
 ): void {
+  const isDpia = assessmentType === 'dpia'
   const riskInfo = riskLevel ? riskLevelInfo[riskLevel] : null
   const today = new Date().toLocaleDateString('nl-NL', {
     day: 'numeric',
@@ -21,33 +25,37 @@ export function exportToPdf(
     year: 'numeric',
   })
 
+  const docTitle = isDpia ? 'Data Protection Impact Assessment' : 'AI Impact Assessment'
+  const footerLabel = isDpia ? 'DPIA – IenW' : 'AI Impact Assessment – IenW'
+  const filename = isDpia ? 'DPIA-IenW.pdf' : 'AI-Impact-Assessment-IenW.pdf'
+
   const content: Content[] = [
     // Cover
     {
-      text: 'AI Impact Assessment',
+      text: docTitle,
       style: 'title',
       margin: [0, 0, 0, 8],
     },
     {
-      text: 'Ministerie van Infrastructuur en Waterstaat',
+      text: 'Ministerie van Financiën',
       style: 'subtitle',
       margin: [0, 0, 0, 4],
     },
     {
-      text: `Versie 2.0 | ${today}`,
+      text: isDpia ? `Versie 1.0 | ${today}` : `Versie 2.0 | ${today}`,
       style: 'meta',
       margin: [0, 0, 0, 4],
     },
     systemName
       ? {
-          text: `Systeem: ${systemName}`,
+          text: isDpia ? `Project: ${systemName}` : `Systeem: ${systemName}`,
           style: 'meta',
           margin: [0, 0, 0, 20],
         }
       : { text: '', margin: [0, 0, 0, 20] },
 
-    // Risk level badge
-    riskInfo
+    // AIIA-only: Risk level badge
+    !isDpia && riskInfo
       ? {
           table: {
             widths: ['*'],
@@ -78,9 +86,9 @@ export function exportToPdf(
     { text: '', pageBreak: 'after' },
   ]
 
-  // Sections
+  // Filter sections
   const sectionsToInclude = assessmentData.sections.filter((s) => {
-    if (s.part === 'B' && !goDecision) return false
+    if (!isDpia && s.part === 'B' && !goDecision) return false
     return true
   })
 
@@ -163,7 +171,7 @@ export function exportToPdf(
     },
     pageMargins: [40, 60, 40, 60],
     footer: (currentPage, pageCount) => ({
-      text: `AI Impact Assessment - IenW | Pagina ${currentPage} van ${pageCount}`,
+      text: `${footerLabel} | Pagina ${currentPage} van ${pageCount}`,
       alignment: 'center',
       fontSize: 8,
       color: '#999999',
@@ -178,7 +186,7 @@ export function exportToPdf(
       const vfs = (vfsFontsModule as { default?: { pdfMake?: { vfs: Record<string, string> } } })
         .default?.pdfMake?.vfs
       if (vfs) pdfMake.vfs = vfs
-      pdfMake.createPdf(docDefinition).download('AI-Impact-Assessment-IenW.pdf')
+      pdfMake.createPdf(docDefinition).download(filename)
     })
   })
 }

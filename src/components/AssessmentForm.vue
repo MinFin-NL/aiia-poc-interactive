@@ -4,17 +4,21 @@
 
     <div style="display: flex; flex: 1;">
       <!-- Sidebar (hidden on home) -->
-      <SectionNav v-if="store.currentView !== 'home'" />
+      <SectionNav
+        v-if="store.currentView !== 'home'"
+        :assessment-data="activeData"
+      />
 
       <!-- Main content -->
       <main style="flex: 1; overflow-y: auto;">
 
         <!-- Home -->
-        <HomePage v-if="store.currentView === 'home'" @start="startAssessment" />
+        <DpiaHomePage v-if="store.currentView === 'home' && isDpia" @start="startAssessment" />
+        <HomePage v-else-if="store.currentView === 'home'" @start="startAssessment" />
 
-        <!-- Forbidden: onaanvaardbaar risk stop screen -->
+        <!-- AIIA-only: Forbidden onaanvaardbaar risk stop screen -->
         <div
-          v-else-if="store.riskLevel === 'onaanvaardbaar' && store.currentView !== 'risk'"
+          v-else-if="!isDpia && store.riskLevel === 'onaanvaardbaar' && store.currentView !== 'risk'"
           class="rvo-max-width-layout rvo-max-width-layout--md rvo-max-width-layout-inline-padding--sm"
           style="padding-top: 48px; padding-bottom: 48px;"
         >
@@ -38,18 +42,24 @@
           </div>
         </div>
 
-        <!-- Risk classification -->
-        <RiskClassification v-else-if="store.currentView === 'risk'" @confirmed="onRiskConfirmed" />
+        <!-- AIIA-only: Risk classification -->
+        <RiskClassification
+          v-else-if="!isDpia && store.currentView === 'risk'"
+          @confirmed="onRiskConfirmed"
+        />
 
-        <!-- Decision gate (Section 3) -->
+        <!-- AIIA-only: Decision gate (Section 3) -->
         <DecisionGate
-          v-else-if="store.currentView === 'decision'"
+          v-else-if="!isDpia && store.currentView === 'decision'"
           @next="onDecisionNext"
           @prev="store.setCurrentView(prevViewOf('decision'))"
         />
 
         <!-- Summary -->
-        <SummaryView v-else-if="store.currentView === 'summary'" />
+        <SummaryView
+          v-else-if="store.currentView === 'summary'"
+          :assessment-data="activeData"
+        />
 
         <!-- Section views -->
         <SectionView
@@ -68,11 +78,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { assessmentData } from '../data/assessment'
+import { assessmentData as aiiaData } from '../data/assessment'
+import { dpiaData } from '../data/dpia'
 import { useAssessmentStore } from '../stores/assessmentStore'
-import type { Section } from '../models/Assessment'
+import type { AssessmentData, Section } from '../models/Assessment'
 import AppHeader from './AppHeader.vue'
 import HomePage from './HomePage.vue'
+import DpiaHomePage from './DpiaHomePage.vue'
 import SectionNav from './SectionNav.vue'
 import SectionView from './SectionView.vue'
 import RiskClassification from './RiskClassification.vue'
@@ -81,10 +93,29 @@ import SummaryView from './SummaryView.vue'
 
 const store = useAssessmentStore()
 
+const isDpia = computed(() => store.activeAssessment === 'dpia')
+
+const activeData = computed((): AssessmentData =>
+  isDpia.value ? dpiaData : aiiaData,
+)
+
 // Build ordered navigation list
 const navOrder = computed((): string[] => {
-  const partA = assessmentData.sections.find((s) => s.id === 'deel_a')
-  const partB = assessmentData.sections.find((s) => s.id === 'deel_b')
+  if (isDpia.value) {
+    // DPIA: linear through all subsections
+    const order: string[] = []
+    for (const section of dpiaData.sections) {
+      for (const sub of section.subsections) {
+        order.push(sub.id)
+      }
+    }
+    order.push('summary')
+    return order
+  }
+
+  // AIIA: existing logic with risk → decision → conditional Part B
+  const partA = aiiaData.sections.find((s) => s.id === 'deel_a')
+  const partB = aiiaData.sections.find((s) => s.id === 'deel_b')
 
   const order: string[] = []
   if (partA) {
@@ -104,13 +135,12 @@ const navOrder = computed((): string[] => {
   return order
 })
 
-// Flat map of all sections by id
+// Flat map of all subsections by id
 const sectionMap = computed((): Record<string, Section> => {
   const map: Record<string, Section> = {}
-  for (const section of assessmentData.sections) {
-    // Create single-subsection wrappers per subsection id
+  for (const section of activeData.value.sections) {
     for (const sub of section.subsections) {
-      if (sub.id === '3') continue // handled by DecisionGate
+      if (!isDpia.value && sub.id === '3') continue // handled by DecisionGate
       map[sub.id] = {
         id: sub.id,
         title: section.title,
@@ -124,7 +154,10 @@ const sectionMap = computed((): Record<string, Section> => {
 
 const currentSection = computed((): Section | null => {
   const view = store.currentView
-  if (['home', 'risk', 'decision', 'summary'].includes(view)) return null
+  const specialViews = isDpia.value
+    ? ['home', 'summary']
+    : ['home', 'risk', 'decision', 'summary']
+  if (specialViews.includes(view)) return null
   return sectionMap.value[view] ?? null
 })
 
@@ -132,6 +165,12 @@ const currentIndex = computed(() => navOrder.value.indexOf(store.currentView))
 const hasPrev = computed(() => currentIndex.value > 0)
 
 const nextLabel = computed(() => {
+  if (isDpia.value) {
+    const idx = currentIndex.value
+    const next = navOrder.value[idx + 1]
+    if (next === 'summary') return 'Naar samenvatting'
+    return 'Volgende'
+  }
   const idx = currentIndex.value
   const next = navOrder.value[idx + 1]
   if (next === 'risk') return 'Naar risicoclassificatie'
@@ -169,7 +208,7 @@ function onRiskConfirmed() {
 
 function onDecisionNext(go: boolean) {
   if (go) {
-    const partB = assessmentData.sections.find((s) => s.id === 'deel_b')
+    const partB = aiiaData.sections.find((s) => s.id === 'deel_b')
     if (partB && partB.subsections.length > 0) {
       store.setCurrentView(partB.subsections[0].id)
       return

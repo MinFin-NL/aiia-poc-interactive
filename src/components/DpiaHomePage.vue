@@ -4,36 +4,37 @@
 
       <div>
         <h1 class="rvo-heading rvo-heading--2xl" style="color: #154273; margin-bottom: 8px;">
-          AI Impact Assessment
+          Data Protection Impact Assessment
         </h1>
         <p class="rvo-text rvo-text--lg" style="color: #555; margin: 0;">
-          Versie 2.0 — Ministerie van Financiën
+          Versie 1.0 — Ministerie van Financiën
         </p>
       </div>
 
       <div class="rvo-alert rvo-alert--info" style="border-radius: 4px;">
         <div class="rvo-alert__content">
-          <strong>Let op:</strong> Dit is een digitale hulptool bij het invullen van het AI Impact Assessment.
-          Het invullen van dit formulier vervangt niet het advies van juridische, privacy- of AI-experts.
-          Raadpleeg bij twijfel altijd de relevante deskundigen binnen IenW.
+          <strong>Let op:</strong> Dit is een digitale hulptool bij het uitvoeren van een Data Protection Impact Assessment (DPIA).
+          Het invullen van dit formulier vervangt niet het advies van juridische of privacy-experts.
+          Raadpleeg bij twijfel altijd de Functionaris voor de Gegevensbescherming (FG) of een privacy-jurist.
         </div>
       </div>
 
       <div class="rvo-layout-column rvo-layout-gap--md">
         <h2 class="rvo-heading rvo-heading--xl" style="color: #154273;">Over dit instrument</h2>
         <p class="rvo-text">
-          Het AI Impact Assessment (AIIA) helpt medewerkers van IenW om op een gestructureerde manier
-          te beoordelen of het verantwoord is een AI-systeem in te zetten, en hoe dit systeem
-          verantwoord geïmplementeerd en gebruikt kan worden.
+          Een DPIA (ook wel gegevensbeschermingseffectbeoordeling) is verplicht bij verwerkingen die
+          waarschijnlijk een hoog risico opleveren voor de rechten en vrijheden van betrokkenen.
+          Dit instrument begeleidt u stap voor stap door het proces zoals voorgeschreven door de AVG (artikel 35).
         </p>
-        <p class="rvo-text">Het assessment bestaat uit twee delen:</p>
+        <p class="rvo-text">Een DPIA omvat minimaal:</p>
         <ul class="rvo-ul">
-          <li><strong>Deel A – Afweging:</strong> Is het verantwoord dit AI-systeem in te zetten?</li>
-          <li><strong>Deel B – Implementatie:</strong> Hoe wordt het systeem verantwoord geïmplementeerd?</li>
+          <li>Een <strong>beschrijving</strong> van de verwerking en de verwerkingsdoeleinden</li>
+          <li>Een <strong>noodzakelijkheids- en proportionaliteitsbeoordeling</strong></li>
+          <li>Een <strong>risicobeoordeling</strong> voor de rechten en vrijheden van betrokkenen</li>
+          <li><strong>Maatregelen</strong> om de risico's te beheersen</li>
         </ul>
         <p class="rvo-text">
-          Daarnaast bevat het een <strong>risicoclassificatie</strong> op basis van de EU AI-verordening,
-          die bepaalt welke wettelijke verplichtingen gelden.
+          Na afronding kunt u de DPIA exporteren als PDF-document voor archivering en consultatie met de FG.
         </p>
       </div>
 
@@ -53,7 +54,7 @@
 
       <div>
         <button @click="$emit('start')" class="rvo-button rvo-button--primary" style="font-size: 1.1rem; padding: 12px 32px;">
-          Starten met het assessment
+          Starten met de DPIA
         </button>
       </div>
 
