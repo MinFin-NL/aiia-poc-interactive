@@ -89,7 +89,13 @@ stages:
                   az containerapp update \
                     --name "$BACKEND_APP" \
                     --resource-group "$RESOURCE_GROUP" \
-                    --image "$ACR_LOGIN_SERVER/$BACKEND_IMAGE:$IMAGE_TAG"
+                    --image "$ACR_LOGIN_SERVER/$BACKEND_IMAGE:$IMAGE_TAG" \
+                    --set-env-vars \
+                      "CORS_ORIGINS=*" \
+                      "AZURE_OPENAI_ENDPOINT=secretref:openai-endpoint" \
+                      "AZURE_OPENAI_DEPLOYMENT=gpt-4o" \
+                      "AZURE_OPENAI_API_VERSION=2024-08-01-preview" \
+                      "AZURE_OPENAI_API_KEY=secretref:openai-api-key"
                 else
                   az containerapp create \
                     --name "$BACKEND_APP" \
@@ -101,7 +107,13 @@ stages:
                     --registry-password "$ACR_PASS" \
                     --ingress internal \
                     --target-port 8000 \
-                    --env-vars "CORS_ORIGINS=*" \
+                    --env-vars \
+                      "CORS_ORIGINS=*" \
+                      "AZURE_OPENAI_ENDPOINT=secretref:openai-endpoint" \
+                      "AZURE_OPENAI_DEPLOYMENT=gpt-4o" \
+                      "AZURE_OPENAI_API_VERSION=2024-08-01-preview" \
+                      "AZURE_OPENAI_API_KEY=secretref:openai-api-key" \
+                    --secrets "openai-endpoint=" "openai-api-key=" \
                     --cpu 0.5 --memory 1.0Gi \
                     --min-replicas 1 --max-replicas 3
                 fi
