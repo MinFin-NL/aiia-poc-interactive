@@ -1,0 +1,155 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  BACKEND_IMAGE: invulhulp-backend
+  FRONTEND_IMAGE: invulhulp-frontend
+  RESOURCE_GROUP: rg-invulhulp-inno-d
+  CONTAINER_APP_ENV: cae-invulhulp-inno-d
+  BACKEND_APP: ca-invulhulp-backend-inno-d
+  FRONTEND_APP: ca-invulhulp-frontend-inno-d
+  AZURE_SERVICE_CONNECTION: ccoe-ipf-d-inno-spn-cicd
+  # ACR_LOGIN_SERVER: set this as a secret pipeline variable in Azure DevOps
+
+stages:
+  - stage: Build
+    displayName: Build and push images
+    jobs:
+      - job: Build
+        displayName: Docker build and push to ACR
+        steps:
+          - task: AzureCLI@2
+            displayName: Build and push backend
+            env:
+              ACR_LOGIN_SERVER: $(ACR_LOGIN_SERVER)
+              IMAGE_TAG: $(Build.SourceVersion)
+              BACKEND_IMAGE: $(BACKEND_IMAGE)
+            inputs:
+              azureSubscription: $(AZURE_SERVICE_CONNECTION)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                ACR_NAME="${ACR_LOGIN_SERVER%%.*}"
+                az acr login --name "$ACR_NAME"
+                docker build -f Dockerfile.backend \
+                  -t "$ACR_LOGIN_SERVER/$BACKEND_IMAGE:$IMAGE_TAG" \
+                  -t "$ACR_LOGIN_SERVER/$BACKEND_IMAGE:latest" .
+                docker push "$ACR_LOGIN_SERVER/$BACKEND_IMAGE:$IMAGE_TAG"
+                docker push "$ACR_LOGIN_SERVER/$BACKEND_IMAGE:latest"
+
+          - task: AzureCLI@2
+            displayName: Build and push frontend
+            env:
+              ACR_LOGIN_SERVER: $(ACR_LOGIN_SERVER)
+              IMAGE_TAG: $(Build.SourceVersion)
+              FRONTEND_IMAGE: $(FRONTEND_IMAGE)
+            inputs:
+              azureSubscription: $(AZURE_SERVICE_CONNECTION)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                ACR_NAME="${ACR_LOGIN_SERVER%%.*}"
+                az acr login --name "$ACR_NAME"
+                docker build -f Dockerfile.frontend \
+                  -t "$ACR_LOGIN_SERVER/$FRONTEND_IMAGE:$IMAGE_TAG" \
+                  -t "$ACR_LOGIN_SERVER/$FRONTEND_IMAGE:latest" .
+                docker push "$ACR_LOGIN_SERVER/$FRONTEND_IMAGE:$IMAGE_TAG"
+                docker push "$ACR_LOGIN_SERVER/$FRONTEND_IMAGE:latest"
+
+  - stage: Deploy
+    displayName: Deploy to Container Apps
+    dependsOn: Build
+    jobs:
+      - job: Deploy
+        displayName: Deploy backend and frontend
+        steps:
+          - task: AzureCLI@2
+            displayName: Deploy backend
+            env:
+              ACR_LOGIN_SERVER: $(ACR_LOGIN_SERVER)
+              IMAGE_TAG: $(Build.SourceVersion)
+              BACKEND_IMAGE: $(BACKEND_IMAGE)
+              BACKEND_APP: $(BACKEND_APP)
+              RESOURCE_GROUP: $(RESOURCE_GROUP)
+              CONTAINER_APP_ENV: $(CONTAINER_APP_ENV)
+            inputs:
+              azureSubscription: $(AZURE_SERVICE_CONNECTION)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                ACR_NAME="${ACR_LOGIN_SERVER%%.*}"
+                ACR_USER=$(az acr credential show --name "$ACR_NAME" --query username -o tsv)
+                ACR_PASS=$(az acr credential show --name "$ACR_NAME" --query "passwords[0].value" -o tsv)
+
+                if az containerapp show --name "$BACKEND_APP" --resource-group "$RESOURCE_GROUP" &>/dev/null; then
+                  az containerapp update \
+                    --name "$BACKEND_APP" \
+                    --resource-group "$RESOURCE_GROUP" \
+                    --image "$ACR_LOGIN_SERVER/$BACKEND_IMAGE:$IMAGE_TAG"
+                else
+                  az containerapp create \
+                    --name "$BACKEND_APP" \
+                    --resource-group "$RESOURCE_GROUP" \
+                    --environment "$CONTAINER_APP_ENV" \
+                    --image "$ACR_LOGIN_SERVER/$BACKEND_IMAGE:$IMAGE_TAG" \
+                    --registry-server "$ACR_LOGIN_SERVER" \
+                    --registry-username "$ACR_USER" \
+                    --registry-password "$ACR_PASS" \
+                    --ingress internal \
+                    --target-port 8000 \
+                    --env-vars "CORS_ORIGINS=*" \
+                    --cpu 0.5 --memory 1.0Gi \
+                    --min-replicas 1 --max-replicas 3
+                fi
+
+          - task: AzureCLI@2
+            displayName: Deploy frontend
+            env:
+              ACR_LOGIN_SERVER: $(ACR_LOGIN_SERVER)
+              IMAGE_TAG: $(Build.SourceVersion)
+              FRONTEND_IMAGE: $(FRONTEND_IMAGE)
+              FRONTEND_APP: $(FRONTEND_APP)
+              BACKEND_APP: $(BACKEND_APP)
+              RESOURCE_GROUP: $(RESOURCE_GROUP)
+              CONTAINER_APP_ENV: $(CONTAINER_APP_ENV)
+            inputs:
+              azureSubscription: $(AZURE_SERVICE_CONNECTION)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                ACR_NAME="${ACR_LOGIN_SERVER%%.*}"
+                ACR_USER=$(az acr credential show --name "$ACR_NAME" --query username -o tsv)
+                ACR_PASS=$(az acr credential show --name "$ACR_NAME" --query "passwords[0].value" -o tsv)
+
+                BACKEND_FQDN=$(az containerapp show \
+                  --name "$BACKEND_APP" \
+                  --resource-group "$RESOURCE_GROUP" \
+                  --query "properties.configuration.ingress.fqdn" -o tsv)
+                BACKEND_URL="https://${BACKEND_FQDN}"
+
+                if az containerapp show --name "$FRONTEND_APP" --resource-group "$RESOURCE_GROUP" &>/dev/null; then
+                  az containerapp update \
+                    --name "$FRONTEND_APP" \
+                    --resource-group "$RESOURCE_GROUP" \
+                    --image "$ACR_LOGIN_SERVER/$FRONTEND_IMAGE:$IMAGE_TAG" \
+                    --set-env-vars "BACKEND_URL=${BACKEND_URL}"
+                else
+                  az containerapp create \
+                    --name "$FRONTEND_APP" \
+                    --resource-group "$RESOURCE_GROUP" \
+                    --environment "$CONTAINER_APP_ENV" \
+                    --image "$ACR_LOGIN_SERVER/$FRONTEND_IMAGE:$IMAGE_TAG" \
+                    --registry-server "$ACR_LOGIN_SERVER" \
+                    --registry-username "$ACR_USER" \
+                    --registry-password "$ACR_PASS" \
+                    --ingress external \
+                    --target-port 80 \
+                    --env-vars "BACKEND_URL=${BACKEND_URL}" \
+                    --cpu 0.25 --memory 0.5Gi \
+                    --min-replicas 1 --max-replicas 3
+                fi
