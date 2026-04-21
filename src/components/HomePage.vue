@@ -15,14 +15,14 @@
         <div class="rvo-alert__content">
           <strong>Let op:</strong> Dit is een digitale hulptool bij het invullen van het AI Impact Assessment.
           Het invullen van dit formulier vervangt niet het advies van juridische, privacy- of AI-experts.
-          Raadpleeg bij twijfel altijd de relevante deskundigen binnen IenW.
+          Raadpleeg bij twijfel altijd de relevante deskundigen binnen MinFin.
         </div>
       </div>
 
       <div class="rvo-layout-column rvo-layout-gap--md">
         <h2 class="rvo-heading rvo-heading--xl" style="color: #154273;">Over dit instrument</h2>
         <p class="rvo-text">
-          Het AI Impact Assessment (AIIA) helpt medewerkers van IenW om op een gestructureerde manier
+          Het AI Impact Assessment (AIIA) helpt medewerkers van MinFin om op een gestructureerde manier
           te beoordelen of het verantwoord is een AI-systeem in te zetten, en hoe dit systeem
           verantwoord geïmplementeerd en gebruikt kan worden.
         </p>

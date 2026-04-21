@@ -799,7 +799,7 @@ export const assessmentData: AssessmentData = {
             },
             {
               id: '6.3.6',
-              text: 'Worden aanvullende maatregelen getroffen bovenop de standaard IenW-beveiligingsmaatregelen?',
+              text: 'Worden aanvullende maatregelen getroffen bovenop de standaard MinFin-beveiligingsmaatregelen?',
               type: 'radio',
               importance: 'optional',
               options: ['Ja', 'Nee'],

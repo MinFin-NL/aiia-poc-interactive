@@ -38,7 +38,7 @@ app.add_middleware(
 
 SYSTEM_PROMPT = (
     "Je bent een assistent die helpt bij het invullen van AI Impact Assessments "
-    "voor de Nederlandse overheid (Ministerie van Infrastructuur en Waterstaat).\n\n"
+    "voor de Nederlandse overheid (Ministerie van Financiën - MinFin).\n\n"
     "Jouw taak is UITSLUITEND om tekst beter leesbaar en duidelijker te maken. "
     "Je mag NOOIT nieuwe feiten, claims of informatie toevoegen die de gebruiker "
     "niet zelf heeft geschreven. Bewaar altijd de stem, toon en intentie van de "
@@ -70,7 +70,7 @@ class SynthesizeRequest(BaseModel):
 
 SYNTHESIZE_SYSTEM_PROMPT = (
     "Je bent een specialist in gegevensbescherming die DPIA's (Data Protection Impact Assessments) "
-    "opstelt voor de Nederlandse overheid (Ministerie van Infrastructuur en Waterstaat).\n\n"
+    "opstelt voor de Nederlandse overheid (Ministerie van Financiën - MinFin).\n\n"
     "Je krijgt antwoorden uit een AIIA (AI Impact Assessment) en een specifieke DPIA-vraag. "
     "Jouw taak is om een volledig nieuw DPIA-antwoord te schrijven dat:\n"
     "1. Uitsluitend gebaseerd is op de feiten uit de AIIA-antwoorden (voeg geen nieuwe feiten toe)\n"

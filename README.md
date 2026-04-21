@@ -4,7 +4,7 @@ A web application that helps Dutch government employees fill in AI-related compl
 
 Currently supported forms:
 
-- **AIIA** – AI Impact Assessment (Ministerie van Infrastructuur en Waterstaat, v2.0)
+- **AIIA** – AI Impact Assessment (Ministerie van Financiën - MinFin, v2.0)
 - **DPIA** – Data Protection Impact Assessment (Model DPIA Rijksdienst, v3.0)
 
 The tool also supports **cross-form mapping**: relevant AIIA answers are used to pre-suggest answers for related DPIA questions, reducing duplicate work.

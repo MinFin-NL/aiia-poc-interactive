@@ -26,7 +26,7 @@ export function exportToPdf(
   })
 
   const docTitle = isDpia ? 'Data Protection Impact Assessment' : 'AI Impact Assessment'
-  const footerLabel = isDpia ? 'DPIA – IenW' : 'AI Impact Assessment – IenW'
+  const footerLabel = isDpia ? 'DPIA – MinFin' : 'AI Impact Assessment – MinFin'
   const filename = isDpia ? 'DPIA-IenW.pdf' : 'AI-Impact-Assessment-IenW.pdf'
 
   const content: Content[] = [
