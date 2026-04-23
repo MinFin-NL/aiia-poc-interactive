@@ -13,7 +13,7 @@ Environment variables (can be set via .env file):
     AZURE_OPENAI_ENDPOINT        — e.g. https://oai-foundation-inno-d.openai.azure.com/
     AZURE_OPENAI_API_KEY         — API key
     AZURE_OPENAI_DEPLOYMENT      — deployment name (default: gpt-4o)
-    AZURE_OPENAI_API_VERSION     — API version (default: 2024-08-01-preview)
+    AZURE_OPENAI_API_VERSION     — API version (default: 2025-04-01-preview)
 
     # Shared
     CORS_ORIGINS      — comma-separated allowed origins (default: http://localhost:5173)
@@ -40,7 +40,7 @@ if USE_AZURE:
     _azure_client = AzureOpenAI(
         azure_endpoint=AZURE_OPENAI_ENDPOINT,
         api_key=os.environ.get("AZURE_OPENAI_API_KEY", ""),
-        api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2024-08-01-preview"),
+        api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2025-04-01-preview"),
     )
     AZURE_DEPLOYMENT = os.environ.get("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
 else:
@@ -54,10 +54,13 @@ else:
 def chat(system: str, user: str) -> str:
     """Send a chat message and return the raw response content."""
     if USE_AZURE:
+        # o-series reasoning models (o1, o3, o4) require "developer" role instead of "system"
+        is_reasoning_model = AZURE_DEPLOYMENT.startswith(("o1", "o3", "o4"))
+        system_role = "developer" if is_reasoning_model else "system"
         response = _azure_client.chat.completions.create(
             model=AZURE_DEPLOYMENT,
             messages=[
-                {"role": "system", "content": system},
+                {"role": system_role, "content": system},
                 {"role": "user", "content": user},
             ],
         )
