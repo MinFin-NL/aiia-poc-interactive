@@ -189,7 +189,7 @@
         <div class="card-row">
           <template v-for="(form, idx) in group.forms" :key="form.id">
             <div v-if="idx > 0" class="card-connector" aria-hidden="true">
-              {{ group.track === 'assessment' ? '↔' : '→' }}
+              {{ connectorGlyph(group, idx) }}
             </div>
             <article
               class="rvo-card rvo-card--outline rvo-card--padding--md form-card"
@@ -576,6 +576,15 @@ const TRACK_META: Record<string, { label: string; description: string; order: nu
     description: 'Volledige impact assessments voor privacy en AI — worden gevoed door informatie uit het project- en privacyspoor.',
     order: 3,
   },
+}
+
+// Bidirectional glyph for the whole assessments track, and specifically for the
+// PPM ↔ PSA pair in the project track (their answers flow both ways).
+function connectorGlyph(group: { track: string; forms: FormIndexEntry[] }, idx: number): string {
+  if (group.track === 'assessment') return '↔'
+  const pair = new Set([group.forms[idx - 1]?.id, group.forms[idx]?.id])
+  if (pair.has('ppm') && pair.has('psa')) return '↔'
+  return '→'
 }
 
 const trackGroups = computed(() => {
