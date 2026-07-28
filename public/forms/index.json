@@ -71,6 +71,46 @@
       "track": "assessment",
       "order": 4,
       "shortDescription": "Doorloop het officiële Impact Assessment Mensenrechten en Algoritmes (MinBZK) voor de grondrechtentoets van een algoritme of AI-systeem."
+    },
+    {
+      "id": "euaiact",
+      "file": "euaiact.json",
+      "title": "EU AI Act Compliance Checklist",
+      "track": "assessment",
+      "order": 5,
+      "shortDescription": "Classificeer een AI-systeem onder de AI-verordening en loop cumulatief de verplichtingen na, inclusief de EU-conformiteitsverklaring (bijlage V)."
+    },
+    {
+      "id": "shadowai",
+      "file": "shadowai.json",
+      "title": "Shadow AI Inventarisatie",
+      "track": "governance",
+      "order": 1,
+      "shortDescription": "Breng per afdeling in kaart welke (ongeautoriseerde) AI-tools in gebruik zijn, classificeer het risico en bepaal de vervolgactie."
+    },
+    {
+      "id": "governancecharter",
+      "file": "governancecharter.json",
+      "title": "AI Governance Charter",
+      "track": "governance",
+      "order": 2,
+      "shortDescription": "Leg op één pagina het mandaat vast: scope, principes, governance-organen, rollen, besluitvorming en escalatie voor AI-inzet."
+    },
+    {
+      "id": "modelcard",
+      "file": "modelcard.json",
+      "title": "AI-systeemregistratie (Model Card)",
+      "track": "governance",
+      "order": 3,
+      "shortDescription": "Registreer een AI-systeem centraal: doel, data, model, beperkingen, bias en compliance-status voor governance en audit."
+    },
+    {
+      "id": "maturityscan",
+      "file": "maturityscan.json",
+      "title": "AI Maturity Assessment (Quick Scan)",
+      "track": "governance",
+      "order": 4,
+      "shortDescription": "Meet de AI-volwassenheid van de organisatie per kennisgebied (KA1–KA12) op een schaal van 1 tot 5 en bepaal verbeterpunten."
     }
   ]
 }

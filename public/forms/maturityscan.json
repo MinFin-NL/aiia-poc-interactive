@@ -1,0 +1,253 @@
+{
+  "id": "maturityscan",
+  "version": "0.1",
+  "title": "AI Maturity Assessment (Quick Scan)",
+  "aiContext": "Dit is een AI Maturity Assessment (Quick Scan): een organisatie- of afdelingsbrede zelfscan van de AI-volwassenheid, gescoord per kennisgebied (KA1–KA12) op een schaal van 1 (initieel) tot 5 (geoptimaliseerd). Gebaseerd op de AI Body of Knowledge (Template 4, AI Maturity Assessment). Het gemiddelde van de twaalf scores geeft het algehele volwassenheidsniveau. Schrijf reflecterend en onderbouwend; betrek bij voorkeur meerdere stakeholders.",
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "AI Maturity Scan",
+    "docTitle": "AI Maturity Assessment (Quick Scan)",
+    "footerLabel": "AI Maturity Assessment (Quick Scan)",
+    "filename": "AI-Maturity-Scan.pdf",
+    "systemNamePlaceholder": "Bijv. Directie Informatievoorziening",
+    "homeContent": {
+      "notice": "Betrek bij voorkeur meerdere stakeholders bij het invullen — de perceptie van de CISO verschilt van die van de data scientist. De nulmeting geeft richting aan het verbeterplan voor de komende kwartalen en maakt voortgang meetbaar voor de directie.",
+      "description": "De AI Maturity Quick Scan bepaalt per kennisgebied (KA1–KA12) een score van 1 tot 5. Het gemiddelde geeft het algehele AI-volwassenheidsniveau van de organisatie of afdeling en wijst de belangrijkste verbeterpunten aan. Gebaseerd op de AI Body of Knowledge (Template 4).",
+      "steps": [
+        "Basisgegevens: organisatie, afdeling, deelnemers en datum",
+        "Scores: beoordeel elk van de twaalf kennisgebieden op een schaal van 1 tot 5",
+        "Resultaat: bepaal het gemiddelde, de prioriteitsgebieden en het vervolg"
+      ],
+      "buttonLabel": "Starten met de scan"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "ms_a" },
+    { "type": "subsections", "sectionId": "ms_b" },
+    { "type": "subsections", "sectionId": "ms_c" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "ms_a",
+      "title": "Basisgegevens",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "ms_a1",
+          "title": "0. Basisgegevens",
+          "description": "Leg vast voor welke organisatie of afdeling de scan wordt uitgevoerd en wie eraan hebben deelgenomen.",
+          "questions": [
+            {
+              "id": "ms_a.organisatie",
+              "text": "Organisatie",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ms_a.afdeling",
+              "text": "Afdeling / directie",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            },
+            {
+              "id": "ms_a.deelnemers",
+              "text": "Deelnemers aan de scan (naam + rol)",
+              "guidance": "Vermeld welke stakeholders hebben meegedaan (bijv. CISO, data scientist, projectleider, functionaris gegevensbescherming).",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ms_a.datum",
+              "text": "Datum van de scan",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "date"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ms_b",
+      "title": "Scores per kennisgebied",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "ms_b1",
+          "title": "1. Scores per kennisgebied (KA1–KA12)",
+          "description": "Beoordeel elk kennisgebied op een schaal van 1 tot 5. 1 = Initieel (ad hoc, ongecoördineerd); 2 = Bewust (enkele initiatieven, niet structureel); 3 = Gedefinieerd (processen en rollen vastgelegd, inconsistente naleving); 4 = Beheerst (processen actief gevolgd en gemeten, continue verbetering); 5 = Geoptimaliseerd (best practices, datagedreven continu verbeterd).",
+          "questions": [
+            {
+              "id": "ms_b.ka1",
+              "text": "KA1 — AI Governance",
+              "guidance": "In hoeverre heeft de organisatie een formele governancestructuur voor AI, met duidelijke rollen, mandaten en besluitvormingsprocessen?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka2",
+              "text": "KA2 — AI Strategie & Portfoliomanagement",
+              "guidance": "In hoeverre is er een expliciete AI-strategie afgestemd op de organisatiestrategie, met een geprioriteerd portfolio van AI-initiatieven?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka3",
+              "text": "KA3 — AI Architectuur",
+              "guidance": "In hoeverre is AI opgenomen in de enterprise-architectuur, inclusief principes, patronen en standaarden voor AI-systemen en de cognition plane?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka4",
+              "text": "KA4 — AI Lifecycle Management",
+              "guidance": "In hoeverre zijn de fasen van de AI-levenscyclus (ontwerp, ontwikkeling, inzet, monitoring, uitfasering) gestandaardiseerd en herhaalbaar?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka5",
+              "text": "KA5 — Data & Semantiek voor AI",
+              "guidance": "In hoeverre zijn datakwaliteit, datagovernance en semantische interoperabiliteit van AI-trainingsdata en -bronnen geborgd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka6",
+              "text": "KA6 — Model Management",
+              "guidance": "In hoeverre worden AI-modellen systematisch beheerd, geversioneerd, gevalideerd en gemonitord op drift en prestaties?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka7",
+              "text": "KA7 — AI Interactie & User Experience",
+              "guidance": "In hoeverre is de interactie tussen mens en AI-systeem bewust ontworpen, met aandacht voor bruikbaarheid, vertrouwen en transparantie?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka8",
+              "text": "KA8 — AI Operations (AIOps/MLOps/LLMOps)",
+              "guidance": "In hoeverre zijn de operationele processen voor AI-systemen geautomatiseerd en gemonitord, inclusief CI/CD-pipelines, monitoring en schaalbaarheid?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka9",
+              "text": "KA9 — AI Risk Management & Safety",
+              "guidance": "In hoeverre worden risico's van AI-systemen systematisch geïdentificeerd, beoordeeld en gemitigeerd, inclusief adversarial attacks en beveiligingsissues?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka10",
+              "text": "KA10 — AI Compliance & Audit",
+              "guidance": "In hoeverre voldoet de organisatie aantoonbaar aan de AI-verordening en andere relevante wet- en regelgeving, en is dit auditeerbaar?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka11",
+              "text": "KA11 — AI Ethics & Responsible AI",
+              "guidance": "In hoeverre zijn ethische principes vertaald naar concrete richtlijnen, toetsingsmechanismen en verantwoordingsprocessen voor AI-systemen?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            },
+            {
+              "id": "ms_b.ka12",
+              "text": "KA12 — AI Knowledge & Context Management",
+              "guidance": "In hoeverre is het beheer van kennisbronnen, RAG-pipelines en contextvoorziening voor AI-systemen gestructureerd en kwaliteitsgeborgd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["1 – Initieel", "2 – Bewust", "3 – Gedefinieerd", "4 – Beheerst", "5 – Geoptimaliseerd"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ms_c",
+      "title": "Resultaat en vervolg",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "ms_c1",
+          "title": "2. Resultaat en interpretatie",
+          "description": "Bepaal het gemiddelde van de twaalf scores en interpreteer de uitkomst. Interpretatie: 1,0–1,5 = Initieel (start met de basis: wijs een AI-eigenaar aan, inventariseer shadow AI, definieer vijf basisprincipes); 1,6–2,5 = Bewust (formaliseer governance: charter, stuurgroep, systeemregistratie); 2,6–3,5 = Gedefinieerd (verdiep en verbind: EU AI Act-checklist, MLOps, volwassenheidsmeting); 3,6–4,5 = Beheerst (optimaliseer: automatiseer compliance-monitoring, verfijn risicomanagement); 4,6–5,0 = Geoptimaliseerd (innoveer: draag bij aan standaarden en best practices).",
+          "questions": [
+            {
+              "id": "ms_c.gemiddelde",
+              "text": "Gemiddelde score (som van de 12 scores gedeeld door 12)",
+              "guidance": "Bereken het gemiddelde van de twaalf scores. Bijvoorbeeld: totaal 30 / 12 = 2,5.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ms_c.niveau",
+              "text": "Algeheel volwassenheidsniveau",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Initieel (1,0–1,5)",
+                "Bewust (1,6–2,5)",
+                "Gedefinieerd (2,6–3,5)",
+                "Beheerst (3,6–4,5)",
+                "Geoptimaliseerd (4,6–5,0)"
+              ]
+            },
+            {
+              "id": "ms_c.prioriteit",
+              "text": "Belangrijkste verbetergebied (laagste score)",
+              "guidance": "Welk kennisgebied scoorde het laagst en verdient prioriteit?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ms_c.sterkste",
+              "text": "Sterkste gebied (hoogste score)",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            },
+            {
+              "id": "ms_c.aanbeveling",
+              "text": "Aanbeveling en verbeterplan",
+              "guidance": "Formuleer op basis van de uitkomst de belangrijkste vervolgacties voor de komende kwartalen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ms_c.volgende_scan",
+              "text": "Datum volgende scan",
+              "type": "text",
+              "importance": "optional",
+              "format": "date"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -576,6 +576,11 @@ const TRACK_META: Record<string, { label: string; description: string; order: nu
     description: 'Volledige impact assessments voor privacy en AI — worden gevoed door informatie uit het project- en privacyspoor.',
     order: 3,
   },
+  governance: {
+    label: 'AI-governance',
+    description: 'Governance- en registratie-instrumenten uit de AI Body of Knowledge: inventariseer AI-gebruik, leg het mandaat vast, registreer AI-systemen en meet de volwassenheid.',
+    order: 4,
+  },
 }
 
 // Bidirectional glyph for the whole assessments track, and specifically for the

@@ -1,0 +1,220 @@
+{
+  "id": "shadowai",
+  "version": "0.1",
+  "title": "Shadow AI Inventarisatie",
+  "aiContext": "Dit is een Shadow AI Inventarisatie: hiermee wordt per afdeling in kaart gebracht welke AI-tools en -systemen zonder formele goedkeuring in gebruik zijn. Gebaseerd op de AI Body of Knowledge (Template 5, Shadow AI Inventory). Het doel is niet om te bestraffen, maar om te formaliseren: elk tool wordt geclassificeerd op risico (minimaal/beperkt/hoog/onaanvaardbaar) met een vervolgactie (formaliseren, blokkeren of monitoren). Schrijf inventariserend en feitelijk.",
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Shadow AI Inventarisatie",
+    "docTitle": "Shadow AI Inventarisatie",
+    "footerLabel": "Shadow AI Inventarisatie",
+    "filename": "Shadow-AI-Inventarisatie.pdf",
+    "systemNamePlaceholder": "Bijv. Directie Communicatie",
+    "homeContent": {
+      "notice": "Het doel van deze inventarisatie is niet bestraffen maar formaliseren. Vul haar in samen met afdelingshoofden en IT-contactpersonen; zij weten vaak meer dan de centrale IT-afdeling. Systemen met een onaanvaardbaar risico moeten direct worden gestopt.",
+      "description": "De Shadow AI Inventarisatie brengt per afdeling in kaart welke (ongeautoriseerde) AI-tools in gebruik zijn, met welke data, door hoeveel mensen, met welk risiconiveau en welke vervolgactie. Gebaseerd op de AI Body of Knowledge (Template 5).",
+      "steps": [
+        "Inventarisatiegegevens: afdeling, contactpersoon, opsteller en datum",
+        "AI-gebruik: tabel met tools, vendor, gebruikers, data en risicoclassificatie",
+        "Veelvoorkomende tools: checklist van bekende AI-tools",
+        "Risicosamenvatting en vervolgacties"
+      ],
+      "buttonLabel": "Starten met de inventarisatie"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "sa_a" },
+    { "type": "subsections", "sectionId": "sa_b" },
+    { "type": "subsections", "sectionId": "sa_c" },
+    { "type": "subsections", "sectionId": "sa_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "sa_a",
+      "title": "Inventarisatiegegevens",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "sa_a1",
+          "title": "0. Inventarisatiegegevens",
+          "description": "Leg vast voor welke afdeling de inventarisatie is uitgevoerd en door wie.",
+          "questions": [
+            {
+              "id": "sa_a.datum",
+              "text": "Inventarisatiedatum",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "date"
+            },
+            {
+              "id": "sa_a.opsteller",
+              "text": "Uitgevoerd door (naam + rol)",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "sa_a.afdeling",
+              "text": "Afdeling / directie",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "sa_a.contactpersoon",
+              "text": "Contactpersoon afdeling",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sa_b",
+      "title": "AI-gebruik overzicht",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "sa_b1",
+          "title": "1. Overzicht van AI-gebruik",
+          "description": "Documenteer per tool of systeem welk gebruik is aangetroffen, met welke data en welk risiconiveau. Bepaal per regel een vervolgactie.",
+          "questions": [
+            {
+              "id": "sa_b.overzicht",
+              "text": "Aangetroffen AI-tools en -systemen",
+              "guidance": "Voeg per aangetroffen tool een regel toe. Classificeer het risico volgens de AI-verordening en bepaal de vervolgactie (formaliseren, blokkeren of monitoren).",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "tool", "label": "Tool / systeem", "hint": "Naam van de AI-tool of het systeem" },
+                { "id": "vendor", "label": "Vendor / leverancier" },
+                { "id": "gebruikers", "label": "Gebruikers (aantal)", "hint": "Aantal medewerkers dat het gebruikt" },
+                { "id": "frequentie", "label": "Frequentie", "hint": "Bijv. dagelijks, wekelijks, incidenteel" },
+                { "id": "data", "label": "Ingevoerde data", "hint": "Welke gegevens gaan het tool in?" },
+                { "id": "datatype", "label": "Type data", "type": "select", "options": ["Persoonsgegevens", "Bedrijfsgegevens", "Openbare gegevens"] },
+                { "id": "risico", "label": "Risicoclassificatie", "type": "select", "options": ["Minimaal", "Beperkt", "Hoog", "Onaanvaardbaar"] },
+                { "id": "eigenaar", "label": "Eigenaar (verantwoordelijke)" },
+                { "id": "actie", "label": "Actie", "type": "select", "options": ["Formaliseren", "Blokkeren", "Monitoren"] }
+              ],
+              "notesLabel": "Aanvullende toelichting bij het overzicht",
+              "minRows": 1,
+              "maxRows": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sa_c",
+      "title": "Veelvoorkomende tools",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "sa_c1",
+          "title": "2. Checklist veelvoorkomende AI-tools",
+          "description": "Vink aan welke van deze veelgebruikte tools binnen de afdeling aanwezig zijn.",
+          "questions": [
+            {
+              "id": "sa_c.tools",
+              "text": "Welke van deze tools zijn in gebruik binnen de afdeling?",
+              "type": "checkbox",
+              "importance": "optional",
+              "options": [
+                "ChatGPT (web/app)",
+                "Microsoft Copilot (onbeheerd)",
+                "Google Gemini",
+                "Claude (Anthropic)",
+                "Midjourney / DALL·E",
+                "GitHub Copilot (onbeheerd)",
+                "Notion AI",
+                "Grammarly AI",
+                "Eigen Python/API-integraties"
+              ]
+            },
+            {
+              "id": "sa_c.tools_bedrijfsdata",
+              "text": "Wordt in een of meer van deze tools bedrijfsgevoelige data ingevoerd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["Ja", "Nee", "Onbekend"]
+            },
+            {
+              "id": "sa_c.tools_overig",
+              "text": "Overige aangetroffen tools",
+              "guidance": "Noem tools die niet in de checklist staan.",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sa_d",
+      "title": "Risicosamenvatting en vervolg",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "sa_d1",
+          "title": "3. Risicosamenvatting",
+          "description": "Vat samen hoeveel tools per risicocategorie zijn aangetroffen en welke directe actie nodig is.",
+          "questions": [
+            {
+              "id": "sa_d.onaanvaardbaar",
+              "text": "Zijn er tools met een onaanvaardbaar risico aangetroffen?",
+              "guidance": "Deze moeten onmiddellijk worden geblokkeerd.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["Ja — direct blokkeren", "Nee"]
+            },
+            {
+              "id": "sa_d.hoog",
+              "text": "Zijn er tools met een hoog risico aangetroffen?",
+              "guidance": "Deze moeten binnen 30 dagen worden geformaliseerd of geblokkeerd.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["Ja — formaliseren of blokkeren binnen 30 dagen", "Nee"]
+            },
+            {
+              "id": "sa_d.samenvatting",
+              "text": "Samenvatting van de risico's",
+              "guidance": "Vat kort samen hoeveel tools per categorie (onaanvaardbaar, hoog, beperkt, minimaal) zijn aangetroffen en wat de belangrijkste bevindingen zijn.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "sa_d2",
+          "title": "4. Vervolgacties",
+          "description": "Leg de concrete vervolgacties vast met verantwoordelijke en deadline.",
+          "questions": [
+            {
+              "id": "sa_d.acties",
+              "text": "Vervolgacties",
+              "type": "table",
+              "importance": "optional",
+              "columns": [
+                { "id": "actie", "label": "Actie" },
+                { "id": "verantwoordelijke", "label": "Verantwoordelijke" },
+                { "id": "deadline", "label": "Deadline" },
+                { "id": "status", "label": "Status", "type": "select", "options": ["Open", "Afgerond"] }
+              ],
+              "notesLabel": "Toelichting bij de vervolgacties",
+              "minRows": 1,
+              "maxRows": 20
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

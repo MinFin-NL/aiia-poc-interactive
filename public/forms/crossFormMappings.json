@@ -673,5 +673,145 @@
       "d10.2"
     ],
     "synthesisHint": "Gebruik de bewaartermijnen uit de DPIA als basis voor de bewaartermijn van outputdata in de AIIA."
+  },
+  {
+    "targetFormId": "euaiact",
+    "targetQuestionId": "eaa_a.doel",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.1.1",
+      "1.1.4"
+    ],
+    "synthesisHint": "Combineer het beoogde doel en de aanleiding uit de AIIA tot een beknopte beschrijving van het beoogde doel en de werking van het AI-systeem voor de EU AI Act-checklist."
+  },
+  {
+    "targetFormId": "euaiact",
+    "targetQuestionId": "eaa_a.doel",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d1.1"
+    ],
+    "synthesisHint": "Herschrijf het voorstel/de projectbeschrijving uit de DPIA als beschrijving van het beoogde doel en de werking van het AI-systeem voor de EU AI Act-checklist."
+  },
+  {
+    "targetFormId": "euaiact",
+    "targetQuestionId": "eaa_a.doel",
+    "sourceFormId": "psa",
+    "sourceQuestionIds": [
+      "psa_d.functioneel"
+    ],
+    "synthesisHint": "Gebruik de functionele beschrijving uit de PSA als basis voor de beschrijving van het beoogde doel en de werking van het AI-systeem in de EU AI Act-checklist."
+  },
+  {
+    "targetFormId": "euaiact",
+    "targetQuestionId": "eaa_a.risiconiveau_onderbouwing",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "2.1.1",
+      "2.1.4",
+      "1.2.1"
+    ],
+    "synthesisHint": "Onderbouw het risiconiveau onder de AI-verordening op basis van de impact op grondrechten, de geraakte domeinen (vergelijk bijlage III) en de technische beschrijving uit de AIIA."
+  },
+  {
+    "targetFormId": "euaiact",
+    "targetQuestionId": "eaa_c.hoog_toelichting",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d17.2",
+      "d17.3"
+    ],
+    "synthesisHint": "Vat de technische en organisatorische maatregelen en de acceptatie van resterende risico's uit de DPIA samen als toelichting bij de hoog-risico verplichtingen (verwijs naar de uitgevoerde DPIA voor item H3 en het risicomanagement voor H2)."
+  },
+  {
+    "targetFormId": "euaiact",
+    "targetQuestionId": "eaa_c.hoog_toelichting",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "6.1.1"
+    ],
+    "synthesisHint": "Gebruik de beschrijving van de risicobeheersmaatregelen uit de AIIA als toelichting bij de hoog-risico verplichtingen (met name het risicomanagementsysteem, item H2)."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_a.doel",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.1.1",
+      "1.1.4"
+    ],
+    "synthesisHint": "Combineer het beoogde doel en de aanleiding uit de AIIA tot een beknopte beschrijving van wat het AI-systeem doet, voor de Model Card."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_a.doel",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d1.1"
+    ],
+    "synthesisHint": "Herschrijf het voorstel/de projectbeschrijving uit de DPIA als beschrijving van wat het AI-systeem doet, voor de Model Card."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_a.doel",
+    "sourceFormId": "psa",
+    "sourceQuestionIds": [
+      "psa_d.functioneel"
+    ],
+    "synthesisHint": "Gebruik de functionele beschrijving uit de PSA als basis voor de beschrijving van wat het AI-systeem doet, voor de Model Card."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_b.inputdata",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "5.1.7"
+    ],
+    "synthesisHint": "Gebruik de beschrijving van hoe inputdata wordt verzameld en gecombineerd uit de AIIA om te beschrijven welke gegevens het systeem in gaan, voor de Model Card."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_b.inputdata",
+    "sourceFormId": "psa",
+    "sourceQuestionIds": [
+      "psa_d.gegevensmodel"
+    ],
+    "synthesisHint": "Gebruik het gegevensmodel uit de PSA om te beschrijven welke gegevens het systeem in gaan, voor de Model Card."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_c.trainingsdata_bron",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "5.1.1"
+    ],
+    "synthesisHint": "Gebruik de beschrijving van de gebruikte trainingsdata en de bronnen daarvan uit de AIIA als bron van de trainingsdata in de Model Card."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_d.beperkingen",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "7.1.1"
+    ],
+    "synthesisHint": "Leid uit de AIIA-beschrijving van hoe eindgebruikers het functioneren en de beperkingen van het systeem begrijpen de bekende beperkingen af, voor de Model Card."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_d.bias_notities",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "4.1.1"
+    ],
+    "synthesisHint": "Gebruik de AIIA-beschrijving van hoe met ongewenste bias in input, model en output wordt omgegaan als notities bij de bias-beoordeling in de Model Card."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_d.bias_risicos",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d16.2"
+    ],
+    "synthesisHint": "Gebruik de geïdentificeerde risico's voor betrokkenen uit de DPIA om de bekende bias-risico's van het systeem te beschrijven in de Model Card."
   }
 ]

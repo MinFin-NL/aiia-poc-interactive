@@ -8,7 +8,7 @@ A web application that helps Dutch government employees fill in AI-related compl
 
 ## Features
 
-- **8 forms across three tracks** — Project (Intakeformulier, Aanbiedingsformulier, PPM Projectplan, PSA), Assessment (Prescan DPIA, DPIA, AI Impact Assessment), and Compliance (Quick scan BIO). Forms are defined as JSON files under `public/forms/` and loaded at runtime.
+- **14 forms across four tracks** — Project (Intakeformulier, Aanbiedingsformulier, PPM Projectplan, PSA), Compliance (Quick scan BIO), Assessment (Prescan DPIA, DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist), and AI-governance (Shadow AI Inventarisatie, AI Governance Charter, AI-systeemregistratie/Model Card, AI Maturity Quick Scan). Forms are defined as JSON files under `public/forms/` and loaded at runtime. Five of these are derived from the **AI Body of Knowledge** and harmonized with MinBZK schemas — see [AI Body of Knowledge forms & MinBZK harmonization](#ai-body-of-knowledge-forms--minbzk-harmonization).
 - **Login via Keycloak (SSO)** — The backend acts as an OpenID Connect backend-for-frontend: users log in through Keycloak, and a signed session cookie gates every API call. A `--dev` flag (backend) and `VITE_AUTH_BYPASS` (frontend) bypass the login for local development.
 - **User management** — Beheerders (admins) can create, edit, reset passwords for, and delete users straight from the app via the Keycloak Admin API.
 - **Dossier management** — Group source documents and form answers into named dossiers; switch between dossiers to work on separate projects simultaneously. Dossiers are stored server-side (with a debounced localStorage cache), so work survives across devices and sessions.
@@ -87,6 +87,25 @@ Twee relevante voorbeelden:
 | Licentie | EUPL-1.2 | EUPL-1.2 | EUPL-1.2 |
 
 Een typische workflow zou zijn: gebruik eerst een **beslishulp** om vast te stellen welke assessments verplicht zijn, en gebruik daarna **findocs** (of par-dpia-form) om die assessments in te vullen.
+
+## AI Body of Knowledge forms & MinBZK harmonization
+
+Five of the forms are derived from the **AI Body of Knowledge (AI-BOK v1.0)** by Jan Willem van Veen — a reference framework for AI governance, lifecycle management and organizational design, aligned with ISO 42001, the NIST AI RMF and the EU AI Act. Its appendix ships ready-to-use templates that map cleanly onto findocs' JSON form schema. Where an AI-BOK template overlaps with an authoritative Dutch government instrument, the form is **harmonized** with the corresponding MinBZK schema, and each imported field carries the upstream identifier (`officialId`) for traceability — the same approach already used for the DPIA, Pre-scan DPIA and IAMA.
+
+| Form | Track | AI-BOK source | MinBZK harmonization |
+|---|---|---|---|
+| EU AI Act Compliance Checklist | Assessment | Template 3 | EU-conformiteitsverklaring (bijlage V / art. 47) folded in as the capstone section from task-registry `conformity_assessment_eu_ai_act` (`urn:nl:aivt:tr:ca:1.0`); each declaration field carries its URN as `officialId` |
+| AI-systeemregistratie (Model Card) | AI-governance | Template 2 | Field structure aligned with the MinBZK systemcard concept (naam, eigenaar, beschrijving); EU AI Act risk levels reused verbatim |
+| Shadow AI Inventarisatie | AI-governance | Template 5 | — |
+| AI Governance Charter | AI-governance | Template 1 | — |
+| AI Maturity Quick Scan | AI-governance | Template 4 | — |
+
+There are **two harmonization tracks** with MinBZK, each targeting a different upstream schema:
+
+- **[par-dpia-form](https://github.com/MinBZK/par-dpia-form)** — *form definitions (YAML)*. The DPIA, Pre-scan DPIA and IAMA are generated from vendored upstream YAML via a build-time converter (`npm run forms:build`), so their content tracks the official Model DPIA Rijksdienst and IAMA. See [`docs/SCHEMA_HARMONIZATION.md`](docs/SCHEMA_HARMONIZATION.md).
+- **[task-registry](https://github.com/MinBZK/task-registry)** — *instrument/task registry (URN-keyed)*. The EU AI Act checklist's conformity-declaration section reuses the `conformity_assessment_eu_ai_act` instrument (`urn:nl:aivt:tr:ca:1.0`). The registry also holds AIIA, IAMA and technical-documentation instruments, and the explicit AIIA↔IAMA links are a candidate for future cross-form mappings.
+
+The new forms plug into the existing **cross-form synthesis**: the EU AI Act checklist and the Model Card are pre-filled from AIIA, DPIA and PSA answers (`public/forms/crossFormMappings.json`), so shared information is entered once and reused. The full inventory of candidate AI-BOK forms and the rationale behind these choices lives in [`docs/AI-BOK-form-opportunities.md`](docs/AI-BOK-form-opportunities.md).
 
 ## Architecture
 
@@ -245,6 +264,8 @@ All endpoints live under `/api` and require an authenticated session (except the
 |---|---|
 | AI Impact Assessment (IenW, v2.0) | [rijksoverheid.nl](https://www.rijksoverheid.nl/documenten/rapporten/2022/11/30/ai-impact-assessment-ministerie-van-infrastructuur-en-waterstaat) |
 | Model DPIA Rijksdienst (v3.0) | [kcbr.nl](https://www.kcbr.nl/sites/default/files/2023-09/Model%20DPIA%20Rijksdienst%20v3.0.pdf) |
+| AI Body of Knowledge (AI-BOK v1.0) | Jan Willem van Veen, 2026 — `AI-Body-of-Knowledge-EN-v4.pdf` |
+| EU-conformiteitsverklaring instrument (`urn:nl:aivt:tr:ca:1.0`) | [MinBZK/task-registry](https://github.com/MinBZK/task-registry/blob/main/instruments/conformity_assessment_eu_ai_act.yaml) |
 
 ## Real-time collaboration internals
 

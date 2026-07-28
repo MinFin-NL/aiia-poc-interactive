@@ -1,0 +1,328 @@
+{
+  "id": "modelcard",
+  "version": "0.1",
+  "title": "AI-systeemregistratie (Model Card)",
+  "aiContext": "Dit is een AI-systeemregistratie (Model Card): een gestandaardiseerd registratieformulier per AI-systeem in ontwikkeling of productie, dat de centrale registratie vormt voor governance, compliance en audit. Gebaseerd op de AI Body of Knowledge (Template 2, AI System Registration / Model Card) en het model card-concept (Mitchell et al., 2019). De velden sluiten aan op de systemcard-structuur van het MinBZK task-registry (naam, beschrijving, eigenaar). Schrijf feitelijk en registrerend; wees concreet over doel, data, model en beperkingen.",
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Model Card",
+    "docTitle": "AI-systeemregistratie (Model Card)",
+    "footerLabel": "AI-systeemregistratie (Model Card)",
+    "filename": "Model-Card.pdf",
+    "systemNamePlaceholder": "Bijv. Fraudedetectiemodel Toeslagen v2",
+    "homeContent": {
+      "notice": "Vul dit formulier in voor elk AI-systeem in productie of in ontwikkeling. De registratie vormt de basis voor audits, DPIA's en continue monitoring. Begin met de hoog-risico systemen en werk daarna de rest van de lijst af.",
+      "description": "De AI-systeemregistratie (Model Card) legt de essentiële informatie van een AI-systeem vast: wat het doet, wie het bezit, welke data erin gaat, welk model wordt gebruikt en wat de bekende beperkingen en compliance-status zijn. Gebaseerd op de AI Body of Knowledge (Template 2).",
+      "steps": [
+        "Basisinformatie: naam, eigenaar, afdeling, risicoclassificatie en doel",
+        "Data: input- en outputgegevens en de aanwezigheid van persoonsgegevens",
+        "Model: type, versie, aanbieder en trainingsdata",
+        "Beperkingen en compliance: bias, DPIA, conformiteit en goedkeuringsstatus"
+      ],
+      "buttonLabel": "Starten met de registratie"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "mc_a" },
+    { "type": "subsections", "sectionId": "mc_b" },
+    { "type": "subsections", "sectionId": "mc_c" },
+    { "type": "subsections", "sectionId": "mc_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "mc_a",
+      "title": "Basisinformatie",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "mc_a1",
+          "title": "1. Basisinformatie",
+          "description": "Leg de kerngegevens van het AI-systeem vast.",
+          "questions": [
+            {
+              "id": "mc_a.systeemnaam",
+              "text": "Systeemnaam",
+              "guidance": "De naam waaronder het AI-systeem bekend is.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "mc_a.systeemid",
+              "text": "Systeem-ID",
+              "guidance": "Uniek registratienummer of referentie waarmee het systeem kan worden geïdentificeerd en getraceerd (bijv. algoritmeregister-ID).",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            },
+            {
+              "id": "mc_a.eigenaar",
+              "text": "Eigenaar (naam + rol)",
+              "guidance": "De persoon die verantwoordelijk is voor de prestaties en compliance van het systeem (AI Owner).",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "mc_a.afdeling",
+              "text": "Afdeling / directie",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "mc_a.risicoclassificatie",
+              "text": "Risicoclassificatie (AI-verordening)",
+              "guidance": "Het risiconiveau van het systeem onder de EU AI Act. Bepaal dit zo nodig met de EU AI Act Compliance Checklist.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Minimaal risico",
+                "Beperkt risico",
+                "Hoog risico",
+                "Onaanvaardbaar risico"
+              ]
+            },
+            {
+              "id": "mc_a.doel",
+              "text": "Doel — wat doet het systeem?",
+              "guidance": "Beschrijf beknopt wat het systeem doet en in welke context het wordt ingezet.",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mc_b",
+      "title": "Data",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "mc_b1",
+          "title": "2. Data",
+          "description": "Beschrijf welke gegevens het systeem in en uit gaan.",
+          "questions": [
+            {
+              "id": "mc_b.inputdata",
+              "text": "Inputdata — welke gegevens gaan het systeem in?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "mc_b.outputtype",
+              "text": "Type output",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Classificatie",
+                "Tekst",
+                "Score",
+                "Besluit",
+                "Anders"
+              ]
+            },
+            {
+              "id": "mc_b.persoonsgegevens_input",
+              "text": "Persoonsgegevens in de input?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["Ja", "Nee"]
+            },
+            {
+              "id": "mc_b.persoonsgegevens_output",
+              "text": "Persoonsgegevens in de output?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["Ja", "Nee"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mc_c",
+      "title": "Model",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "mc_c1",
+          "title": "3. Model",
+          "description": "Beschrijf het onderliggende model en de trainingsdata.",
+          "questions": [
+            {
+              "id": "mc_c.modeltype",
+              "text": "Type model",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "LLM (taalmodel)",
+                "Classificatie",
+                "Regressie",
+                "Agent",
+                "Anders"
+              ]
+            },
+            {
+              "id": "mc_c.modelversie",
+              "text": "Modelversie",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            },
+            {
+              "id": "mc_c.aanbieder",
+              "text": "Aanbieder (intern / extern — naam)",
+              "guidance": "Wie levert het model? Bij een extern model: de naam van de leverancier.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "mc_c.trainingsdata_bron",
+              "text": "Trainingsdata — bron",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "mc_c.trainingsdata_volume",
+              "text": "Trainingsdata — omvang",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            },
+            {
+              "id": "mc_c.trainingsdata_datum",
+              "text": "Trainingsdata — datum (laatste training / fine-tuning)",
+              "type": "text",
+              "importance": "optional",
+              "format": "date"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mc_d",
+      "title": "Beperkingen, risico's en compliance",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "mc_d1",
+          "title": "4. Beperkingen en risico's",
+          "description": "Beschrijf de bekende beperkingen en bias-risico's van het systeem.",
+          "questions": [
+            {
+              "id": "mc_d.beperkingen",
+              "text": "Bekende beperkingen",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "mc_d.bias_uitgevoerd",
+              "text": "Bias-beoordeling uitgevoerd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["Ja", "Nee"]
+            },
+            {
+              "id": "mc_d.bias_notities",
+              "text": "Notities bij de bias-beoordeling",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "mc_d.fairness_metrics",
+              "text": "Fairness-metrieken gedefinieerd?",
+              "type": "radio",
+              "importance": "optional",
+              "options": ["Ja", "Nee"]
+            },
+            {
+              "id": "mc_d.bias_risicos",
+              "text": "Bekende bias-risico's",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        },
+        {
+          "id": "mc_d2",
+          "title": "5. Compliance",
+          "description": "Leg de compliance- en goedkeuringsstatus vast.",
+          "questions": [
+            {
+              "id": "mc_d.dpia_vereist",
+              "text": "DPIA vereist?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": ["Ja", "Nee"]
+            },
+            {
+              "id": "mc_d.dpia_datum",
+              "text": "DPIA uitgevoerd (datum)",
+              "type": "text",
+              "importance": "optional",
+              "format": "date"
+            },
+            {
+              "id": "mc_d.conformiteit_uitgevoerd",
+              "text": "Conformiteitsbeoordeling uitgevoerd?",
+              "guidance": "Alleen van toepassing op hoog-risico AI-systemen (art. 43 AI-verordening).",
+              "type": "radio",
+              "importance": "optional",
+              "options": ["Ja", "Nee", "Niet van toepassing"]
+            },
+            {
+              "id": "mc_d.goedkeuringsstatus",
+              "text": "Goedkeuringsstatus",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "In behandeling",
+                "Goedgekeurd",
+                "Voorwaardelijk goedgekeurd",
+                "Afgewezen"
+              ]
+            },
+            {
+              "id": "mc_d.goedgekeurd_door",
+              "text": "Goedgekeurd door (naam + datum)",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            },
+            {
+              "id": "mc_d.laatste_evaluatie",
+              "text": "Datum laatste evaluatie",
+              "type": "text",
+              "importance": "optional",
+              "format": "date"
+            },
+            {
+              "id": "mc_d.volgende_evaluatie",
+              "text": "Datum volgende evaluatie",
+              "type": "text",
+              "importance": "optional",
+              "format": "date"
+            },
+            {
+              "id": "mc_d.opmerkingen",
+              "text": "Opmerkingen",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
