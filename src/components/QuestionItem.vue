@@ -42,7 +42,7 @@
         >
           <input
             type="radio"
-            class="rvo-radio-button__input"
+            class="utrecht-radio-button utrecht-radio-button--html-input"
             :name="question.id"
             :value="option"
             :checked="radioValue === option"
@@ -322,6 +322,48 @@ function onCheckboxToggle(option: string) {
 }
 .invulhulp-question--optional {
   border-inline-start-color: var(--invulhulp-color-optional);
+}
+
+/* RVO's radio design tokens are incomplete in this package version
+   (--utrecht-radio-button-checked-color / -checked-background-color are never
+   defined), so the native radio renders as a plain white circle with no
+   selected dot. Style the control explicitly instead of relying on RVO's
+   broken CSS-variable chain. Mirrors the RVO checkbox look. */
+.invulhulp-question__fieldset :deep(.utrecht-radio-button--html-input) {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 0 0 auto;
+  inline-size: var(--utrecht-radio-button-size, 24px);
+  block-size: var(--utrecht-radio-button-size, 24px);
+  margin: 0;
+  padding: 0;
+  border: var(--utrecht-form-control-border-width, 2px) solid
+    var(--rvo-color-lintblauw, #154273);
+  border-radius: 50%;
+  background-color: var(--rvo-color-wit, #fff);
+  background-image: none;
+  cursor: pointer;
+}
+.invulhulp-question__fieldset :deep(.utrecht-radio-button--html-input:checked) {
+  background-image: radial-gradient(
+    circle,
+    var(--rvo-color-lintblauw, #154273) 0 45%,
+    var(--rvo-color-wit, #fff) 50%
+  );
+}
+.invulhulp-question__fieldset :deep(.utrecht-radio-button--html-input:disabled) {
+  border-color: var(--rvo-color-grijs-300, #b8b8b8);
+  cursor: not-allowed;
+}
+
+/* RVO's checkbox draws its checkmark with `mask-image: var(--rvo-icon-vinkje)`,
+   but the app never imports @nl-rvo/assets/icons/index.css where that variable
+   is defined — so a checked checkbox shows a solid white square instead of a
+   tick. Supply the vinkje mask directly with a static url (Vite bundles it;
+   same pattern as the recolored icons elsewhere in the app). */
+.invulhulp-question__fieldset :deep(.rvo-checkbox__input:checked)::after {
+  -webkit-mask-image: url('@nl-rvo/assets/icons/functioneel/vinkje.svg');
+  mask-image: url('@nl-rvo/assets/icons/functioneel/vinkje.svg');
 }
 
 /* Strip the fieldset's default grey background + padding so radio/checkbox
