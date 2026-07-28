@@ -1,25 +1,25 @@
 {
   "id": "prescandpia",
-  "version": "1.0",
-  "title": "Prescan DPIA",
-  "aiContext": "Dit is een Prescan DPIA voor het Ministerie van Financiën: een snelle toets die op basis van risicofactoren (AP/EDPB-criteria) bepaalt of een volledige DPIA verplicht is. Schrijf in privacy- en AVG-termen.",
+  "version": "2.0",
+  "title": "Pre-scan DPIA",
+  "aiContext": "Dit is een Pre-scan DPIA volgens het officiële model van MinBZK (urn:nl:prescan v2.0) voor het Ministerie van Financiën: een snelle toets die op basis van risicofactoren (o.a. AP/EDPB-criteria, internationale doorgiften, basisregistraties, algoritmes en kinderrechten) bepaalt of een volledige DPIA — en eventueel een DTIA of IAMA — nodig is. Schrijf juridisch nauwkeurig in privacy- en AVG-terminologie.",
   "meta": {
     "homeComponent": "HomePage",
     "exportLabel": "Prescan DPIA",
-    "docTitle": "Prescan Data Protection Impact Assessment",
+    "docTitle": "Pre-scan Data Protection Impact Assessment",
     "footerLabel": "Prescan DPIA – MinFin",
     "filename": "Prescan-DPIA.pdf",
     "systemNamePlaceholder": "Bijv. Klantportaal persoonsgegevens v1",
     "homeContent": {
-      "notice": "Met behulp van de prescan DPIA beoordeelt u of er mogelijk grote risico's bestaan voor de rechten en vrijheden van betrokkenen (AVG/WPG/WJSG). Bij twijfel over de uitkomst: neem contact op met de Privacy Officer of de Functionaris voor de Gegevensbescherming (FG).",
-      "description": "De Prescan DPIA is een quick assessment waarmee wordt bepaald of een volledige DPIA verplicht is. De uitkomst hangt af van aanwezige risicofactoren zoals grootschalige verwerking, bijzondere persoonsgegevens, geautomatiseerde besluitvorming of kwetsbare groepen betrokkenen.",
+      "notice": "Met behulp van de Pre-scan DPIA beoordeelt u of er mogelijk hoge risico's bestaan voor de rechten en vrijheden van betrokkenen (AVG/WPG/WJSG). Bij twijfel over de uitkomst: neem contact op met de Privacy Officer of de Functionaris voor de Gegevensbescherming (FG).",
+      "description": "De Pre-scan DPIA is een quick assessment volgens het officiële model van MinBZK waarmee wordt bepaald of een volledige DPIA verplicht is, en of aanvullende producten zoals een DTIA (Data Transfer Impact Assessment) of een IAMA nodig zijn. De uitkomst hangt af van risicofactoren zoals bijzondere persoonsgegevens, internationale doorgiften, gebruik van basisregistraties, algoritmes/AI en verwerking die kinderen raakt.",
       "steps": [
         "Deel A – Beschrijving van de verwerking: doel, grondslag en cloudgebruik",
-        "Deel B – Typen persoonsgegevens en bijzondere categorieën (art. 9 AVG)",
-        "Deel C – Risicofactoren op basis van de AP/EDPB-criteria",
-        "Deel D – Algoritme en AI: gebruik, kwalificatie en conclusie DPIA-noodzaak"
+        "Deel B – Gegevensverwerking en internationale doorgiften",
+        "Deel C – Risico-indicatoren (AP/EDPB-criteria) en basisregistraties",
+        "Deel D – Algoritmes, AI en kinderrechten"
       ],
-      "buttonLabel": "Starten met de prescan DPIA"
+      "buttonLabel": "Starten met de Pre-scan DPIA"
     }
   },
   "features": {
@@ -28,11 +28,27 @@
     "conditionalPartB": false
   },
   "navigation": [
-    { "type": "subsections", "sectionId": "ps_a" },
-    { "type": "subsections", "sectionId": "ps_b" },
-    { "type": "subsections", "sectionId": "ps_c" },
-    { "type": "subsections", "sectionId": "ps_d" },
-    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+    {
+      "type": "subsections",
+      "sectionId": "ps_a"
+    },
+    {
+      "type": "subsections",
+      "sectionId": "ps_b"
+    },
+    {
+      "type": "subsections",
+      "sectionId": "ps_c"
+    },
+    {
+      "type": "subsections",
+      "sectionId": "ps_d"
+    },
+    {
+      "type": "specialView",
+      "viewId": "summary",
+      "label": "Naar samenvatting"
+    }
   ],
   "sections": [
     {
@@ -41,105 +57,468 @@
       "part": "A",
       "subsections": [
         {
-          "id": "ps_a1",
-          "title": "A.1 Algemene beschrijving",
-          "description": "Beschrijf het proces of systeem waarvoor de prescan wordt ingevuld. Deze informatie kan worden hergebruikt in paragraaf 1 van het Model DPIA Rijksdienst.",
+          "id": "d0",
+          "title": "Inleiding",
           "questions": [
             {
-              "id": "ps_a.omschrijving",
-              "text": "Geef een uitvoerige beschrijving van de verwerking of het geheel van verwerkingen",
-              "guidance": "Beschrijf om welk proces/systeem/applicatie het gaat en de context. Noem de stappen op hoofdlijnen, betrokken partijen en welke systemen worden gebruikt.",
-              "type": "text",
-              "importance": "mandatory"
-            },
-            {
-              "id": "ps_a.verwerkingsdoelen",
-              "text": "Welk doel wil de organisatie bereiken met de gegevensverwerking?",
-              "guidance": "Beschrijf de doelen. Deze kunnen worden hergebruikt in paragraaf 5 van het Model DPIA Rijksdienst.",
-              "type": "text",
-              "importance": "mandatory"
-            },
-            {
-              "id": "ps_a.grondslag",
-              "text": "Wat is de wettelijke grondslag voor de verwerking (artikel 6 lid 1 AVG)?",
-              "guidance": "De grondslag kan worden gebruikt voor paragraaf 11 van het Model DPIA Rijksdienst.",
+              "id": "d0.1",
+              "officialId": "0.1",
+              "text": "Scope",
               "type": "radio",
-              "importance": "mandatory",
               "options": [
-                "Toestemming van de betrokkene",
-                "Noodzakelijk voor uitvoering overeenkomst",
-                "Wettelijke verplichting",
-                "Vitaal belang betrokkene",
-                "Taak van algemeen belang",
-                "Gerechtvaardigd belang",
-                "Nog niet bepaald"
-              ]
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "guidance": "Betreft de scope nieuwe wet- of regelgeving?"
             },
             {
-              "id": "ps_a.cloudgebruik",
+              "id": "d0.2",
+              "officialId": "0.2",
+              "text": "Beschrijving van de verwerking",
+              "type": "text",
+              "importance": "optional",
+              "guidance": "Geef een korte beschrijving van de verwerking of het geheel van verwerkingen: om welk proces/systeem/applicatie gaat het. Besteed daarbij aandacht aan de context waarin de verwerking plaatsvindt, door wie, waar, waarom en hoe. Om wat voor bedrijfsproces(sen) gaat het en om hoeveel gegevens over wie. Deze input kun je hergebruiken voor paragraaf 1 van het Model DPIA Rijksdienst (https://www.kcbr.nl/sites/default/files/2023-09/Model%20DPIA%20Rijksdienst%20v3.0.pdf).\nBeschrijf het proces waar de beoogde verwerkingen van persoonsgegevens deel van uitmaken. Noem daarbij de stappen op hoofdlijnen, betrokken partijen, en welke systemen of applicaties gebruikt zullen worden."
+            },
+            {
+              "id": "d0.3",
+              "officialId": "0.3",
+              "text": "Doel gegevensverwerking",
+              "type": "text",
+              "importance": "optional",
+              "guidance": "Welk doel wil de organisatie bereiken met de gegevensverwerking? Dit kan hergebruikt worden in paragraaf 5 van het Model DPIA Rijksdienst (https://www.kcbr.nl/sites/default/files/2023-09/Model%20DPIA%20Rijksdienst%20v3.0.pdf)."
+            },
+            {
+              "id": "d0.4",
+              "officialId": "0.4",
+              "text": "Wat is de grondslag voor de verwerking?",
+              "type": "radio",
+              "options": [
+                "Rechtsgrond toestemming",
+                "Rechtsgrond noodzakelijk voor de uitvoering van een overeenkoms",
+                "Rechtsgrond wettelijke verplichting",
+                "Rechtsgrond vitaal belang",
+                "Rechtsgrond taak van algemeen belang",
+                "Rechtsgrond gerechtvaardigd belang"
+              ],
+              "importance": "optional",
+              "guidance": "De grondslag kan gebruikt worden voor paragraaf 11 van het Model DPIA Rijksdienst (https://www.kcbr.nl/sites/default/files/2023-09/Model%20DPIA%20Rijksdienst%20v3.0.pdf)."
+            },
+            {
+              "id": "d0.5.1",
+              "officialId": "0.5.1",
               "text": "Is er sprake van cloudgebruik?",
-              "guidance": "Geef aan of en welk type cloudoplossing wordt gebruikt.",
               "type": "radio",
-              "importance": "mandatory",
               "options": [
-                "Geen cloudgebruik (on-premise)",
-                "SaaS (Software as a Service)",
-                "IaaS (Infrastructure as a Service)",
-                "PaaS (Platform as a Service)",
-                "Hybride cloud",
-                "Nog niet bepaald"
-              ]
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "guidance": "Een alternatieve aanduiding is cloudoplossing."
+            },
+            {
+              "id": "d0.5.2",
+              "officialId": "0.5.2",
+              "text": "Selecteer een of meer van onderstaande opties",
+              "type": "checkbox",
+              "options": [
+                "Een Saas, IaaS of PaaS oplossing",
+                "Cloudopslag van data",
+                "Een applicatie die gebruik maakt van een subverwerker voor cloudopslag (bijv. Azure, AWS, Google Cloud)",
+                "On premise toepassing met functionaliteiten van het internet vanuit de cloud (hybrid cloud)"
+              ],
+              "importance": "optional",
+              "guidance": "Met Infrastructure as a Service (IaaS) huurt u een IT-infrastructuur (servers en virtuele machines (VM's)), opslag, netwerken, besturingssystemen) bij een cloudprovider op basis van betaling per gebruik. Platform as a Service (PaaS) verwijst naar diensten die bestaan uit de levering op aanvraag van een omgeving voor het ontwikkelen, testen, leveren en beheren van softwaretoepassingen. Software-as-a-Service (SaaS) is een methode voor de levering op aanvraag van softwaretoepassingen via het internet, en doorgaans op basis van een abonnement. Zie ook Pianoo (https://www.pianoo.nl/nl/sectoren/ict/ict-categorieen/cloudoplossingen-iaas-paas-saas).",
+              "visibleIf": {
+                "questionId": "d0.5.1",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "d0.5.3",
+              "officialId": "0.5.3",
+              "text": "Welke vorm van cloud betreft het?",
+              "type": "radio",
+              "options": [
+                "Public cloud",
+                "Private cloud",
+                "Hybrid"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d0.5.1",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "d0.5.4",
+              "officialId": "0.5.4",
+              "text": "Gaat het om materieel public cloudgebruik voor de primaire taak?",
+              "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d0.5.1",
+                "equals": "Ja"
+              }
             }
-          ]
+          ],
+          "description": "Met behulp van de Pre-scan DPIA beoordeelt een organisatie of er mogelijke hoge risico's bestaan voor de rechten en vrijheden van betrokkenen, zoals beschreven in de AVG. Indien de beoogde verwerking een hoog risico kent voor de rechten en de vrijheden van de betrokkenen, dan is de organisatie verplicht een DPIA uit te voeren.\n\nDe Pre-scan DPIA geeft inzicht in zaken zoals:\n• Categorieën persoonsgegevens\n• Doelen van de verwerking\n• Rechtsgrond\n• Proportionaliteit van de verwerking\n• Bijzondere aandachtspunten zoals verwerking buiten de Europese Economische Ruimte (EER)\n\nAan de hand van de Pre-scan DPIA wordt beoordeeld of een volledige DPIA nodig is, een DTIA (Data Transfer Impact Assessment), en een Impact Assessment Mensenrechten en Algoritmes (IAMA) en welke andere privacy producten: een verwerkersovereenkomst, Standard Contractual Clauses.\n\nOm je te helpen inzicht te krijgen in de voortgang van je pre-scan, is onderaan elke pagina een uitklapbaar gedeelte 'Tussenresultaten pre-scan' toegevoegd. Hier zie je direct welke assessments op basis van je huidige antwoorden verplicht of aangeraden zijn. Zodra je voldoende informatie hebt verzameld of weet welke assessments van toepassing zijn, kun je het proces versnellen door op 'Markeer als voltooid' te klikken en vervolgens naar 'Volgende stap' te gaan. Je hoeft dan de overige vragen niet meer te beantwoorden."
         }
       ]
     },
     {
       "id": "ps_b",
-      "title": "Deel B: Gegevensverwerking",
+      "title": "Deel B: Gegevensverwerking en internationale doorgiften",
       "part": "B",
       "subsections": [
         {
-          "id": "ps_b1",
-          "title": "B.1 Typen persoonsgegevens",
-          "description": "Geef aan welke typen persoonsgegevens worden verwerkt. Dit kan worden hergebruikt in paragraaf 12 van het Model DPIA Rijksdienst.",
+          "id": "d1.1",
+          "title": "1.1. Gewone persoonsgegevens",
           "questions": [
             {
-              "id": "ps_b.typen_persoonsgegevens",
-              "text": "Welke typen persoonsgegevens worden mogelijk verwerkt?",
-              "guidance": "Selecteer alle van toepassing zijnde categorieën.",
-              "type": "checkbox",
-              "importance": "mandatory",
+              "id": "d1.1.1",
+              "officialId": "1.1.1",
+              "text": "Gaat het systeem categorieën gewone persoonsgegevens verwerken?",
+              "type": "radio",
               "options": [
-                "Naam en contactgegevens",
-                "Demografische gegevens (geslacht, leeftijd, woonplaats)",
-                "Content (documenten, ingevulde velden in applicaties)",
-                "Apparaat- en internetgegevens (IP-adres, MAC-adres, locatiegegevens)",
-                "Logging (audit trail en/of applicatielogging)",
-                "Diagnostische gegevens of telemetrie",
-                "Helpdeskgegevens",
-                "Webformulieren en cookies",
-                "Overige"
-              ]
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "guidance": "Er wordt gesproken van gewone persoonsgegevens als een activiteit de classificatie \"bevat gewone persoonsgegevens\" heeft. In dat geval wordt deze categorie specifiek vastgelegd."
             },
             {
-              "id": "ps_b.bijzondere_persoonsgegevens",
-              "text": "Worden er ook bijzondere persoonsgegevens verwerkt (artikel 9 AVG)?",
-              "guidance": "Selecteer alle van toepassing zijnde categorieën bijzondere persoonsgegevens.",
+              "id": "d1.1.2",
+              "officialId": "1.1.2",
+              "text": "Gaat het systeem een van onderstaande gewone persoonsgegevens verwerken? Selecteer één of meer opties.",
               "type": "checkbox",
-              "importance": "mandatory",
               "options": [
-                "Geen bijzondere persoonsgegevens",
-                "Ras of etnische afkomst",
-                "Politieke opvattingen",
-                "Religieuze of levensbeschouwelijke overtuiging",
-                "Vakbondslidmaatschap",
-                "Gezondheidsgegevens",
-                "Genetische gegevens",
-                "Biometrische gegevens",
-                "Gegevens over seksueel gedrag of seksuele gerichtheid",
-                "Strafrechtelijke persoonsgegevens"
-              ]
+                "Categorie gewone persoonsgegevens: Apparaat- en internetgegevens",
+                "Categorie gewone persoonsgegevens: Content",
+                "Categorie gewone persoonsgegevens: Demografische gegevens",
+                "Categorie gewone persoonsgegevens: Diagnostische gegevens of telemetrie",
+                "Categorie gewone persoonsgegevens: Gegevens verzameld via een website",
+                "Categorie gewone persoonsgegevens: Helpdeskgegevens",
+                "Categorie gewone persoonsgegevens: Logging",
+                "Categorie gewone persoonsgegevens: Naam, contactgegevens",
+                "Categorie gewone persoonsgegevens: Overige"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d1.1.1",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "d1.1.3",
+              "officialId": "1.1.3",
+              "text": "Specificeer",
+              "type": "text",
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d1.1.2",
+                "equals": "'Categorie gewone persoonsgegevens: Overige'"
+              }
+            }
+          ]
+        },
+        {
+          "id": "d1.2",
+          "title": "1.2. Bijzondere persoonsgegevens",
+          "questions": [
+            {
+              "id": "d1.2.1",
+              "officialId": "1.2.1",
+              "text": "Gaat het systeem bijzondere persoonsgegevens verwerken?",
+              "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "guidance": "Er is sprake van bijzondere persoonsgegevens als een activiteit de classificatie \"bijzondere persoonsgegevens\" heeft. In dat geval wordt vastgelegd om welk type bijzondere persoonsgegevens het gaat."
+            },
+            {
+              "id": "d1.2.2",
+              "officialId": "1.2.2",
+              "text": "Gaat het systeem een van onderstaande bijzondere persoonsgegevens verwerken? Selecteer één of meer opties.",
+              "type": "checkbox",
+              "options": [
+                "Categorie bijzondere persoonsgegevens: Biometrische gegevens met het oog op de unieke identificatie van een persoon",
+                "Categorie bijzondere persoonsgegevens: Gegevens met betrekking tot iemands seksueel gedrag of seksuele gerichtheid",
+                "Categorie bijzondere persoonsgegevens: Gegevens over gezondheid",
+                "Categorie bijzondere persoonsgegevens: Genetische gegevens",
+                "Categorie bijzondere persoonsgegevens: Persoonsgegevens waaruit het lidmaatschap van een vakbond blijkt",
+                "Categorie bijzondere persoonsgegevens: Persoonsgegevens waaruit politieke opvattingen blijken",
+                "Categorie bijzondere persoonsgegevens: Persoonsgegevens waaruit ras of etnische afkomst blijkt",
+                "Categorie bijzondere persoonsgegevens: Persoonsgegevens waaruit religieuze of levensbeschouwelijke overtuigingen blijken"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d1.2.1",
+                "equals": "Ja"
+              }
+            }
+          ]
+        },
+        {
+          "id": "d1.3",
+          "title": "1.3. Overige gevoelige persoonsgegevens",
+          "questions": [
+            {
+              "id": "d1.3.1",
+              "officialId": "1.3.1",
+              "text": "Gaat het systeem ook andere gevoelige persoonsgegevens verwerken?",
+              "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "guidance": "Er is sprake van gevoelige persoonsgegevens als een activiteit de classificatie \"gevoelige persoonsgegevens\" heeft. In dat geval wordt vastgelegd om welke categorie gevoelige persoonsgegevens het gaat."
+            },
+            {
+              "id": "d1.3.2",
+              "officialId": "1.3.2",
+              "text": "Gaat het systeem een van onderstaande gevoelige persoonsgegevens verwerken? Selecteer één of meer opties.",
+              "type": "checkbox",
+              "options": [
+                "Categorie gevoelige persoonsgegevens: Surfgedrag",
+                "Categorie gevoelige persoonsgegevens: Gegevens over de financiële situatie van de betrokkene",
+                "Categorie gevoelige persoonsgegevens: Gegevens die kunnen worden gebruikt voor (identiteits)fraude",
+                "Categorie gevoelige persoonsgegevens: Gegevens die betrekking hebben op kwetsbare groepen",
+                "Categorie gevoelige persoonsgegevens: Gebruikersnamen, wachtwoorden en andere inloggegevens",
+                "Categorie gevoelige persoonsgegevens: Communicatie- en locatiegegevens",
+                "Categorie gevoelige persoonsgegevens: Nationale identificatienummers (bijv. BSN)",
+                "Categorie gevoelige persoonsgegevens: Strafrechtelijke gegevens",
+                "Categorie gevoelige persoonsgegevens: Andere gegevens die kunnen leiden tot stigmatisering of uitsluiting van de betrokkene"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d1.3.1",
+                "equals": "Ja"
+              }
+            }
+          ]
+        },
+        {
+          "id": "d1.4",
+          "title": "1.4. Categorieën betrokkene",
+          "questions": [
+            {
+              "id": "d1.4.1",
+              "officialId": "1.4.1",
+              "text": "Welke categorieën betrokkene kun je onderscheiden?",
+              "type": "checkbox",
+              "options": [
+                "Categorie betrokkenen: Medewerkers/bewindspersonen",
+                "Categorie betrokkenen: Burgers over wie gegevens worden verwerkt in het proces/systeem/applicatie",
+                "Categorie betrokkenen: Kinderen jonger dan 16 jaar",
+                "Categorie betrokkenen: Andere kwetsbare groepen (gehandicapten, minderheden, etc.)",
+                "Categorie betrokkenen: Specificatie categorie betrokkenen (bijv. vanuit uitvoeringswetgeving)"
+              ],
+              "importance": "optional"
+            },
+            {
+              "id": "d1.4.2",
+              "officialId": "1.4.2",
+              "text": "Specificeer",
+              "type": "text",
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d1.4.1",
+                "equals": "'Categorie betrokkenen: Specificatie categorie betrokkenen (bijv. vanuit uitvoeringswetgeving)'"
+              }
+            }
+          ],
+          "description": "Er wordt ook vastgelegd welke categorie betrokkenen onderwerp zijn van de gegevens die worden verwerkt, evenals het aantal betrokkenen in die categorie."
+        },
+        {
+          "id": "d1.5",
+          "title": "1.5. Wat is naar schatting de omvang van de gegevensset/de verwerking?",
+          "questions": [
+            {
+              "id": "d1.5.1",
+              "officialId": "1.5.1",
+              "text": "Is het totale aantal betrokkenen gelijk aan of groter dan 10.000?",
+              "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "guidance": "Hieronder vallen: medewerkers/bewindspersonen, burgers over wie gegevens worden verwerkt in het proces/systeem/applicatie,\nkinderen jonger dan 16 jaar, andere kwetsbare groepen (gehandicapten, minderheden, etc.) en specificatie categorie betrokkenen (bijv. vanuit uitvoeringswetgeving)."
+            },
+            {
+              "id": "d1.5.2",
+              "officialId": "1.5.2",
+              "text": "Is de hoeveelheid gegevens die wordt verwerkt van alle betrokkene gelijk aan of groter dan 10.000?",
+              "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "guidance": "Hieronder vallen: medewerkers/bewindspersonen, burgers over wie gegevens worden verwerkt in het proces/systeem/applicatie, kinderen jonger dan 16 jaar, andere kwetsbare groepen (gehandicapten, minderheden, etc.) en specificatie categorie betrokkenen (bijv. vanuit uitvoeringswetgeving)."
+            },
+            {
+              "id": "d1.5.3",
+              "officialId": "1.5.3",
+              "text": "Frequentie van verwerking",
+              "type": "radio",
+              "options": [
+                "Continu",
+                "Vaker dan maandelijks",
+                "Minstens maandelijks",
+                "Minstens jaarlijks",
+                "Onregelmatig",
+                "Eenmalig"
+              ],
+              "importance": "optional"
+            },
+            {
+              "id": "d1.5.4",
+              "officialId": "1.5.4",
+              "text": "Wat is de bewaartermijn van de gegevens?",
+              "type": "radio",
+              "options": [
+                "Aantal jaren",
+                "Jaar",
+                "Minder dan 1 maand",
+                "Minder dan 1 week",
+                "Minder dan 24 uur"
+              ],
+              "importance": "optional"
+            }
+          ]
+        },
+        {
+          "id": "d2.1",
+          "title": "2.1. Internationale doorgiften",
+          "questions": [
+            {
+              "id": "d2.1.1",
+              "officialId": "2.1.1",
+              "text": "Is er sprake van internationale doorgifte buiten de Europese Economische Ruimte (EER)?",
+              "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional"
+            },
+            {
+              "id": "d2.1.2",
+              "officialId": "2.1.2",
+              "text": "Waar is het hoofdkantoor van de cloudprovider gevestigd?",
+              "type": "radio",
+              "options": [
+                "Binnen EER",
+                "Buiten EER"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d2.1.1",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "d2.1.3",
+              "officialId": "2.1.3",
+              "text": "Waar vindt de opslag van de gegevens contractueel plaats?",
+              "type": "radio",
+              "options": [
+                "Opslag van gegevens: on premise",
+                "Opslag van gegevens: datacenter EER",
+                "Opslag van gegevens: buiten EER"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d2.1.1",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "d2.1.4",
+              "officialId": "2.1.4",
+              "text": "Van waaruit wordt er support geleverd?",
+              "type": "radio",
+              "options": [
+                "Binnen EER",
+                "Buiten EER"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d2.1.1",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "d2.1.5",
+              "officialId": "2.1.5",
+              "text": "Waar worden telemetrie en/of diagnostische gegevens verwerkt?",
+              "type": "radio",
+              "options": [
+                "Binnen EER",
+                "Buiten EER"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d2.1.1",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "d2.1.6",
+              "officialId": "2.1.6",
+              "text": "Mechanisme(s) voor doorgifte",
+              "type": "radio",
+              "options": [
+                "Doorgiftemechanisme: Adequaatheidsbesluit",
+                "Doorgiftemechanisme: Standaard contractsbepaling",
+                "Doorgiftemechanisme: Bindend bedrijfsvoorschrift",
+                "Doorgiftemechanisme: Goedgekeurd certificeringsmechanisme",
+                "Doorgiftemechanisme: Goedgekeurde gedragscode",
+                "Doorgiftemechanisme: Juridisch bindend en afdwingbaar instrument",
+                "Doorgiftemechanisme: Uitzondering artikel 49 avg",
+                "Doorgiftemechanisme: Overig mechanisme"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d2.1.1",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "d2.1.7",
+              "officialId": "2.1.7",
+              "text": "Specificatie overig doorgiftemechanisme",
+              "type": "text",
+              "format": "shorttext",
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d2.1.6",
+                "equals": "Doorgiftemechanisme: Overig mechanisme"
+              }
+            },
+            {
+              "id": "d2.1.8",
+              "officialId": "2.1.8",
+              "text": "Bevat de doorgifte ook bijzondere persoonsgegevens?",
+              "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d2.1.1",
+                "equals": "Ja"
+              }
             }
           ]
         }
@@ -147,75 +526,104 @@
     },
     {
       "id": "ps_c",
-      "title": "Deel C: Risicofactoren (AP/EDPB-criteria)",
+      "title": "Deel C: Risico-indicatoren en basisregistraties",
       "part": "C",
       "subsections": [
         {
-          "id": "ps_c1",
-          "title": "C.1 Risicoindicatoren",
-          "description": "Beoordeel of de volgende risicofactoren van toepassing zijn. Op basis van de antwoorden wordt bepaald of een volledige DPIA verplicht is.",
+          "id": "d3",
+          "title": "3. Lijst AP",
           "questions": [
             {
-              "id": "ps_c.evaluatie_scoring",
-              "text": "Is er sprake van evaluatie of scoring van personen op basis van persoonskenmerken?",
-              "guidance": "Bijv. het vaststellen van een score op basis van kenmerken of de financiële situatie van personen.",
+              "id": "d3.1",
+              "officialId": "3.1",
+              "text": "Welke groepen betrokkenen kun je onderscheiden?",
+              "type": "checkbox",
+              "options": [
+                "Lijst AP: Biometrische gegevens",
+                "Lijst AP: Cameratoezicht",
+                "Lijst AP: Communicatiegegevens",
+                "Lijst AP: Controle werknemers",
+                "Lijst AP: Creditscores",
+                "Lijst AP: Financiële situatie",
+                "Lijst AP: Flexibel cameratoezicht",
+                "Lijst AP: Fraudebestrijding",
+                "Lijst AP: Genetische persoonsgegevens",
+                "Lijst AP: Gezondheidsgegevens",
+                "Lijst AP: Heimelijk onderzoek",
+                "Lijst AP: Internet of things",
+                "Lijst AP: Profilering",
+                "Lijst AP: Observatie en beïnvloeding van gedrag",
+                "Lijst AP: Locatiegegevens",
+                "Lijst AP: Samenwerkingsverbanden",
+                "Lijst AP: Zwarte lijsten"
+              ],
+              "importance": "optional",
+              "guidance": "Bij het verwerken van persoonsgegevens moet worden aangegeven of de verwerking valt onder de lijst van de Autoriteit Persoonsgegevens (AP). Deze lijst bevat soorten gegevensverwerkingen waarvoor een DPIA verplicht is."
+            }
+          ]
+        },
+        {
+          "id": "d4",
+          "title": "4. Lijst EDPB",
+          "questions": [
+            {
+              "id": "d4.1",
+              "officialId": "4.1",
+              "text": "Welke categorieën betrokkenen kun je onderscheiden?",
+              "type": "checkbox",
+              "options": [
+                "Lijst EDPB: Bijzondere persoonsgegevens of zeer gevoelige persoonsgegevens",
+                "Lijst EDPB: Blokkering van een dienst, recht of contract",
+                "Lijst EDPB: Geautomatiseerde besluitvorming",
+                "Lijst EDPB: Gebruik van nieuwe technologieën",
+                "Lijst EDPB: Grootschalige gegevensverwerkingen",
+                "Lijst EDPB: Koppelen van datasets",
+                "Lijst EDPB: Mensen beoordelen met persoonskenmerken (evaluatie of scoring)",
+                "Lijst EDPB: Stelselmatige en grootschalige monitoring",
+                "Lijst EDPB: Verwerking van persoonsgegevens over kwetsbare groepen of personen"
+              ],
+              "importance": "optional",
+              "guidance": "Bij het verwerken van persoonsgegevens moet worden aangegeven of de verwerking valt onder de lijst van de EDPB. Deze lijst bevat soorten gegevensverwerkingen waarvoor mogelijk een DPIA verplicht is."
+            }
+          ]
+        },
+        {
+          "id": "d5.1",
+          "title": "5.1. Basisregistraties",
+          "questions": [
+            {
+              "id": "d5.1.1",
+              "officialId": "5.1.1",
+              "text": "Betreft het een basisregistratie?",
               "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Mogelijk / nader te bepalen"]
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional"
             },
             {
-              "id": "ps_c.geautomatiseerde_besluitvorming",
-              "text": "Is er sprake van geautomatiseerde besluitvorming met rechtsgevolg of aanmerkelijke impact?",
-              "guidance": "Besluitvorming zonder menselijke tussenkomst met rechtsgevolg of anderszins aanmerkelijke impact op de rechten en vrijheden van betrokkenen.",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Mogelijk / nader te bepalen"]
-            },
-            {
-              "id": "ps_c.monitoring",
-              "text": "Is er sprake van stelselmatige en grootschalige monitoring van betrokkenen?",
-              "guidance": "Verwerking voor het observeren, monitoren of controleren van betrokkenen, inclusief monitoring van openbaar toegankelijke ruimten.",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Mogelijk / nader te bepalen"]
-            },
-            {
-              "id": "ps_c.bijzondere_gegevens",
-              "text": "Is er sprake van grootschalige verwerking van bijzondere persoonsgegevens?",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Mogelijk / nader te bepalen"]
-            },
-            {
-              "id": "ps_c.koppelen_datasets",
-              "text": "Is er sprake van het koppelen of combineren van datasets uit verschillende bronnen of verwerkingen?",
-              "guidance": "Bijv. datasets van twee of meer verwerkingen voor verschillende doeleinden of door verschillende verwerkingsverantwoordelijken.",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Mogelijk / nader te bepalen"]
-            },
-            {
-              "id": "ps_c.kwetsbare_groepen",
-              "text": "Betreft de verwerking kwetsbare groepen of personen?",
-              "guidance": "Bijv. kinderen, ouderen, psychiatrische patiënten, asielzoekers, of andere groepen die verminderd in staat zijn om toestemming te geven.",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Mogelijk / nader te bepalen"]
-            },
-            {
-              "id": "ps_c.nieuwe_technologieen",
-              "text": "Wordt er gebruik gemaakt van nieuwe technologieën of een combinatie van technologieën die tot nieuwe verwerkingen leidt?",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Mogelijk / nader te bepalen"]
-            },
-            {
-              "id": "ps_c.basisregistraties",
-              "text": "Maakt de verwerking gebruik van een basisregistratie met persoonsgegevens?",
-              "guidance": "Bijv. BRP, Handelsregister, BAG, BRK, BRV, BRI, WOZ, BGT, BRO.",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Niet van toepassing"]
+              "id": "d5.1.2",
+              "officialId": "5.1.2",
+              "text": "Van welke basisregistraties wordt gebruik gemaakt?",
+              "type": "checkbox",
+              "options": [
+                "Basisregistratie: Basisregistratie Grootschalige Topografie (BGT)",
+                "Basisregistratie: Basisregistratie Inkomen (BRI)",
+                "Basisregistratie: Basisregistratie Kadaster (BRK)",
+                "Basisregistratie: Basisregistratie Ondergrond (BRO)",
+                "Basisregistratie: Basisregistratie Personen (BRP)",
+                "Basisregistratie: Basisregistratie Topografie (BRT)",
+                "Basisregistratie: Basisregistratie Voertuigen (BRV)",
+                "Basisregistratie: Basisregistratie Waarde Onroerende Zaken (WOZ)",
+                "Basisregistratie: Handelsregister (HR)",
+                "Basisregistratie: Basisregistratie Adressen en Gebouwen (BAG)"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d5.1.1",
+                "equals": "Ja"
+              }
             }
           ]
         }
@@ -223,70 +631,103 @@
     },
     {
       "id": "ps_d",
-      "title": "Deel D: Algoritme en AI",
+      "title": "Deel D: Algoritmes, AI en kinderrechten",
       "part": "D",
       "subsections": [
         {
-          "id": "ps_d1",
-          "title": "D.1 Algoritmegebruik",
-          "description": "Beoordeel of er algoritmen of AI-systemen worden ingezet en wat de impact hiervan is.",
+          "id": "d6.1",
+          "title": "6.1. Algoritmes en AI",
           "questions": [
             {
-              "id": "ps_d.algoritme_gebruik",
+              "id": "d6.1.1",
+              "officialId": "6.1.1",
               "text": "Wordt er gebruik gemaakt van een algoritme?",
-              "guidance": "Dit kan worden hergebruikt in paragraaf 4 van het Model DPIA Rijksdienst.",
               "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee"]
-            },
-            {
-              "id": "ps_d.algoritme_beschrijving", "allowAttachments": true,
-              "text": "Beschrijf het algoritme en de rol ervan in de verwerking",
-              "guidance": "Speelt het algoritme een belangrijke rol? Essentieel is als de uitkomsten noodzakelijk zijn voor het goed werken van het proces.",
-              "type": "text",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
               "importance": "optional"
             },
             {
-              "id": "ps_d.ai_systeem",
-              "text": "Kwalificeert het algoritme als een AI-systeem (artikel 3 lid 1 AI-verordening)?",
-              "guidance": "Een AI-systeem is een machinaal systeem dat is ontworpen om met niveaus van autonomie te werken en dat op basis van invoer prognoses, aanbevelingen of beslissingen genereert.",
+              "id": "d6.1.2",
+              "officialId": "6.1.2",
+              "text": "Kwalificeert het algoritme als (een onderdeel van) een ‘hoog-risico AI-systeem’ volgens de EU AI-verordening?",
               "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
               "importance": "optional",
-              "options": ["Ja", "Nee", "Onduidelijk / nader te beoordelen"]
+              "guidance": "Artikel 27 van de EU AI-verordening verplicht bepaalde gebruikers van een AI-systeem met een hoog risico die worden ingezet voor publieke taken om voorafgaand aan ingebruikneming een grondrechteneffectbeoordeling (Fundamental Rights Impact Assessment, FRIA) uit te voeren.\n\nRaadpleeg artikel 6 en Annex III uit de AI Verordening, of de Beslishulp AI-verordening (https://minbzk.github.io/Algoritmekader/ai-verordening/) om te bepalen wanneer sprake is van een hoog-risico AI-systeem waarvoor deze verplichting geldt.",
+              "visibleIf": {
+                "questionId": "d6.1.1",
+                "equals": "Ja"
+              }
             },
             {
-              "id": "ps_d.verboden_ai",
-              "text": "Is er mogelijk sprake van gebruik van een verboden AI-systeem (Hoofdstuk II AI-verordening)?",
-              "guidance": "Denk aan subliminale technieken, misbruik van kwetsbaarheden, sociale kredietwaardigheidsscores, predictive policing, gezichtsherkenningsdatabases, emotiedetectie op werkplek.",
+              "id": "d6.1.3",
+              "officialId": "6.1.3",
+              "text": "Kwalificeert het algoritme als een ander impactvol algoritme?",
               "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
               "importance": "optional",
-              "options": ["Nee", "Mogelijk — nader onderzoek nodig", "Ja — onmiddellijk stoppen"]
+              "guidance": "De Handreiking Algoritmeregister (https://www.digitaleoverheid.nl/document/handreiking-algoritmeregister/) hanteert de volgende definitie van impactvol algoritme&#58;\n\n- Het proces waarin het algoritme wordt gebruikt heeft directe rechtsgevolgen voor betrokkenen of draagt bij aan hoe de overheid een betrokkene of groep categoriseert of benadert, en\n- Het algoritme heeft een significant effect op de uitkomst van het proces.\n\nRaadpleeg de Handreiking Algoritmeregister voor nadere toelichting.",
+              "visibleIf": {
+                "questionId": "d6.1.1",
+                "equals": "Ja"
+              }
             }
           ]
         },
         {
-          "id": "ps_d2",
-          "title": "D.2 Conclusie",
-          "description": "Bepaal op basis van de voorgaande antwoorden of een volledige DPIA verplicht is.",
+          "id": "d7.1",
+          "title": "7.1. Kinderrechten",
           "questions": [
             {
-              "id": "ps_d.conclusie_dpia",
-              "text": "Conclusie: is een volledige DPIA noodzakelijk?",
-              "guidance": "Bij twee of meer risicofactoren uit deel C is een DPIA verplicht. Bij één factor overleggen met de Functionaris Gegevensbescherming (FG).",
+              "id": "d7.1.1",
+              "officialId": "7.1.1",
+              "text": "Biedt u een digitale dienst aan of gebruikt u deze?",
               "type": "radio",
-              "importance": "mandatory",
               "options": [
-                "Ja — DPIA is verplicht",
-                "Nee — geen DPIA vereist",
-                "Overleg met FG vereist"
-              ]
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional"
             },
             {
-              "id": "ps_d.conclusie_toelichting",
-              "text": "Toelichting bij de conclusie",
-              "guidance": "Licht de conclusie toe op basis van de ingevulde risicofactoren.",
-              "type": "text",
-              "importance": "optional"
+              "id": "d7.1.2",
+              "officialId": "7.1.2",
+              "text": "Biedt u een digitale dienst aan die primair bedoeld is voor gebruik door personen jonger dan 18 jaar?",
+              "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "d7.1.1",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "d7.1.3",
+              "officialId": "7.1.3",
+              "text": "Kunt u aantonen dat de dienst niet zal worden gebruikt door personen jonger dan 18 jaar of deze niet wordt ingezet bij personen jonger dan 18 jaar?",
+              "type": "radio",
+              "options": [
+                "Ja",
+                "Nee"
+              ],
+              "importance": "optional",
+              "guidance": "Zorg voor goede leeftijdsverificatie om te voorkomen dat minderjarigen gebruik maken van de digitale dienst.",
+              "visibleIf": {
+                "questionId": "d7.1.2",
+                "equals": "Nee"
+              }
             }
           ]
         }

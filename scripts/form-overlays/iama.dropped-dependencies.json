@@ -1,0 +1,30 @@
+{
+  "generatedFrom": "vendor/par-dpia-form/iama.yaml",
+  "warnings": [],
+  "dropped": [
+    {
+      "questionId": "d1.3.3",
+      "officialId": "1.3.3",
+      "kind": "informational",
+      "note": "Informatieve tekst zonder invoerveld (voorwaarde: 1.3.1 = true); niet weergegeven."
+    },
+    {
+      "questionId": "d2.2A",
+      "officialId": "2.2A",
+      "kind": "group_conditional",
+      "note": "Voorwaardelijke subsectie \"Totstandkoming algoritme – Niet-zelflerend\" wordt altijd getoond (voorwaarde: 2.1.1.1 = \"niet-zelflerend\")."
+    },
+    {
+      "questionId": "d2.2B",
+      "officialId": "2.2B",
+      "kind": "group_conditional",
+      "note": "Voorwaardelijke subsectie \"Totstandkoming algoritme – Zelflerend\" wordt altijd getoond (voorwaarde: 2.1.1.1 = \"zelflerend\")."
+    },
+    {
+      "questionId": "d4.3.0",
+      "officialId": "4.3.0",
+      "kind": "informational",
+      "note": "Informatieve tekst zonder invoerveld; niet weergegeven."
+    }
+  ]
+}

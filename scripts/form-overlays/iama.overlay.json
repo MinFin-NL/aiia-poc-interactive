@@ -1,0 +1,66 @@
+{
+  "_comment": "Hand-authored overlay for the IAMA converter. Carries everything the upstream MinBZK YAML does NOT contain: our presentation (meta/homeContent), AI hints, feature flags, and the mapping of the upstream IAMA 'Delen' into our A/B/C/D/summary sections. scripts/convert-form.mjs merges this with vendor/par-dpia-form/iama.yaml (= upstream sources/iama.yaml, Impact Assessment Mensenrechten en Algoritmes v2). NOTE: the IAMA is a NEW, SEPARATE form (id 'iama') that sits ALONGSIDE the hand-written MinFin AIIA (id 'aiia') — it does not replace it. The IAMA is a grondrechten-dialoog instrument; it has no risk-classification or decision-gate, so those bespoke AIIA features (riskClassification/decisionGate/conditionalPartB) are simply not part of this form and are OFF. IAMA 'Deel 0 (Inleiding)' is intentionally omitted (informational only) and its content lives in homeContent. Because IAMA's top level is coarse ('Deel 1-5'), the overlay lists the SECOND-level themes as subsections. See docs/SCHEMA_HARMONIZATION.md.",
+  "form": {
+    "id": "iama",
+    "version": "2.0",
+    "title": "Impact Assessment Mensenrechten en Algoritmes (IAMA)",
+    "aiContext": "Dit is een Impact Assessment Mensenrechten en Algoritmes (IAMA v2) volgens het officiële model van MinBZK (urn:nl:iama) voor het Ministerie van Financiën: een gestructureerde beoordeling van de impact van een algoritme of AI-systeem op grondrechten en publieke waarden, in lijn met artikel 27 van de EU AI-verordening. Het instrument doorloopt Waarom (doel en grondslag), Wat (soort algoritme en data), Hoe (inzet en governance), Mensenrechten (grondrechtentoets) en een Afsluiting met belangenafweging en advies. Schrijf zorgvuldig in termen van grondrechten, publieke waarden en AI-governance.",
+    "meta": {
+      "homeComponent": "HomePage",
+      "exportLabel": "IAMA",
+      "docTitle": "Impact Assessment Mensenrechten en Algoritmes",
+      "footerLabel": "IAMA – MinFin",
+      "filename": "IAMA-MinFin.pdf",
+      "systemNamePlaceholder": "Bijv. Verkeersprognosemodel v2",
+      "homeContent": {
+        "notice": "Dit is een digitale hulptool bij het invullen van het Impact Assessment Mensenrechten en Algoritmes (IAMA). Het invullen vervangt niet het advies van juridische, privacy- of grondrechtenexperts. Het IAMA is bedoeld als instrument voor interdisciplinaire dialoog en besluitvorming; betrek de relevante deskundigen binnen MinFin.",
+        "description": "Het IAMA (Impact Assessment Mensenrechten en Algoritmes, versie 2) helpt overheidsorganisaties bij het beoordelen van de impact van een algoritme of AI-systeem op grondrechten en publieke waarden, voorafgaand aan ontwikkeling of inzet. Het is in lijn gebracht met de grondrechtenbeoordeling uit artikel 27 van de EU AI-verordening en stuurt het projectteam aan om een onderbouwd advies te formuleren over het al dan niet inzetten van het algoritme.",
+        "steps": [
+          "Deel 1 – Waarom? Aanleiding, doel, publieke waarden en wettelijke grondslag",
+          "Deel 2 – Wat? Type algoritme, totstandkoming, data en governance",
+          "Deel 3 – Hoe? Gebruikscontext, rol van de medewerker, monitoring en impact",
+          "Deel 4 – Mensenrechten: grondrechtentoets, ernst, noodzaak en proportionaliteit",
+          "Deel 5 – Afsluiting: belangenafweging, advies en restrisico's"
+        ],
+        "buttonLabel": "Starten met het IAMA"
+      }
+    },
+    "features": {
+      "riskClassification": false,
+      "decisionGate": false,
+      "conditionalPartB": false
+    }
+  },
+  "sections": [
+    {
+      "id": "iama_1",
+      "title": "Deel 1: Waarom?",
+      "part": "A",
+      "paragraphs": ["1.1", "1.2", "1.3", "1.4"]
+    },
+    {
+      "id": "iama_2",
+      "title": "Deel 2: Wat?",
+      "part": "B",
+      "paragraphs": ["2.1", "2.2A", "2.2B", "2.3", "2.4", "2.5"]
+    },
+    {
+      "id": "iama_3",
+      "title": "Deel 3: Hoe?",
+      "part": "C",
+      "paragraphs": ["3.1", "3.2", "3.3", "3.4", "3.5"]
+    },
+    {
+      "id": "iama_4",
+      "title": "Deel 4: Mensenrechten",
+      "part": "D",
+      "paragraphs": ["4.1.1", "4.1.2", "4.1.3", "4.2", "4.3", "4.4", "4.5"]
+    },
+    {
+      "id": "iama_5",
+      "title": "Deel 5: Afsluiting",
+      "part": "summary",
+      "paragraphs": ["5.A", "5.B", "5.C"]
+    }
+  ]
+}

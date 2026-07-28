@@ -63,6 +63,14 @@
       "track": "assessment",
       "order": 3,
       "shortDescription": "Beoordeel de impact van een AI-systeem op grondrechten, proportionaliteit en beveiliging."
+    },
+    {
+      "id": "iama",
+      "file": "iama.json",
+      "title": "IAMA",
+      "track": "assessment",
+      "order": 4,
+      "shortDescription": "Doorloop het officiële Impact Assessment Mensenrechten en Algoritmes (MinBZK) voor de grondrechtentoets van een algoritme of AI-systeem."
     }
   ]
 }

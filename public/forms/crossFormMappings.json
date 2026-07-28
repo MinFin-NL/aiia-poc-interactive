@@ -397,7 +397,7 @@
   },
   {
     "targetFormId": "prescandpia",
-    "targetQuestionId": "ps_b.typen_persoonsgegevens",
+    "targetQuestionId": "d1.1.2",
     "sourceFormId": "quickscan",
     "sourceQuestionIds": [
       "qs_d.persoonsgegevens_toelichting"
@@ -406,7 +406,7 @@
   },
   {
     "targetFormId": "prescandpia",
-    "targetQuestionId": "ps_a.omschrijving",
+    "targetQuestionId": "d0.2",
     "sourceFormId": "quickscan",
     "sourceQuestionIds": [
       "qs_a.systeemnaam",
@@ -438,48 +438,30 @@
     "targetQuestionId": "d1.1",
     "sourceFormId": "prescandpia",
     "sourceQuestionIds": [
-      "ps_a.omschrijving"
+      "d0.2"
     ],
-    "synthesisHint": "Gebruik de omschrijving van de verwerking uit de prescan DPIA als projectbeschrijving in de volledige DPIA."
-  },
-  {
-    "targetFormId": "dpia",
-    "targetQuestionId": "d5.2",
-    "sourceFormId": "prescandpia",
-    "sourceQuestionIds": [
-      "ps_a.verwerkingsdoelen"
-    ],
-    "synthesisHint": "Vertaal de verwerkingsdoelen uit de prescan DPIA naar specifieke, uitdrukkelijk omschreven verwerkingsdoeleinden voor de DPIA."
-  },
-  {
-    "targetFormId": "dpia",
-    "targetQuestionId": "d11.2",
-    "sourceFormId": "prescandpia",
-    "sourceQuestionIds": [
-      "ps_a.grondslag"
-    ],
-    "synthesisHint": "Gebruik de gekozen wettelijke grondslag uit de prescan DPIA en motiveer deze in de context van de volledige DPIA."
+    "synthesisHint": "Neem de beschrijving van de verwerking uit de Pre-scan DPIA over als projectvoorstel/beschrijving in paragraaf 1 van de DPIA. (par-dpia-form reference: prescan 0.2 -> DPIA 1.1, one-to-one)"
   },
   {
     "targetFormId": "dpia",
     "targetQuestionId": "d4",
     "sourceFormId": "prescandpia",
     "sourceQuestionIds": [
-      "ps_c.geautomatiseerde_besluitvorming"
+      "d0.5.2",
+      "d0.5.3",
+      "d0.5.4",
+      "d6.1.1"
     ],
-    "synthesisHint": "Gebruik de informatie over geautomatiseerde besluitvorming uit de prescan DPIA om dit te beschrijven in de volledige DPIA."
+    "synthesisHint": "Vat het cloudgebruik (soort en vorm) en het algoritmegebruik uit de Pre-scan DPIA samen als beschrijving van de gebruikte technieken en methoden in paragraaf 4 van de DPIA. (par-dpia-form references: prescan 0.5.2/0.5.3/0.5.4/6.1.1 -> DPIA 4, pre-view)"
   },
   {
     "targetFormId": "dpia",
-    "targetQuestionId": "d16.2",
+    "targetQuestionId": "d12.1.1",
     "sourceFormId": "prescandpia",
     "sourceQuestionIds": [
-      "ps_c.evaluatie_scoring",
-      "ps_c.monitoring",
-      "ps_c.bijzondere_gegevens",
-      "ps_c.kwetsbare_groepen"
+      "d1.2.1"
     ],
-    "synthesisHint": "Combineer de risicofactoren uit de prescan DPIA (scoring, monitoring, bijzondere gegevens, kwetsbare groepen) tot een beschrijving van mogelijke negatieve gevolgen voor betrokkenen in de DPIA."
+    "synthesisHint": "Gebruik het antwoord uit de Pre-scan DPIA of er bijzondere persoonsgegevens worden verwerkt om paragraaf 12 van de DPIA vooraf in te vullen. (par-dpia-form reference: prescan 1.2.1 -> DPIA 12.1.1, pre-fill)"
   },
   {
     "targetFormId": "aiia",

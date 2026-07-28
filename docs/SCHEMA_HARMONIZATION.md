@@ -161,8 +161,114 @@ widest-blast-radius change in the app): per-cell conditional columns (6) and `in
 ## How to refresh from upstream
 
 1. Bump the pinned file + SHA per `vendor/par-dpia-form/PROVENANCE.md`.
-2. `npm run forms:build`.
-3. Review `git diff public/forms/dpia.json` and the dropped-dependencies report.
+2. `npm run forms:build` (now builds **all three** generated forms: dpia, prescandpia, iama).
+3. Review `git diff public/forms/*.json` and the dropped-dependencies reports.
+
+## Extension to Pre-scan DPIA + IAMA (2026-07-28)
+
+The same converter was pointed at the other two assessments in `MinBZK/par-dpia-form`
+(`sources/prescan.yaml`, `sources/iama.yaml`) — the only two of our forms with an upstream
+counterpart. Pre-scan DPIA **replaced** our old hand-written prescan (same instrument); IAMA was
+added as a **new form** next to the existing AIIA (different instrument — see below). The other five
+forms (intake, aanbiedingsformulier, ppm, psa, quickscan) are MinFin/BIO-specific and have no MinBZK
+source.
+
+**Naming:** each vendored file is named after *our* form id — `vendor/par-dpia-form/prescandpia.yaml`
+(= upstream `prescan.yaml`) and `iama.yaml` (= upstream `iama.yaml`) — so the converter's single
+`name` argument selects yaml + overlay + `public/forms/<name>.json` together. `prescandpia` reuses its
+existing `index.json` entry; `iama` got a new one (assessment track, order 4). See `PROVENANCE.md` for
+the local↔upstream mapping.
+
+### Converter changes (all additive; DPIA output is byte-for-byte unchanged, re-verified)
+- **Subsection ids resolve at any depth via `byId`.** DPIA/prescan list their top-level tasks as
+  "paragraphs"; IAMA's top level is coarse (`Deel 1-5`) so its overlay lists the *second-level*
+  themes (`1.1`, `2.2A`, `5.A`, …) — each becomes a subsection instead of one giant flat card per Deel.
+- **Empty `task_group` leaves** (informational/heading nodes with no input, e.g. IAMA's `1.3.3`
+  "Stop…" and `4.3.0` "Instructie") are **omitted** instead of emitted as bogus empty text fields,
+  and recorded as `informational` in the dropped report.
+- **Group-level conditionals are recorded** (`group_conditional`) when a flattened group or a listed
+  subsection carries a show-if we can't re-express (IAMA `2.2A`/`2.2B` — the zelflerend vs
+  niet-zelflerend branch — both stay visible).
+- **Empty-`task` leaves** fall back to their parent group's label instead of showing the raw id
+  (IAMA `2.1.1.1`).
+
+### Pre-scan DPIA (`prescandpia`) — clean match
+Upstream **Pre-scan DPIA v2.0** (`urn:nl:prescan`). Same instrument as ours, richer content
+(internationale doorgiften/DTIA, basisregistraties, algoritmes/AI, kinderrechten).
+**Result:** 4 sections, 12 subsections, 39 questions, 20 `visibleIf`, 0 warnings, 0 still-lossy.
+**One deliberate loss:** upstream carries a top-level `assessments` **rules-engine** that
+auto-computes which follow-up assessments (DPIA/DTIA/IAMA) are required. Our model has no such
+engine, so the pre-scan captures the same questions but the "is a full DPIA needed" conclusion
+stays a human judgement (as it already was).
+
+### IAMA (`iama`) — added as a NEW form, alongside AIIA (not a replacement)
+Upstream **Impact Assessment Mensenrechten en Algoritmes v2** (`urn:nl:iama`). The IAMA is a
+grondrechten/human-rights dialogue instrument (aligned with AI-Act art. 27) and is a *different*
+instrument from our hand-written MinFin AIIA (an EU-AI-Act risk-classification form with the bespoke
+`riskClassification` / `decisionGate` / `conditionalPartB` features). Rather than overwrite the AIIA,
+IAMA was added as a **new, separate form** (`id: iama`, `public/forms/iama.json`, `index.json`
+assessment track order 4). The AIIA (`aiia.json`) is **untouched** — verified byte-for-byte identical
+to HEAD.
+- Because IAMA has no risk-classification or decision gate, its `features` are simply all off; it is a
+  flat question set across `Deel 1-5`. That is the nature of the instrument, not a lost feature.
+- **`Deel 0` (Inleiding)** is intentionally omitted (informational only); its text lives in
+  `homeContent`.
+- **Result:** 5 sections (A/B/C/D/summary = Deel 1-5), 25 subsections, 83 questions, 2 `visibleIf`,
+  0 warnings, 4 still-lossy (2 `informational` = `1.3.3`/`4.3.0`, 2 `group_conditional` =
+  `2.2A`/`2.2B`, the zelflerend vs niet-zelflerend branch, both kept visible).
+
+### Cross-form mappings
+`crossFormMappings.json` only changed on the **prescandpia** side; **aiia entries were left exactly as
+they were** (the AIIA form still exists with its original ids), and the DPIA side was already stable.
+The new `iama` form has **no cross-form mappings yet** — see "Where mappings come from" below.
+
+- **quickscan→prescandpia** (2 entries): targets remapped onto new ids (`d1.1.2`, `d0.2`).
+- **prescandpia→dpia**: **rebuilt from the authoritative upstream source.** par-dpia-form's
+  `prescandpia.yaml` carries a `references:` field on each task — 20 typed prescan→DPIA links
+  (`one-to-one` / `one-to-many` / `pre-fill` / `pre-view`). We replaced the earlier hand-authored
+  guesses with these. **Only 6 of the 20 could be adopted**, producing 3 target-centric entries:
+  `d0.2 → d1.1` (beschrijving→voorstel), `{d0.5.2,d0.5.3,d0.5.4,d6.1.1} → d4` (cloud + algoritme →
+  technieken/methoden), `d1.2.1 → d12.1.1` (bijzondere pg). Each `synthesisHint` cites its upstream
+  reference.
+  - **Why only 6/20:** the other 14 references point at DPIA fields that our **v3 conversion collapsed
+    into tables** (e.g. `2.1.3`, `5.1.1`, `12.1.2.4`, `16.1.1`). They resolve to a real *table*
+    question, but the synthesize flow can't fill tables (`QuestionItem.vue` suppresses cross-form
+    suggestions on `type: table`), so such mappings would be **dead data**. They are authoritative but
+    not representable in v3 — recorded here rather than fabricated. If the DPIA ever moves away from
+    collapsed tables (or the tool gains table-fill from a scalar source), they can be adopted directly.
+
+**Every mapping ref was validated to resolve to a real question in every form; none of the new
+prescan→DPIA entries target a table.** (Unrelated pre-existing issues, out of scope: one
+`dpia→aiia` entry targets a table in the hand-written AIIA, and `aanbiedingsformulier`'s own mapping
+refs were already broken at HEAD.)
+
+### Where mappings come from (authoritative sources)
+Cross-instrument relationships are **defined upstream**, in two MinBZK repos with different schemas:
+- **`par-dpia-form`** (the form-definition repo we vendor): a `references:` field on tasks. Used above
+  for prescan→DPIA. DPIA tasks themselves carry none.
+- **`MinBZK/instrument-registry`** (the overarching task/measure/requirement registry, different
+  flat schema, URN ids): a `links:` array on every task pointing at other instruments' task URNs.
+  There the **AIIA and IAMA are separate instruments** (`urn:nl:aivt:tr:aiia:1.0` vs `…:iama:1.0`)
+  with **61 explicit AIIA↔IAMA links**, plus IAMA→DPIA (partly free-text). Deriving our IAMA↔AIIA/DPIA
+  mappings from those links is a good next step but needs a URN→our-id crosswalk **and** version
+  reconciliation: the registry's IAMA is **v1** (57 tasks) while our `iama` form is par-dpia-form
+  **v2** (83 questions, renumbered). Not done yet.
+
+### Still to review (owner: privacy/AI/grondrechten expert)
+1. **IAMA content** (`public/forms/iama.json`) — the flattened `Deel 1-5`, the omitted `Deel 0`, and
+   the two always-visible `2.2A`/`2.2B` branches (`iama.dropped-dependencies.json`).
+2. **IAMA/AIIA cross-form mappings from `instrument-registry` `links`** — build the URN→id crosswalk
+   and reconcile IAMA v1 (registry) vs v2 (our form) so the 61 authoritative AIIA↔IAMA links (and
+   IAMA→DPIA) can be adopted. None exist yet.
+3. **The 14 prescan→DPIA references we couldn't adopt** — decide whether to redirect them onto DPIA
+   narrative text fields (as the DPIA promotion did for the old mappings) or to leave them until the
+   DPIA tables / table-fill change.
+4. **The prescan `assessments` engine** — decide whether the manual "conclusie" is enough or the
+   auto-recommendation deserves a real feature.
+5. **IAMA subsection grouping** in `iama.overlay.json` (which second-level themes became subsections).
+6. **Two more instruments available** in `instrument-registry` (flat schema, would need a second
+   converter): EU-conformiteitsverklaring (`ca`, 8 tasks) and Technische documentatie hoog-risico AI
+   (`td`, 29 tasks).
 
 ## Next steps
 
@@ -178,8 +284,6 @@ widest-blast-radius change in the app): per-cell conditional columns (6) and `in
    per-question `visibleIf` — a separate, larger change deliberately out of scope here.
 5. **Optionally validate the live form loader** against `scripts/schemas/findocs-form.schema.json`
    (add ajv to `loadForm` in dev) so hand-edited forms get the same safety net as generated ones.
-6. **Extend to other assessments only where the frameworks actually match.** Upstream `iama.yaml`
-   and `prescan.yaml` are *different* frameworks from our `aiia.json` / `prescandpia.json`
-   (IAMA = human-rights/algorithms; our AIIA = EU AI Act risk classification; upstream prescan uses
-   an `assessments` rules-engine vs our `goDecision` gate). Harmonize those only after a content
-   review confirms they're the same instrument.
+6. **Extension to Pre-scan DPIA and IAMA — done (2026-07-28).** See the dedicated section below.
+   Prescan was a clean in-place match; IAMA is a *different* instrument from the AIIA, so it was added
+   as a **new form** (`iama`) alongside the untouched AIIA. Content still needs expert review.

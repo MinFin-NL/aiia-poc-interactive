@@ -130,7 +130,13 @@ const conditionalDep = (t) => (t.dependencies || []).find((d) => d.type === 'con
 // ---------- leaf -> question ----------
 function convertLeaf(t) {
   const ut = typeOf(t)
-  const q = { id: genId(t.id), officialId: String(t.id), text: clean(t.task) || t.id }
+  // Some upstream inputs carry an empty `task` because the human-readable question
+  // sits on their parent group (e.g. a lone radio under "Wat voor type algoritme?").
+  // When we flatten that group its name is lost, so fall back to the parent's task
+  // rather than showing the raw id as a label.
+  const parentId = String(t.id).includes('.') ? String(t.id).replace(/\.[^.]+$/, '') : null
+  const labelFallback = (parentId && byId[parentId] && clean(byId[parentId].task)) || t.id
+  const q = { id: genId(t.id), officialId: String(t.id), text: clean(t.task) || labelFallback }
   const guidanceParts = []
   if (clean(t.description)) guidanceParts.push(clean(t.description))
 
@@ -240,30 +246,52 @@ function convertGroup(group) {
 }
 
 function convertNode(t) {
-  if (isLeaf(t)) return [convertLeaf(t)]
+  if (isLeaf(t)) {
+    // An empty task_group leaf is an informational / heading node with no answer.
+    // Our model has no informational question type, so emit nothing rather than a
+    // bogus empty text field — record it (with its show-if condition if any).
+    if (typeOf(t) === 'task_group') {
+      const c = conditionalDep(t)
+      dropped.push({ questionId: genId(t.id), officialId: String(t.id), kind: 'informational', note: `Informatieve tekst zonder invoerveld${c ? ` (voorwaarde: ${c.condition.id} = ${JSON.stringify(c.condition.value)})` : ''}; niet weergegeven.` })
+      return []
+    }
+    return [convertLeaf(t)]
+  }
   if (t.repeatable) return convertGroup(t)
+  // A non-repeatable group is flattened, so a show-if on the *group* can't be
+  // re-expressed (our visibleIf/optionsFrom only target questions/tables). Its
+  // children stay visible; record it instead of dropping it silently.
+  const cond = conditionalDep(t)
+  if (cond) dropped.push({ questionId: genId(t.id), officialId: String(t.id), kind: 'group_conditional', note: `Voorwaardelijke groep "${clean(t.task) || t.id}" samengevouwen; kinderen blijven altijd zichtbaar (voorwaarde: ${cond.condition.id} = ${JSON.stringify(cond.condition.value)}).` })
   return (t.tasks || []).flatMap(convertNode)
 }
 
 // ---------- assemble ----------
-const paragraphToSection = {}
-for (const s of overlay.sections) for (const p of s.paragraphs) paragraphToSection[p] = s.id
+// A "paragraph" (= subsection) is any task id the overlay lists, resolved at any
+// depth via byId. DPIA/prescan list their top-level tasks; forms whose top level
+// is coarse (IAMA "Deel 1-5") list their second-level themes so each becomes a
+// subsection instead of one giant flat card per part.
 const sections = overlay.sections.map((s) => ({ id: s.id, title: s.title, part: s.part, subsections: [] }))
-const sectionById = Object.fromEntries(sections.map((s) => [s.id, s]))
 
-for (const paragraph of doc.tasks) {
-  const pid = String(paragraph.id)
-  const secId = paragraphToSection[pid]
-  if (!secId) { warn(`Paragraph ${pid} not in overlay — skipped`); continue }
-  const paragraphIsLeaf = isLeaf(paragraph)
-  const questions = paragraphIsLeaf ? [convertLeaf(paragraph)] : (paragraph.tasks || []).flatMap(convertNode)
-  const sub = { id: genId(pid), title: `${pid}. ${clean(paragraph.task) || ''}`.trim().replace(/\.$/, '').replace(/^0\.\s*/, ''), questions }
-  if (clean(paragraph.description)) sub.description = clean(paragraph.description)
-  // A leaf paragraph = one question whose guidance is the paragraph description,
-  // which we've just shown as the section intro — drop it from the card so the
-  // same text doesn't appear twice.
-  if (paragraphIsLeaf) delete questions[0].guidance
-  sectionById[secId].subsections.push(sub)
+for (const s of overlay.sections) {
+  const sec = sections.find((x) => x.id === s.id)
+  for (const pid of s.paragraphs.map(String)) {
+    const node = byId[pid]
+    if (!node) { warn(`Overlay section ${s.id} lists id ${pid}, not found in source — skipped`); continue }
+    const nodeIsLeaf = isLeaf(node)
+    // A show-if on a whole subsection can't be re-expressed (visibleIf targets a
+    // single question/table), so the subsection stays visible — record it.
+    const subCond = !nodeIsLeaf && conditionalDep(node)
+    if (subCond) dropped.push({ questionId: genId(pid), officialId: String(pid), kind: 'group_conditional', note: `Voorwaardelijke subsectie "${clean(node.task) || pid}" wordt altijd getoond (voorwaarde: ${subCond.condition.id} = ${JSON.stringify(subCond.condition.value)}).` })
+    const questions = nodeIsLeaf ? [convertLeaf(node)] : (node.tasks || []).flatMap(convertNode)
+    const sub = { id: genId(pid), title: `${pid}. ${clean(node.task) || ''}`.trim().replace(/\.$/, '').replace(/^0\.\s*/, ''), questions }
+    if (clean(node.description)) sub.description = clean(node.description)
+    // A leaf paragraph = one question whose guidance is the paragraph description,
+    // which we've just shown as the section intro — drop it from the card so the
+    // same text doesn't appear twice.
+    if (nodeIsLeaf) delete questions[0].guidance
+    sec.subsections.push(sub)
+  }
 }
 
 // ---------- pass 2: resolve deferred dependencies ----------
