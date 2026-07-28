@@ -72,3 +72,6 @@ data/
 # Claude stuff
 .scratch-test
 claude.md
+
+# Docx→JSON form authoring helpers (local only)
+opstelhulp/

@@ -1,8 +1,8 @@
 {
   "id": "aanbiedingsformulier",
-  "version": "1.0",
+  "version": "2.0",
   "title": "PPM Aanbiedingsformulier (Outline Businesscase)",
-  "aiContext": "Dit is een PPM-aanbiedingsformulier dat de outline business case voor een portfoliobesluit bij het Ministerie van Financiën beschrijft: nut en noodzaak, verwachte baten, kosten, risico's en planning van een initiatief. Schrijf zakelijk en onderbouwend.",
+  "aiContext": "Dit is een PPM-aanbiedingsformulier dat de outline business case voor een portfoliobesluit bij het Ministerie van Financiën beschrijft: belang, nut en noodzaak, afhankelijkheden, risico's, impact, planning, baten en kosten van een I-projectinitiatief. Schrijf zakelijk en onderbouwend.",
   "meta": {
     "homeComponent": "HomePage",
     "exportLabel": "Aanbiedingsformulier",
@@ -11,14 +11,14 @@
     "filename": "Aanbiedingsformulier.pdf",
     "systemNamePlaceholder": "Bijv. Vervanging declaratiesysteem",
     "homeContent": {
-      "notice": "Stuur het ingevulde aanbiedingsformulier naar portfoliomanagement@minfin.nl. Wees zo volledig en concreet mogelijk, geef context waar nodig en vermijd afkortingen. Stem het formulier vooraf af met de opdrachtgever en de vertegenwoordiger in de portfolioboard.",
-      "description": "Het PPM Aanbiedingsformulier (outline businesscase) wordt gebruikt om een I-projectinitiatief aan te melden voor opname in het centrale projectenportfolio van het Beleidsdepartement en/of om budget aan te vragen voor de initiatiefase.",
+      "notice": "Stuur het ingevulde aanbiedingsformulier naar portfoliomanagement@minfin.nl. Wees zo volledig en concreet mogelijk, geef context waar nodig, verwijs naar eventuele formele besluiten en voorkom afkortingen. Stem het formulier af met de vertegenwoordiger van het organisatieonderdeel in de portfolioboard, de adviesgroep en de opdrachtgever voordat het wordt ingediend.",
+      "description": "Met het PPM Aanbiedingsformulier (outline businesscase) wordt een I-projectinitiatief aangemeld voor opname in het centrale projectenportfolio van het Beleidsdepartement en/of budget aangevraagd voor de start van de initiatiefase.",
       "steps": [
-        "Algemeen: projectidentificatie en betrokkenen",
-        "Business: belang, nut, noodzaak en strategische waarde",
-        "Te verwachten opbrengsten: kwantitatieve en kwalitatieve baten",
-        "Kosten: projectraming, financiering en onderhoudskosten",
-        "Risico's, impact en planning"
+        "Algemeen: projectidentificatie, contactgegevens en gevraagd besluit",
+        "Business: belang, nut, noodzaak en toegevoegde waarde",
+        "Afhankelijkheden, risico's en impact",
+        "Planning en benodigde resources",
+        "Budget: baten en kosten"
       ],
       "buttonLabel": "Starten met het aanbiedingsformulier"
     }
@@ -49,10 +49,38 @@
           "questions": [
             {
               "id": "aa_a.naam_project",
-              "text": "Naam project / initiatief",
+              "text": "Naam project",
               "type": "text",
               "importance": "mandatory",
               "format": "shorttext"
+            },
+            {
+              "id": "aa_a.directie_afdeling",
+              "text": "Directie / Afdeling(en)",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "aa_a.contactpersoon",
+              "text": "Contactpersoon",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "aa_a.email",
+              "text": "E-mailadres",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "email"
+            },
+            {
+              "id": "aa_a.telefoonnummer",
+              "text": "Telefoonnummer",
+              "type": "text",
+              "importance": "optional",
+              "format": "phone"
             },
             {
               "id": "aa_a.datum_aanmelden",
@@ -62,8 +90,8 @@
               "format": "date"
             },
             {
-              "id": "aa_a.naam_aanmelder",
-              "text": "Naam aanmelder",
+              "id": "aa_a.naam_opdrachtgever",
+              "text": "Naam opdrachtgever",
               "type": "text",
               "importance": "mandatory",
               "format": "shorttext"
@@ -74,13 +102,23 @@
               "type": "text",
               "importance": "optional",
               "format": "shorttext"
-            },
+            }
+          ]
+        },
+        {
+          "id": "aa_a2",
+          "title": "Gevraagd besluit",
+          "description": "Geef aan welk besluit wordt gevraagd. In de initiatiefase wordt het projectplan opgesteld, inclusief Project Start Architectuur (PSA), en is het verplicht een quickscan Informatiebeveiliging (IB) en pre-scan DPIA en – indien nodig – een cloudtoets uit te voeren.",
+          "questions": [
             {
-              "id": "aa_a.naam_opdrachtgever",
-              "text": "Naam opdrachtgever",
-              "type": "text",
+              "id": "aa_a.gevraagd_besluit",
+              "text": "Gevraagd besluit",
+              "type": "checkbox",
               "importance": "mandatory",
-              "format": "shorttext"
+              "options": [
+                "Opname project in projectenportfolio",
+                "Budgetaanvraag initiatiefase"
+              ]
             }
           ]
         }
@@ -88,52 +126,51 @@
     },
     {
       "id": "aa_b",
-      "title": "Business: Belang, nut en noodzaak",
+      "title": "Business: Belang (nut-noodzaak) / toegevoegde waarde",
       "part": "B",
       "subsections": [
         {
           "id": "aa_b1",
-          "title": "2. Projectbeschrijving en strategische waarde",
-          "description": "Beschrijf het belang van het project voor de organisatie en de strategische doelstellingen.",
+          "title": "2. Projectbeschrijving en toegevoegde waarde",
+          "description": "Beschrijf het belang van het project en de bijdrage aan de strategische doelstellingen.",
           "questions": [
             {
-              "id": "aa_b.projectbeschrijving",
-              "text": "Projectbeschrijving algemeen (strategische doelstelling / noodzaak)",
-              "guidance": "Geef een beschrijving van de aanleiding, de noodzaak en de bijdrage aan organisatiedoelstellingen. Welke problemen worden opgelost?",
+              "id": "aa_b.aanleiding",
+              "text": "Aanleiding",
+              "guidance": "Beschrijf de op te lossen problemen, de urgentie, eventuele wettelijke verplichtingen en de doelstellingen van de organisatie.",
               "type": "text",
               "importance": "mandatory"
             },
             {
-              "id": "aa_b.geen_uitvoering",
-              "text": "Wat gebeurt er als het project niet wordt uitgevoerd?",
-              "guidance": "Beschrijf de consequenties van niet-uitvoering voor de organisatie.",
+              "id": "aa_b.doelstelling",
+              "text": "Doelstelling (strategische context)",
+              "guidance": "Wanneer is het project succesvol en hoe draagt het bij aan de organisatiedoelstellingen?",
               "type": "text",
               "importance": "mandatory"
             },
             {
-              "id": "aa_b.alternatieven",
-              "text": "Wat zijn de overwogen alternatieven voor dit project?",
-              "guidance": "Beschrijf welke alternatieven zijn overwogen en waarom voor dit project is gekozen.",
-              "type": "text",
-              "importance": "mandatory"
+              "id": "aa_b.gevolg_van",
+              "text": "Is het project het gevolg van:",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "Wet- en regelgeving",
+                "Bestuurlijke interdepartementale afspraken / verplichtingen",
+                "Onvermijdelijke vervangingsinvestering",
+                "Politieke en tijdgebonden noodzaak, opdracht of toezegging (bijv. aan de Kamer)"
+              ]
             },
             {
-              "id": "aa_b.later_uitvoeren",
-              "text": "Wat als het project later wordt uitgevoerd? Welke ruimte is er in de planning?",
+              "id": "aa_b.gevolg_toelichting",
+              "text": "Licht toe",
+              "guidance": "Licht de aangevinkte aanleiding(en) nader toe.",
               "type": "text",
               "importance": "optional"
             },
             {
-              "id": "aa_b.urgentie",
-              "text": "Politieke en bestuurlijke urgentie",
-              "guidance": "Is het project het gevolg van wet- en regelgeving, bestuurlijke afspraken, onvermijdelijke vervangingsinvesteringen of politieke toezeggingen?",
-              "type": "text",
-              "importance": "mandatory"
-            },
-            {
-              "id": "aa_b.organisatiedoelstellingen",
-              "text": "Bijdrage aan organisatiedoelstellingen en speerpunten DG",
-              "guidance": "In welke mate is het project essentieel voor het behalen van de organisatiebrede (strategische) doelstellingen en/of speerpunten DG?",
+              "id": "aa_b.mogelijke_oplossingen",
+              "text": "Mogelijke oplossingen",
+              "guidance": "Geef aan of er al onderzoek is gedaan naar mogelijke oplossingen of alternatieven en welke andere zaken van belang zijn om te weten.",
               "type": "text",
               "importance": "mandatory"
             }
@@ -143,27 +180,41 @@
     },
     {
       "id": "aa_c",
-      "title": "Te verwachten opbrengsten",
+      "title": "Afhankelijkheden, risico's en impact",
       "part": "C",
       "subsections": [
         {
           "id": "aa_c1",
-          "title": "3. Baten",
-          "description": "Beschrijf de verwachte opbrengsten van het project.",
+          "title": "3. Afhankelijkheden, risico's en impact",
+          "description": "Beschrijf de afhankelijkheden, risico's en de impact op gebruikers, organisatie en techniek.",
           "questions": [
             {
-              "id": "aa_c.kwantitatieve_baten",
-              "text": "Kwantitatieve baten (financiële opbrengsten)",
-              "guidance": "Geef waar mogelijk de kwantitatieve baten aan in euro's ten opzichte van de huidige situatie.",
+              "id": "aa_c.afhankelijkheden",
+              "text": "Afhankelijkheden",
+              "guidance": "Is er een relatie en/of afhankelijkheid met andere activiteiten of projecten?",
               "type": "text",
               "importance": "optional"
             },
             {
-              "id": "aa_c.kwalitatieve_baten",
-              "text": "Kwalitatieve baten (niet-financiële opbrengsten)",
-              "guidance": "Kwantificeer de niet-financiële opbrengsten van de nieuwe situatie ten opzichte van de huidige situatie.",
+              "id": "aa_c.risicos",
+              "text": "Risico's",
+              "guidance": "Zijn er risico's of andere factoren die belangrijk zijn voor het succesvol afronden van dit initiatief? Wat gebeurt er als het project niet wordt uitgevoerd?",
               "type": "text",
               "importance": "mandatory"
+            },
+            {
+              "id": "aa_c.impact_gebruikers",
+              "text": "Mogelijke impact op gebruikers, processen en organisatie",
+              "guidance": "Denk aan de doelgroep, de omvang van toekomstige gebruikers en de benodigde wijzigingen in organisatie en processen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "aa_c.impact_techniek",
+              "text": "Mogelijke impact op technische systemen & aspecten",
+              "guidance": "Denk aan de benodigde wijzigingen in systemen en/of de beheerorganisatie.",
+              "type": "text",
+              "importance": "optional"
             }
           ]
         }
@@ -171,25 +222,88 @@
     },
     {
       "id": "aa_d",
-      "title": "Kosten",
+      "title": "Planning",
       "part": "D",
       "subsections": [
         {
           "id": "aa_d1",
-          "title": "4. Kostenoverzicht",
-          "description": "Geef een indicatie van de eenmalige projectkosten en jaarlijkse onderhoudskosten.",
+          "title": "4. Planning en resources",
+          "description": "Geef de beoogde planning en de benodigde resources.",
           "questions": [
             {
-              "id": "aa_d.budget_initiatiefase",
-              "text": "Is er budget nodig voor het uitvoeren van de initiatiefase (opstarten project)?",
-              "guidance": "Geef een gespecificeerde kostenraming inclusief BTW voor de initiatiefase.",
+              "id": "aa_d.start_einddatum",
+              "text": "Beoogde start- / einddatum",
+              "guidance": "Benoem de start- en einddatum en eventuele fasering van zowel de initiatiefase als de projectfase.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "aa_d.tijdgevoelig",
+              "text": "Is het project tijdgevoelig?",
+              "guidance": "Geef een korte toelichting over de urgentie. Zijn er harde deadlines of kan het project eventueel later worden uitgevoerd, bijvoorbeeld als het door gebrek aan budget of capaciteit niet past?",
               "type": "text",
               "importance": "optional"
             },
             {
-              "id": "aa_d.raming_projectkosten",
+              "id": "aa_d.resources",
+              "text": "Benodigde resources",
+              "guidance": "Denk aan alle documenten en resources die nodig zijn voor het opstellen van het projectplan (projectleider, medewerkers uit de business, PSA, quickscan, DPIA, cloudtoets etc.).",
+              "type": "table",
+              "importance": "optional",
+              "columns": [
+                { "id": "resource", "label": "Resource" },
+                { "id": "activiteit", "label": "Activiteit" },
+                { "id": "uren_week", "label": "Uren/week" },
+                { "id": "startdatum", "label": "Gewenste startdatum" },
+                { "id": "einddatum", "label": "Gewenste einddatum" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aa_e",
+      "title": "Budget (kosten en opbrengsten)",
+      "part": "E",
+      "subsections": [
+        {
+          "id": "aa_e1",
+          "title": "5. Baten",
+          "description": "Beschrijf de verwachte opbrengsten van het project.",
+          "questions": [
+            {
+              "id": "aa_e.kwantitatieve_baten",
+              "text": "Kwantitatieve baten (financiële opbrengsten)",
+              "guidance": "Geef waar mogelijk de kwantitatieve baten van de nieuwe situatie aan in euro's ten opzichte van de huidige situatie.",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "aa_e.kwalitatieve_baten",
+              "text": "Kwalitatieve baten (niet-financiële opbrengsten)",
+              "guidance": "Kwantificeer de niet-financiële opbrengsten van de nieuwe situatie ten opzichte van de huidige situatie.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "aa_e2",
+          "title": "6. Kosten",
+          "description": "Geef een indicatie van de eenmalige projectkosten en jaarlijkse onderhoudskosten.",
+          "questions": [
+            {
+              "id": "aa_e.budget_initiatiefase",
+              "text": "Is er budget nodig voor het uitvoeren van de initiatiefase?",
+              "guidance": "Wanneer er budget nodig is uit het centrale projectenbudget voor het uitvoeren van de initiatiefase, geef dan hier een gespecificeerde (p×q) kostenraming inclusief BTW, bijvoorbeeld voor het inhuren van een projectleider.",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "aa_e.raming_projectkosten",
               "text": "Raming projectkosten (investering)",
-              "guidance": "Geef een ruwe indicatie van de eenmalige projectkosten.",
+              "guidance": "Geef een ruwe indicatie van de eenmalige projectkosten die nodig zijn voor het uitvoeren van het project en onderbouw waarop dit is gebaseerd.",
               "type": "radio",
               "importance": "mandatory",
               "options": [
@@ -197,24 +311,23 @@
                 "> €100K en < €250K",
                 "> €250K en < €500K",
                 "> €500K en < €1.000K",
-                "> €1.000K (CIO-oordeel vereist)"
+                "> €1.000K (komt in aanmerking voor een CIO-oordeel)"
               ]
             },
             {
-              "id": "aa_d.financiering",
+              "id": "aa_e.financiering",
               "text": "Gewenste financiering van de eenmalige projectkosten",
               "type": "radio",
               "importance": "mandatory",
               "options": [
-                "Centraal Projectenbudget (Portfolioboard)",
-                "Decentraal lijnbudget",
-                "Anders"
+                "Centraal projectenbudget",
+                "Decentraal lijnbudget"
               ]
             },
             {
-              "id": "aa_d.onderhoudskosten",
+              "id": "aa_e.onderhoudskosten",
               "text": "Raming jaarlijkse onderhoudskosten (exploitatiebudget)",
-              "guidance": "Geef een ruwe inschatting van de jaarlijkse beheerkosten na afronding van het project.",
+              "guidance": "Geef een ruwe inschatting van de jaarlijkse beheerkosten die nodig zijn na afronding van het project.",
               "type": "radio",
               "importance": "mandatory",
               "options": [
@@ -224,78 +337,6 @@
                 "> €200K en < €300K",
                 "> €300K"
               ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "aa_e",
-      "title": "Risico's, impact en planning",
-      "part": "D",
-      "subsections": [
-        {
-          "id": "aa_e1",
-          "title": "5. Risico's en impact",
-          "description": "Beschrijf de risico's en de impact op de organisatie.",
-          "questions": [
-            {
-              "id": "aa_e.risicos",
-              "text": "Risico's en aandachtspunten",
-              "guidance": "Welke risico's of aandachtspunten zijn nu te onderkennen bij uitvoering van het project? Hoe ernstig is het als het risico optreedt? Welke maatregelen zijn voorzien?",
-              "type": "table",
-              "importance": "mandatory",
-              "columns": [
-                { "id": "risico", "label": "Risico of aandachtspunt" },
-                { "id": "ernst", "label": "Ernst bij optreden" },
-                { "id": "maatregelen", "label": "Voorziene maatregelen" }
-              ]
-            },
-            {
-              "id": "aa_e.impact_gebruikersorg",
-              "text": "Impact op de gebruikersorganisatie",
-              "guidance": "Wat is de impact op de gebruikersorganisatie? Wat is de omvang van de doelgroepen die worden geraakt?",
-              "type": "text",
-              "importance": "mandatory"
-            },
-            {
-              "id": "aa_e.technische_impact",
-              "text": "Technische impact",
-              "guidance": "Wat is de impact op de beheerorganisatie en welke informatiesystemen worden geraakt?",
-              "type": "text",
-              "importance": "optional"
-            },
-            {
-              "id": "aa_e.risicoprofiel",
-              "text": "Risicoprofiel van het project",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": [
-                "Laag",
-                "Gemiddeld",
-                "Hoog"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "aa_e2",
-          "title": "6. Planning",
-          "description": "Geef de beoogde planning van het project.",
-          "questions": [
-            {
-              "id": "aa_e.startdatum_einddatum",
-              "text": "Beoogde start- en einddatum van het project",
-              "guidance": "Wat zijn de beoogde start- en einddatum? Is het project tijdsgevoelig?",
-              "type": "text",
-              "importance": "mandatory"
-            },
-            {
-              "id": "aa_e.tijdgevoeligheid",
-              "text": "Tijdgevoeligheid en harde deadlines",
-              "guidance": "Zijn er harde deadlines of kan het project eventueel later worden uitgevoerd? Licht de urgentie toe.",
-              "type": "text",
-              "importance": "optional"
             }
           ]
         }
