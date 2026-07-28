@@ -87,19 +87,26 @@ const features = [
 ]
 
 onMounted(async () => {
-  await auth.fetchMe()
-  if (auth.status === 'authenticated') {
-    if (auth.user) {
-      setLocalUser({ sub: auth.user.sub, name: auth.user.name ?? auth.user.email ?? 'Gebruiker' })
+  try {
+    await auth.fetchMe()
+    if (auth.status === 'authenticated') {
+      if (auth.user) {
+        setLocalUser({ sub: auth.user.sub, name: auth.user.name ?? auth.user.email ?? 'Gebruiker' })
+      }
+      const store = useAssessmentStore()
+      // Server first: shared dossiers and other-device edits come in before
+      // ensureDossier() would auto-create a spurious empty dossier.
+      await store.loadFromServer()
+      store.ensureDossier()
+      store.syncDocumentsFromServer()
     }
-    const store = useAssessmentStore()
-    // Server first: shared dossiers and other-device edits come in before
-    // ensureDossier() would auto-create a spurious empty dossier.
-    await store.loadFromServer()
-    store.ensureDossier()
-    store.syncDocumentsFromServer()
+  } catch (err) {
+    // Never trap the user on the loading screen: a failed boot step still lets
+    // the app render (offline / with local state).
+    console.error('[boot] initialisatie mislukt:', err)
+  } finally {
+    booting.value = false
   }
-  booting.value = false
 })
 </script>
 

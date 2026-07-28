@@ -1,0 +1,78 @@
+{
+  "generatedFrom": "vendor/par-dpia-form/dpia.yaml",
+  "warnings": [],
+  "dropped": [
+    {
+      "questionId": "d2.1.7",
+      "officialId": "2.1.7",
+      "kind": "conditional_column",
+      "note": "Voorwaardelijke kolom binnen een tabel; blijft zichtbaar met toelichting."
+    },
+    {
+      "questionId": "d2.1.8",
+      "officialId": "2.1.8",
+      "kind": "conditional_column",
+      "note": "Voorwaardelijke kolom binnen een tabel; blijft zichtbaar met toelichting."
+    },
+    {
+      "questionId": "d2.1.9",
+      "officialId": "2.1.9",
+      "kind": "conditional_column",
+      "note": "Voorwaardelijke kolom binnen een tabel; blijft zichtbaar met toelichting."
+    },
+    {
+      "questionId": "d6.1",
+      "officialId": "6.1",
+      "kind": "instance_mapping",
+      "note": "Per-instantie herhaling (relationeel); samengevouwen tot één tabel."
+    },
+    {
+      "questionId": "d8.1",
+      "officialId": "8.1",
+      "kind": "instance_mapping",
+      "note": "Per-instantie herhaling (relationeel); samengevouwen tot één tabel."
+    },
+    {
+      "questionId": "d9.1",
+      "officialId": "9.1",
+      "kind": "instance_mapping",
+      "note": "Per-instantie herhaling (relationeel); samengevouwen tot één tabel."
+    },
+    {
+      "questionId": "d10.1",
+      "officialId": "10.1",
+      "kind": "instance_mapping",
+      "note": "Per-instantie herhaling (relationeel); samengevouwen tot één tabel."
+    },
+    {
+      "questionId": "d11.1",
+      "officialId": "11.1",
+      "kind": "instance_mapping",
+      "note": "Per-instantie herhaling (relationeel); samengevouwen tot één tabel."
+    },
+    {
+      "questionId": "d13.1",
+      "officialId": "13.1",
+      "kind": "instance_mapping",
+      "note": "Per-instantie herhaling (relationeel); samengevouwen tot één tabel."
+    },
+    {
+      "questionId": "d13.1.1.6",
+      "officialId": "13.1.1.6",
+      "kind": "conditional_column",
+      "note": "Voorwaardelijke kolom binnen een tabel; blijft zichtbaar met toelichting."
+    },
+    {
+      "questionId": "d17.1.5",
+      "officialId": "17.1.5",
+      "kind": "conditional_column",
+      "note": "Voorwaardelijke kolom binnen een tabel; blijft zichtbaar met toelichting."
+    },
+    {
+      "questionId": "d17.1.6",
+      "officialId": "17.1.6",
+      "kind": "conditional_column",
+      "note": "Voorwaardelijke kolom binnen een tabel; blijft zichtbaar met toelichting."
+    }
+  ]
+}

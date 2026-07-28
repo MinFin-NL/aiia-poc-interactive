@@ -97,6 +97,7 @@
       "id": "deel_a",
       "title": "Deel A: Afweging",
       "part": "A",
+      "kicker": "Deel A – Afweging",
       "subsections": [
         {
           "id": "1.1",
@@ -354,6 +355,7 @@
       "id": "deel_b",
       "title": "Deel B: Implementatie en gebruik AI-systeem",
       "part": "B",
+      "kicker": "Deel B – Implementatie",
       "subsections": [
         {
           "id": "4.1",

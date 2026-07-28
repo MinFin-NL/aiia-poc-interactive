@@ -36,7 +36,7 @@
       </p>
       <div class="rvo-radio-button__group">
         <label
-          v-for="option in question.options"
+          v-for="option in resolvedOptions"
           :key="option"
           class="rvo-radio-button"
         >
@@ -76,7 +76,7 @@
       </p>
       <div class="rvo-checkbox__group">
         <label
-          v-for="option in question.options"
+          v-for="option in resolvedOptions"
           :key="option"
           class="rvo-checkbox"
         >
@@ -170,6 +170,8 @@ import { useCrossFormMappings } from '../composables/useCrossFormMappings'
 import { useAiMode } from '../composables/useAiMode'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { answerPlainText } from '../utils/sourceMatching'
+import { mergedOptions } from '../utils/answerRefs'
+import { getCachedForm } from '../services/formLoader'
 import { useCollab } from '../collab/useCollab'
 
 const props = defineProps<{
@@ -210,6 +212,16 @@ const matchingMappings = computed(() => {
     (m) => m.targetFormId === store.activeFormId && m.targetQuestionId === props.question.id,
   )
 })
+
+// Radio/checkbox options, including any live values pulled via `optionsFrom`.
+const resolvedOptions = computed(() =>
+  mergedOptions(
+    props.question.options,
+    props.question.optionsFrom,
+    store.getAnswer,
+    store.activeFormId ? getCachedForm(store.activeFormId) : undefined,
+  ),
+)
 
 const sourceMeta = computed(() => store.answerSourcesFor(props.question.id))
 const persistedAnswerText = computed(() => answerPlainText(props.modelValue))
@@ -360,6 +372,8 @@ function onCheckboxToggle(option: string) {
 .invulhulp-question__guidance {
   color: var(--invulhulp-color-text-subtle);
   margin: 0 0 var(--rvo-space-xs);
+  /* Preserve paragraph breaks / bullet lines coming from the form JSON. */
+  white-space: pre-line;
 }
 
 .invulhulp-question__followup {

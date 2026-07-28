@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://findocs/schemas/findocs-form.schema.json",
+  "title": "findocs FormConfig",
+  "description": "Runtime shape consumed by src/services/formLoader.ts + src/models/Assessment.ts. The converter validates its output against this so a bad generation fails the build instead of at render time.",
+  "type": "object",
+  "required": ["id", "version", "title", "meta", "features", "navigation", "sections"],
+  "additionalProperties": true,
+  "properties": {
+    "id": { "type": "string" },
+    "version": { "type": "string" },
+    "title": { "type": "string" },
+    "aiContext": { "type": "string" },
+    "meta": { "type": "object" },
+    "features": { "type": "object" },
+    "navigation": { "type": "array", "items": { "type": "object" } },
+    "sections": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/section" }
+    }
+  },
+  "definitions": {
+    "answerRef": {
+      "type": "object",
+      "required": ["questionId"],
+      "additionalProperties": false,
+      "properties": {
+        "questionId": { "type": "string" },
+        "column": { "type": "string" }
+      }
+    },
+    "section": {
+      "type": "object",
+      "required": ["id", "title", "part", "subsections"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "part": { "enum": ["A", "B", "C", "D", "summary"] },
+        "kicker": { "type": "string" },
+        "subsections": { "type": "array", "items": { "$ref": "#/definitions/subsection" } }
+      }
+    },
+    "subsection": {
+      "type": "object",
+      "required": ["id", "title", "questions"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "questions": { "type": "array", "items": { "$ref": "#/definitions/question" } }
+      }
+    },
+    "question": {
+      "type": "object",
+      "required": ["id", "text", "type", "importance"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "officialId": { "type": "string" },
+        "text": { "type": "string" },
+        "guidance": { "type": "string" },
+        "type": { "enum": ["text", "radio", "checkbox", "table"] },
+        "importance": { "enum": ["mandatory", "optional"] },
+        "options": { "type": "array", "items": { "type": "string" } },
+        "followUp": { "type": "string" },
+        "format": { "enum": ["email", "phone", "date", "shorttext", "longtext"] },
+        "allowAttachments": { "type": "boolean" },
+        "optionsFrom": { "$ref": "#/definitions/answerRef" },
+        "visibleIf": {
+          "type": "object",
+          "required": ["questionId", "equals"],
+          "additionalProperties": false,
+          "properties": {
+            "questionId": { "type": "string" },
+            "equals": { "type": "string" }
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "label"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" },
+              "hint": { "type": "string" },
+              "type": { "enum": ["text", "select", "suggest"] },
+              "options": { "type": "array", "items": { "type": "string" } },
+              "optionsFrom": { "$ref": "#/definitions/answerRef" }
+            }
+          }
+        },
+        "notesLabel": { "type": "string" },
+        "minRows": { "type": "number" },
+        "maxRows": { "type": "number" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "table" } } },
+          "then": { "required": ["columns"] }
+        }
+      ]
+    }
+  }
+}

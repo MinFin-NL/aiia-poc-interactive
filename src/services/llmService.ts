@@ -211,7 +211,8 @@ export interface ServerDocument {
 
 /** Documents the backend has persisted for this user + dossier (session). */
 export async function listDocuments(sessionId: string): Promise<ServerDocument[]> {
-  const res = await fetch(`/api/documents?session_id=${encodeURIComponent(sessionId)}`)
+  // Timeout so a hung backend degrades to local state instead of blocking boot.
+  const res = await fetch(`/api/documents?session_id=${encodeURIComponent(sessionId)}`, { signal: AbortSignal.timeout(10000) })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const data = (await res.json()) as { documents: ServerDocument[] }
   return data.documents
@@ -431,6 +432,11 @@ export interface BulkExtractParams {
   onEmpty?: (qId: string) => void
   onProgress: (filled: number, total: number) => void
   isCancelled: () => boolean
+  /** Re-evaluated per question, just before its LLM call. Return false to skip
+   *  it (e.g. a `visibleIf` condition unmet by the answers filled so far). The
+   *  flattened question order puts a controlling field before its dependents, so
+   *  by the time a dependent is reached its controller's answer is already set. */
+  shouldAnswer?: (question: Question) => boolean
 }
 
 /** Build the source metadata for an accepted answer, keeping only the chunks
@@ -460,12 +466,20 @@ export function buildAnswerSourceMeta(
 }
 
 export async function bulkExtractFromDocument(params: BulkExtractParams): Promise<number> {
-  const { sessionId, docIds, questions, formContext, onAnswer, onSources, onEmpty, onProgress, isCancelled } = params
+  const { sessionId, docIds, questions, formContext, onAnswer, onSources, onEmpty, onProgress, isCancelled, shouldAnswer } = params
   let filled = 0
+  let skipped = 0
 
   for (const question of questions) {
     if (isCancelled()) break
-    onProgress(filled, questions.length)
+    // Skip questions currently hidden by an unmet visibleIf — re-checked live so
+    // a question that just became (in)visible is handled correctly. Costs no call.
+    if (shouldAnswer && !shouldAnswer(question)) {
+      skipped++
+      onProgress(filled, questions.length - skipped)
+      continue
+    }
+    onProgress(filled, questions.length - skipped)
 
     await extractRagStream(
       {
@@ -502,7 +516,7 @@ export async function bulkExtractFromDocument(params: BulkExtractParams): Promis
     })
   }
 
-  onProgress(filled, questions.length)
+  onProgress(filled, questions.length - skipped)
   return filled
 }
 

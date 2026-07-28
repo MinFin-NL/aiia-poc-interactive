@@ -4,16 +4,47 @@ export type QuestionImportance = 'mandatory' | 'optional'
 // short text field should have. Untagged text fields are treated as 'longtext'.
 export type QuestionFormat = 'email' | 'phone' | 'date' | 'shorttext' | 'longtext'
 
+// Points at another question's answer (optionally a specific table column of
+// it) to derive live values from — used for dynamic option lists (`optionsFrom`)
+// and conditional visibility (`visibleIf`).
+export interface AnswerRef {
+  questionId: string
+  // When the referenced question is a 'table', which column id to read.
+  column?: string
+}
+
+// Show a question only when another question's answer equals `equals`. Restores
+// the upstream `conditional` dependency for standalone questions. (Conditions
+// that live between columns of the same table are kept as column hints instead.)
+export interface VisibleCondition {
+  questionId: string
+  equals: string
+}
+
 // Column definition for a 'table' question. `hint` feeds both the column
 // header tooltip and the AI extraction prompt.
 export interface TableColumn {
   id: string
   label: string
   hint?: string
+  // Cell input kind. 'select' renders a dropdown; 'suggest' renders a free text
+  // cell with a datalist of suggestions (used for multi-value columns); absent
+  // or 'text' is a plain text cell.
+  type?: 'text' | 'select' | 'suggest'
+  // Static choices for a 'select'/'suggest' column.
+  options?: string[]
+  // Dynamic choices, read live from another answer (restores upstream
+  // `source_options`). Merged with `options` when both are present.
+  optionsFrom?: AnswerRef
 }
 
 export interface Question {
   id: string
+  // Official source identifier when this question is generated from an external
+  // standard (e.g. the Model DPIA Rijksdienst task id "2.1.4" that our local
+  // `id` maps to). Purely informational/traceability — no runtime behaviour
+  // depends on it. Set by scripts/convert-form.mjs during form generation.
+  officialId?: string
   text: string
   guidance?: string
   type: QuestionType
@@ -25,6 +56,12 @@ export interface Question {
   // for questions where a picture genuinely helps (architectuur, datamodel,
   // processchema) so the other questions stay uncluttered.
   allowAttachments?: boolean
+  // Radio/checkbox questions: derive the option list live from another answer
+  // instead of (or in addition to) the static `options` (upstream source_options).
+  optionsFrom?: AnswerRef
+  // Show this question only when the referenced answer matches (upstream
+  // conditional). When absent the question is always visible.
+  visibleIf?: VisibleCondition
   // Table questions only: fixed column schema plus grid bounds and the label
   // of the free-text notes field rendered under the grid.
   columns?: TableColumn[]
@@ -44,6 +81,9 @@ export interface Section {
   id: string
   title: string
   part: 'A' | 'B' | 'C' | 'D' | 'summary'
+  // Small eyebrow label shown above the section title. Defaults to "Deel {part}"
+  // (or "Samenvatting" for the summary part) when omitted.
+  kicker?: string
   subsections: Subsection[]
 }
 

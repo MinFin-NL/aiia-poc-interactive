@@ -66,7 +66,9 @@ export async function fetchDossier(id: string): Promise<ServerDossier> {
 }
 
 export async function fetchDossiers(): Promise<ServerDossier[]> {
-  const res = await fetch('/api/dossiers')
+  // Timeout so a hung/dead backend surfaces as a (caught) error and the app
+  // boots in offline mode, instead of the loading screen hanging forever.
+  const res = await fetch('/api/dossiers', { signal: AbortSignal.timeout(10000) })
   if (!res.ok) throw new Error(await readErrorDetail(res))
   const data = (await res.json()) as { dossiers: ServerDossier[] }
   return data.dossiers

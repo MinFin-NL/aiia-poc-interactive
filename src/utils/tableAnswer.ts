@@ -8,9 +8,25 @@ export interface TableAnswer {
 }
 
 export function parseTableAnswer(value: string | string[] | undefined): TableAnswer | null {
-  if (typeof value !== 'string' || !value.trim().startsWith('{')) return null
+  if (typeof value !== 'string') return null
+  // Tolerate a value that got HTML-wrapped somewhere upstream (e.g. an old
+  // rich-text round-trip): unwrap <p>…</p> and decode the few entities Tiptap
+  // emits, then look for the JSON object. Without this a wrapped table answer
+  // would fail to parse and get re-stuffed into `notes`, nesting on each edit.
+  let text = value.trim()
+  if (!text.startsWith('{')) {
+    const unwrapped = text
+      .replace(/<[^>]+>/g, '')
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .trim()
+    if (!unwrapped.startsWith('{')) return null
+    text = unwrapped
+  }
   try {
-    const parsed = JSON.parse(value)
+    const parsed = JSON.parse(text)
     if (!parsed || !Array.isArray(parsed.rows)) return null
     const rows = (parsed.rows as unknown[])
       .filter((r): r is unknown[] => Array.isArray(r))

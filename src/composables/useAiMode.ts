@@ -4,6 +4,7 @@ import { loadForm, flattenFormQuestions } from '../services/formLoader'
 import { bulkExtractFromDocument, smoothFormAnswers, verifyDocuments } from '../services/llmService'
 import type { SmoothSection } from '../services/llmService'
 import { stripHtml } from '../utils/sourceMatching'
+import { isQuestionVisible } from '../utils/answerRefs'
 import type { FormConfig } from '../models/Assessment'
 
 // Module-level singleton — shared across all component instances
@@ -88,6 +89,11 @@ export function useAiMode() {
         aiModeProgress.value = { ...aiModeProgress.value, [formId]: { filled: f, total: t } }
       },
       isCancelled: () => aiModeCancelled[formId] === true,
+      // Re-checked live: don't spend a call on a question hidden by its visibleIf,
+      // and pick up any that became visible once the AI filled its controller.
+      // Reads the run's own dossier (not the active one — the user may switch).
+      shouldAnswer: (q) =>
+        isQuestionVisible(q, (id) => store.dossiers[dossierId]?.forms[formId]?.answers?.[id] ?? ''),
     })
 
     if (!aiModeCancelled[formId]) {

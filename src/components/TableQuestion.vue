@@ -1,6 +1,7 @@
 <template>
   <div class="invulhulp-table-question">
-    <div class="invulhulp-table-question__scroll">
+    <div class="invulhulp-table-question__viewport">
+      <div class="invulhulp-table-question__scroll" ref="scrollEl" @scroll="updateScrollState">
       <table class="rvo-table invulhulp-table-question__table">
         <thead class="rvo-table-head">
           <tr class="rvo-table-row">
@@ -21,12 +22,49 @@
         <tbody class="rvo-table-body">
           <tr v-for="(row, rowIndex) in table.rows" :key="rowIndex" class="rvo-table-row">
             <td v-for="(col, colIndex) in columns" :key="col.id" class="rvo-table-cell">
+              <!-- Dropdown cell (upstream select/radio column) -->
+              <select
+                v-if="col.type === 'select'"
+                class="rvo-select__input invulhulp-table-question__cell-input"
+                :value="row[colIndex] ?? ''"
+                :aria-label="`${col.label}, rij ${rowIndex + 1}`"
+                :title="col.hint"
+                :disabled="store.readOnly"
+                @change="onCellInput(rowIndex, colIndex, $event)"
+              >
+                <option value="">–</option>
+                <option
+                  v-if="row[colIndex] && !colOptions(col).includes(row[colIndex])"
+                  :value="row[colIndex]"
+                >{{ row[colIndex] }}</option>
+                <option v-for="opt in colOptions(col)" :key="opt" :value="opt">{{ opt }}</option>
+              </select>
+
+              <!-- Free-text cell with suggestions (upstream checkbox/multiselect column) -->
+              <template v-else-if="col.type === 'suggest'">
+                <input
+                  type="text"
+                  class="rvo-text-input invulhulp-table-question__cell-input"
+                  :value="row[colIndex] ?? ''"
+                  :list="`dl-${questionId}-${col.id}`"
+                  :aria-label="`${col.label}, rij ${rowIndex + 1}`"
+                  :placeholder="cellPlaceholder(col)"
+                  :disabled="store.readOnly"
+                  @input="onCellInput(rowIndex, colIndex, $event)"
+                />
+                <datalist :id="`dl-${questionId}-${col.id}`">
+                  <option v-for="opt in colOptions(col)" :key="opt" :value="opt" />
+                </datalist>
+              </template>
+
+              <!-- Plain text cell -->
               <input
+                v-else
                 type="text"
                 class="rvo-text-input invulhulp-table-question__cell-input"
                 :value="row[colIndex] ?? ''"
                 :aria-label="`${col.label}, rij ${rowIndex + 1}`"
-                :placeholder="col.hint"
+                :placeholder="cellPlaceholder(col)"
                 :disabled="store.readOnly"
                 @input="onCellInput(rowIndex, colIndex, $event)"
               />
@@ -46,7 +84,36 @@
           </tr>
         </tbody>
       </table>
+      </div>
+      <!-- Clickable scroll buttons — the explicit affordance. -->
+      <button
+        v-show="overflowing && !atStart"
+        type="button"
+        class="invulhulp-table-question__scroll-btn invulhulp-table-question__scroll-btn--left"
+        aria-label="Toon vorige kolommen"
+        @click="scrollStep(-1)"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+          <path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+      <button
+        v-show="overflowing && !atEnd"
+        type="button"
+        class="invulhulp-table-question__scroll-btn invulhulp-table-question__scroll-btn--right"
+        aria-label="Toon volgende kolommen"
+        @click="scrollStep(1)"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+          <path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
     </div>
+
+    <p v-if="overflowing" class="invulhulp-table-question__scroll-hint">
+      <span class="invulhulp-table-question__scroll-hint-icon" aria-hidden="true">↔</span>
+      Deze tabel heeft {{ columns.length }} kolommen — scroll of gebruik de pijlen om ze allemaal te zien.
+    </p>
 
     <button
       v-if="!store.readOnly"
@@ -75,10 +142,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, watch, ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import type { Question, TableColumn } from '../models/Assessment'
 import { parseTableAnswer, serializeTableAnswer, type TableAnswer } from '../utils/tableAnswer'
 import { useAssessmentStore } from '../stores/assessmentStore'
+import { mergedOptions } from '../utils/answerRefs'
+import { getCachedForm } from '../services/formLoader'
 
 const props = defineProps<{
   question: Question
@@ -97,8 +166,58 @@ const maxRows = computed(() => props.question.maxRows ?? 25)
 const notesLabel = computed(() => props.question.notesLabel ?? 'Toelichting')
 const questionId = computed(() => props.question.id)
 
+// Horizontal-scroll affordance: track whether the grid overflows its viewport
+// and where we are in the scroll, to drive the edge fades + "scroll voor meer"
+// hint. Recomputed on scroll, on resize, and when rows/columns change.
+const scrollEl = ref<HTMLElement | null>(null)
+const overflowing = ref(false)
+const atStart = ref(true)
+const atEnd = ref(true)
+
+function updateScrollState() {
+  const el = scrollEl.value
+  if (!el) return
+  const max = el.scrollWidth - el.clientWidth
+  overflowing.value = max > 1
+  atStart.value = el.scrollLeft <= 1
+  atEnd.value = el.scrollLeft >= max - 1
+}
+
+// Scroll the grid roughly one screenful in the given direction (-1 left, +1 right).
+function scrollStep(dir: number) {
+  const el = scrollEl.value
+  if (!el) return
+  el.scrollBy({ left: dir * el.clientWidth * 0.7, behavior: 'smooth' })
+}
+
+let resizeObserver: ResizeObserver | null = null
+onMounted(() => {
+  updateScrollState()
+  resizeObserver = new ResizeObserver(() => updateScrollState())
+  if (scrollEl.value) resizeObserver.observe(scrollEl.value)
+})
+onBeforeUnmount(() => resizeObserver?.disconnect())
+
 function blankRow(): string[] {
   return columns.value.map(() => '')
+}
+
+// Only short hints belong in a cell as placeholder text (e.g. "bijv. BSN").
+// Long ones — like the "Alleen relevant indien…" conditional notes — would clip
+// awkwardly, so they live only in the header tooltip (`th[title]`).
+function cellPlaceholder(col: TableColumn): string | undefined {
+  return col.hint && col.hint.length <= 40 ? col.hint : undefined
+}
+
+// Choices for a select/suggest column: its static options plus any live values
+// pulled from another answer via `optionsFrom`.
+function colOptions(col: TableColumn): string[] {
+  return mergedOptions(
+    col.options,
+    col.optionsFrom,
+    store.getAnswer,
+    store.activeFormId ? getCachedForm(store.activeFormId) : undefined,
+  )
 }
 
 // Questions converted from free text to table can carry an old prose/HTML
@@ -146,6 +265,12 @@ watch(
   },
 )
 
+// Re-measure the scroll affordance when the grid's rows or columns change.
+watch(
+  () => [columns.value.length, table.rows.length],
+  () => nextTick(updateScrollState),
+)
+
 function emitValue() {
   emit('update:modelValue', serializeTableAnswer(table))
 }
@@ -175,19 +300,91 @@ function removeRow(rowIndex: number) {
 </script>
 
 <style scoped>
+.invulhulp-table-question__viewport {
+  position: relative;
+}
+
 .invulhulp-table-question__scroll {
   overflow-x: auto;
 }
 
+/* NL Design System secondary-button styling for the edge scroll controls:
+   white surface, hemelblauw border + icon, invert on hover/focus. */
+.invulhulp-table-question__scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  padding: 0;
+  color: var(--rvo-color-hemelblauw, #007bc7);
+  background: var(--rvo-color-wit, #fff);
+  border: 1px solid var(--rvo-color-hemelblauw, #007bc7);
+  border-radius: var(--rvo-border-radius-md, 8px);
+  box-shadow: 0 1px 4px rgb(21 66 115 / 0.18);
+  cursor: pointer;
+  transition: background-color 0.1s, color 0.1s;
+}
+.invulhulp-table-question__scroll-btn:hover {
+  background: var(--rvo-color-hemelblauw, #007bc7);
+  color: var(--rvo-color-wit, #fff);
+}
+.invulhulp-table-question__scroll-btn:focus-visible {
+  outline: var(--rvo-color-donkerblauw, #01689b) solid 2px;
+  outline-offset: 2px;
+}
+.invulhulp-table-question__scroll-btn--left {
+  inset-inline-start: 0.25rem;
+}
+.invulhulp-table-question__scroll-btn--right {
+  /* Left of the sticky delete column so it never covers the delete button. */
+  inset-inline-end: 3rem;
+}
+
+/* Prominent info bar spelling out that the table scrolls. */
+.invulhulp-table-question__scroll-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--rvo-space-2xs);
+  margin: var(--rvo-space-xs) 0 0;
+  padding: var(--rvo-space-2xs) var(--rvo-space-sm);
+  background: var(--rvo-color-lichtblauw-150, #e5f0f8);
+  border-inline-start: 4px solid var(--rvo-color-hemelblauw, #007bc7);
+  border-radius: var(--rvo-border-radius-sm, 4px);
+  font-size: var(--rvo-font-size-sm);
+  font-weight: var(--rvo-font-weight-semibold, 600);
+  color: var(--rvo-color-lintblauw, #154273);
+}
+.invulhulp-table-question__scroll-hint-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
 .invulhulp-table-question__table {
-  width: 100%;
-  /* Fixed layout: columns share the card width and shrink to fit, so the
-     table never overflows and the delete button is always in view. */
-  table-layout: fixed;
+  /* Fill the card when there are few columns, but grow past it (and scroll
+     inside .__scroll) when there are many, so columns stay readable instead of
+     cramming. */
+  width: auto;
+  min-width: 100%;
+  table-layout: auto;
   /* `collapse` breaks position:sticky on cells in Chrome; `separate` with
      zero spacing renders identically because borders are per-cell. */
   border-collapse: separate;
   border-spacing: 0;
+}
+
+/* Give every data column a readable floor; wide tables then overflow-scroll. */
+.invulhulp-table-question__table .rvo-table-header,
+.invulhulp-table-question__table .rvo-table-cell {
+  min-inline-size: 8.5rem;
+}
+.invulhulp-table-question__table .invulhulp-table-question__actions-header,
+.invulhulp-table-question__table .invulhulp-table-question__actions-cell {
+  min-inline-size: 2.75rem;
 }
 
 .invulhulp-table-question__table .rvo-table-header {

@@ -5,7 +5,7 @@
       <!-- Section header -->
       <header>
         <p class="rvo-text rvo-text--sm section-view__kicker">
-          {{ section.part === 'A' ? 'Deel A – Afweging' : 'Deel B – Implementatie' }}
+          {{ kicker }}
         </p>
         <h1 class="rvo-heading rvo-heading--xl section-view__title">
           {{ section.title }}
@@ -24,7 +24,7 @@
         </div>
 
         <QuestionItem
-          v-for="question in subsection.questions"
+          v-for="question in subsection.questions.filter((q) => isQuestionVisible(q, store.getAnswer))"
           :key="question.id"
           :question="question"
           :modelValue="store.getAnswer(question.id)"
@@ -58,6 +58,7 @@
 import { computed } from 'vue'
 import type { Section } from '../models/Assessment'
 import { useAssessmentStore } from '../stores/assessmentStore'
+import { isQuestionVisible } from '../utils/answerRefs'
 import QuestionItem from './QuestionItem.vue'
 
 const props = defineProps<{
@@ -74,6 +75,12 @@ const emit = defineEmits<{
 const store = useAssessmentStore()
 
 const nextLabel = computed(() => props.nextLabel ?? 'Volgende')
+
+// Eyebrow label above the title. Uses the section's own `kicker` when set,
+// otherwise a generic "Deel {part}" (or "Samenvatting" for the summary part).
+const kicker = computed(
+  () => props.section.kicker ?? (props.section.part === 'summary' ? 'Samenvatting' : `Deel ${props.section.part}`),
+)
 
 function onNext() {
   store.markSectionCompleted(props.section.id)
@@ -106,6 +113,8 @@ function onNext() {
 .section-view__subsection-desc {
   color: var(--invulhulp-color-text-subtle);
   margin: 0;
+  /* Preserve paragraph breaks / bullet lines coming from the form JSON. */
+  white-space: pre-line;
 }
 
 .section-view__nav {

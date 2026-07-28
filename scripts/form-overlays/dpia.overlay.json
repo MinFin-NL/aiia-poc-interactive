@@ -1,0 +1,65 @@
+{
+  "_comment": "Hand-authored overlay for the DPIA converter. Carries everything the upstream MinBZK YAML does NOT contain: our presentation (meta/homeContent), AI hints, feature flags, and the mapping of upstream paragraphs (top-level tasks) into our Deel A/B/C/D section structure. scripts/convert-form.mjs merges this with vendor/par-dpia-form/dpia.yaml to emit the generated form.",
+  "form": {
+    "id": "dpia",
+    "version": "3.0",
+    "title": "Data Protection Impact Assessment",
+    "aiContext": "Dit is een volledige Data Protection Impact Assessment (DPIA) volgens het Model DPIA Rijksdienst v3.0 en artikel 35 AVG voor het Ministerie van Financiën: beschrijving van de verwerking, rechtmatigheid, noodzaak en proportionaliteit, risico's voor betrokkenen en mitigerende maatregelen. Schrijf juridisch nauwkeurig in AVG-terminologie.",
+    "meta": {
+      "homeComponent": "DpiaHomePage",
+      "exportLabel": "DPIA",
+      "docTitle": "Data Protection Impact Assessment",
+      "footerLabel": "DPIA – MinFin",
+      "filename": "DPIA-IenW.pdf",
+      "systemNamePlaceholder": "Bijv. Klantportaal persoonsgegevens v1",
+      "homeContent": {
+        "notice": "Dit is een digitale hulptool bij het uitvoeren van een Data Protection Impact Assessment (DPIA). Het invullen vervangt niet het advies van juridische of privacy-experts. Raadpleeg bij twijfel altijd de Functionaris voor de Gegevensbescherming (FG) of een privacy-jurist.",
+        "description": "Een DPIA (gegevensbeschermingseffectbeoordeling) is verplicht bij verwerkingen die waarschijnlijk een hoog risico opleveren voor de rechten en vrijheden van betrokkenen. Dit instrument volgt het Model DPIA Rijksdienst v3.0 en begeleidt u stap voor stap door het proces zoals voorgeschreven door de AVG (artikel 35).",
+        "steps": [
+          "Deel A – Beschrijving van de gegevensverwerking",
+          "Deel B – Beoordeling van de rechtmatigheid",
+          "Deel C – Beoordeling van de risico's voor betrokkenen",
+          "Deel D – Maatregelen om risico's te beheersen"
+        ],
+        "buttonLabel": "Starten met de DPIA"
+      }
+    },
+    "features": {
+      "riskClassification": false,
+      "decisionGate": false,
+      "conditionalPartB": false
+    }
+  },
+  "sections": [
+    {
+      "id": "dpia_a",
+      "title": "Deel A: Beschrijving van de gegevensverwerking",
+      "part": "A",
+      "paragraphs": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+    },
+    {
+      "id": "dpia_b",
+      "title": "Deel B: Beoordeling van de rechtmatigheid",
+      "part": "B",
+      "paragraphs": ["11", "12", "13", "14", "15"]
+    },
+    {
+      "id": "dpia_c",
+      "title": "Deel C: Beoordeling van de risico's voor betrokkenen",
+      "part": "C",
+      "paragraphs": ["16"]
+    },
+    {
+      "id": "dpia_d",
+      "title": "Deel D: Maatregelen",
+      "part": "D",
+      "paragraphs": ["17"]
+    },
+    {
+      "id": "dpia_afronding",
+      "title": "Afronding: samenvatting, versiebeheer en ondertekening",
+      "part": "summary",
+      "paragraphs": ["18", "19", "20"]
+    }
+  ]
+}

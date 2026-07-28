@@ -70,6 +70,16 @@ describe('DossierDoc mutation dispatch', () => {
     expect(answers.q_table).toBe(JSON.stringify([{ x: 2 }]))
   })
 
+  it('round-trips an object-shaped table answer verbatim (not through rich text)', () => {
+    // Regression: table answers serialize as {"rows":[...],"notes":"..."} — a JSON
+    // object, not an array. If not recognised as opaque it is routed through the
+    // rich-text bucket, HTML-wrapped, and re-nested into `notes` on every edit.
+    const d = DossierDoc.fromPayload(payload())
+    const tableValue = JSON.stringify({ rows: [['', '', 'd', '', '', '', '']], notes: '' })
+    d.setAnswer('aiia', 'q_table', tableValue)
+    expect(d.toPayload().forms.aiia.answers.q_table).toBe(tableValue)
+  })
+
   it('transact() coalesces several setAnswer calls into one update', () => {
     const d = DossierDoc.fromPayload(payload())
     let fires = 0
