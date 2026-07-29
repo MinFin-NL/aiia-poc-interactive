@@ -8,7 +8,7 @@ A web application that helps Dutch government employees fill in AI-related compl
 
 ## Features
 
-- **14 forms across four tracks** — Project (Intakeformulier, Aanbiedingsformulier, PPM Projectplan, PSA), Compliance (Quick scan BIO), Assessment (Prescan DPIA, DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist), and AI-governance (Shadow AI Inventarisatie, AI Governance Charter, AI-systeemregistratie/Model Card, AI Maturity Quick Scan). Forms are defined as JSON files under `public/forms/` and loaded at runtime. Five of these are derived from the **AI Body of Knowledge** and harmonized with MinBZK schemas — see [AI Body of Knowledge forms & MinBZK harmonization](#ai-body-of-knowledge-forms--minbzk-harmonization).
+- **11 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quick scan BIO, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier) → *Ontwerpen* (PPM Projectplan, PSA) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist) → *In gebruik nemen* (AI-systeemregistratie/Model Card) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Two of these are derived from the **AI Body of Knowledge** and harmonized with MinBZK schemas — see [AI Body of Knowledge forms & MinBZK harmonization](#ai-body-of-knowledge-forms--minbzk-harmonization).
 - **Login via Keycloak (SSO)** — The backend acts as an OpenID Connect backend-for-frontend: users log in through Keycloak, and a signed session cookie gates every API call. A `--dev` flag (backend) and `VITE_AUTH_BYPASS` (frontend) bypass the login for local development.
 - **User management** — Beheerders (admins) can create, edit, reset passwords for, and delete users straight from the app via the Keycloak Admin API.
 - **Dossier management** — Group source documents and form answers into named dossiers; switch between dossiers to work on separate projects simultaneously. Dossiers are stored server-side (with a debounced localStorage cache), so work survives across devices and sessions.
@@ -90,15 +90,15 @@ Een typische workflow zou zijn: gebruik eerst een **beslishulp** om vast te stel
 
 ## AI Body of Knowledge forms & MinBZK harmonization
 
-Five of the forms are derived from the **AI Body of Knowledge (AI-BOK v1.0)** by Jan Willem van Veen — a reference framework for AI governance, lifecycle management and organizational design, aligned with ISO 42001, the NIST AI RMF and the EU AI Act. Its appendix ships ready-to-use templates that map cleanly onto findocs' JSON form schema. Where an AI-BOK template overlaps with an authoritative Dutch government instrument, the form is **harmonized** with the corresponding MinBZK schema, and each imported field carries the upstream identifier (`officialId`) for traceability — the same approach already used for the DPIA, Pre-scan DPIA and IAMA.
+Two of the forms are derived from the **AI Body of Knowledge (AI-BOK v1.0)** by Jan Willem van Veen — a reference framework for AI governance, lifecycle management and organizational design, aligned with ISO 42001, the NIST AI RMF and the EU AI Act. Its appendix ships ready-to-use templates that map cleanly onto findocs' JSON form schema. Where an AI-BOK template overlaps with an authoritative Dutch government instrument, the form is **harmonized** with the corresponding MinBZK schema, and each imported field carries the upstream identifier (`officialId`) for traceability — the same approach already used for the DPIA, Pre-scan DPIA and IAMA.
 
 | Form | Track | AI-BOK source | MinBZK harmonization |
 |---|---|---|---|
-| EU AI Act Compliance Checklist | Assessment | Template 3 | EU-conformiteitsverklaring (bijlage V / art. 47) folded in as the capstone section from task-registry `conformity_assessment_eu_ai_act` (`urn:nl:aivt:tr:ca:1.0`); each declaration field carries its URN as `officialId` |
-| AI-systeemregistratie (Model Card) | AI-governance | Template 2 | Field structure aligned with the MinBZK systemcard concept (naam, eigenaar, beschrijving); EU AI Act risk levels reused verbatim |
-| Shadow AI Inventarisatie | AI-governance | Template 5 | — |
-| AI Governance Charter | AI-governance | Template 1 | — |
-| AI Maturity Quick Scan | AI-governance | Template 4 | — |
+| EU AI Act Compliance Checklist | Toetsen | Template 3 | EU-conformiteitsverklaring (bijlage V / art. 47) folded in as the capstone section from task-registry `conformity_assessment_eu_ai_act` (`urn:nl:aivt:tr:ca:1.0`); each declaration field carries its URN as `officialId` |
+| AI-systeemregistratie (Model Card) | In gebruik nemen | Template 2 | Field structure aligned with the MinBZK systemcard concept (naam, eigenaar, beschrijving); EU AI Act risk levels reused verbatim |
+
+Three further AI-BOK templates (Governance Charter, Maturity Quick Scan, Shadow AI Inventory) were built and then removed: they describe an *organisation*, while a dossier describes one project or system, so they never fitted the model. See [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md); they remain in the git history.
+
 
 There are **two harmonization tracks** with MinBZK, each targeting a different upstream schema:
 

@@ -187,8 +187,19 @@ async function loadActiveForm() {
     return
   }
   isLoading.value = true
-  formConfig.value = await loadForm(store.activeFormId)
-  isLoading.value = false
+  try {
+    formConfig.value = await loadForm(store.activeFormId)
+  } catch (err) {
+    // A dossier persisted while a since-removed form was open would otherwise
+    // hang here forever: the dev server and nginx both answer an unknown
+    // /forms/*.json with the SPA index.html, so the fetch succeeds and the
+    // JSON parse throws. Drop back to the dossier overview instead.
+    console.warn(`[forms] Formulier "${store.activeFormId}" kon niet worden geladen — bestaat het nog? Terug naar het dossier.`, err)
+    formConfig.value = null
+    store.goToPortal()
+  } finally {
+    isLoading.value = false
+  }
 }
 
 onMounted(loadActiveForm)

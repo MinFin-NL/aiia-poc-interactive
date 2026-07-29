@@ -186,7 +186,11 @@
           <p class="rvo-text track-desc">{{ group.description }}</p>
         </div>
 
-        <div class="card-row">
+        <p v-if="group.forms.length === 0" class="rvo-text rvo-text--sm track-empty">
+          {{ group.emptyHint }}
+        </p>
+
+        <div v-else class="card-row">
           <template v-for="(form, idx) in group.forms" :key="form.id">
             <div v-if="idx > 0" class="card-connector" aria-hidden="true">
               {{ connectorGlyph(group, idx) }}
@@ -197,6 +201,11 @@
             >
               <div class="form-card__body">
                 <h3 class="rvo-heading rvo-heading--md form-card__title">{{ form.title }}</h3>
+                <ul v-if="form.domains?.length" class="form-card__domains">
+                  <li v-for="domain in form.domains" :key="domain" class="form-card__domain">
+                    {{ domainLabel(domain) }}
+                  </li>
+                </ul>
                 <p class="rvo-text rvo-text--sm form-card__desc">{{ form.shortDescription }}</p>
               </div>
               <div class="form-card__actions">
@@ -560,52 +569,96 @@ function formatSize(bytes: number): string {
   return `${(bytes / 1024).toFixed(1)} KB`
 }
 
-const TRACK_META: Record<string, { label: string; description: string; order: number }> = {
-  project: {
-    label: 'Projectspoor',
-    description: 'Gebruik deze formulieren in volgorde om een IV-project voor te bereiden, in te dienen bij het portfolioboard en architectureel te onderbouwen.',
+// Sporen are one axis only: the lifecycle phase of the project. The subject
+// domain (privacy / beveiliging / ai / data) is a facet on the card, not a
+// heading — see FormIndexEntry.domains.
+//
+// `emptyHint` is shown instead of cards for a track we deliberately want
+// visible while it has no forms yet: the gap is information, not an omission.
+const TRACK_META: Record<string, { label: string; description: string; order: number; emptyHint?: string }> = {
+  verkennen: {
+    label: 'Verkennen & afbakenen',
+    description: 'Bepaal wat je gaat doen en welke zwaardere instrumenten je daarvoor nodig hebt.',
     order: 1,
   },
-  compliance: {
-    label: 'Compliancespoor',
-    description: 'Bepaal snel het BIO-beveiligingsniveau en eventuele aanvullende compliance-maatregelen.',
+  besluiten: {
+    label: 'Onderbouwen & besluiten',
+    description: 'Bouw de business case op voor de portfolioafweging en leg het besluit vast.',
     order: 2,
   },
-  assessment: {
-    label: 'Assessments',
-    description: 'Volledige impact assessments voor privacy en AI — worden gevoed door informatie uit het project- en privacyspoor.',
+  ontwerpen: {
+    label: 'Ontwerpen',
+    description: 'Leg de aanpak, de architectuurkaders en de gegevensstromen vast.',
     order: 3,
   },
-  governance: {
-    label: 'AI-governance',
-    description: 'Governance- en registratie-instrumenten uit de AI Body of Knowledge: inventariseer AI-gebruik, leg het mandaat vast, registreer AI-systemen en meet de volwassenheid.',
+  toetsen: {
+    label: 'Toetsen',
+    description: 'De volledige impact assessments voor privacy, grondrechten en AI — deze voeden elkaar over en weer.',
     order: 4,
+  },
+  ingebruikname: {
+    label: 'In gebruik nemen',
+    description: 'Registreer en publiceer wat er daadwerkelijk live gaat.',
+    order: 5,
+  },
+  beheer: {
+    label: 'Beheren & evalueren',
+    description: 'Herijking, incidenten en monitoring gedurende de levensduur van het systeem.',
+    order: 6,
+    emptyHint: 'Voor deze fase zijn nog geen formulieren beschikbaar. Verplichtingen zoals periodieke herijking (AVG art. 35 lid 11), incidentregistratie en post-market monitoring lopen door ná ingebruikname — die instrumenten staan op de roadmap.',
+  },
+  onbekend: {
+    label: 'Niet ingedeeld',
+    description: 'Deze formulieren hebben een onbekend spoor in index.json en zijn daardoor niet ingedeeld.',
+    order: 98,
   },
 }
 
-// Bidirectional glyph for the whole assessments track, and specifically for the
-// PPM ↔ PSA pair in the project track (their answers flow both ways).
+// Bidirectional glyph where answers genuinely flow both ways: across the whole
+// toetsen track (DPIA ↔ AIIA and friends), and for the PPM ↔ PSA pair.
 function connectorGlyph(group: { track: string; forms: FormIndexEntry[] }, idx: number): string {
-  if (group.track === 'assessment') return '↔'
+  if (group.track === 'toetsen') return '↔'
   const pair = new Set([group.forms[idx - 1]?.id, group.forms[idx]?.id])
   if (pair.has('ppm') && pair.has('psa')) return '↔'
   return '→'
 }
 
+const DOMAIN_LABELS: Record<string, string> = {
+  privacy: 'Privacy',
+  beveiliging: 'Beveiliging',
+  ai: 'AI',
+  data: 'Data',
+  project: 'Project',
+}
+
+function domainLabel(domain: string): string {
+  return DOMAIN_LABELS[domain] ?? domain
+}
+
 const trackGroups = computed(() => {
   const byTrack: Record<string, FormIndexEntry[]> = {}
   for (const form of forms.value) {
-    const t = form.track ?? 'assessment'
+    // An unknown track used to fall through to the assessments group, which hid
+    // typos in index.json. Surface them instead.
+    let t = form.track ?? 'onbekend'
+    if (!TRACK_META[t]) {
+      console.warn(`[forms] Onbekend spoor "${form.track}" voor formulier "${form.id}" — controleer public/forms/index.json`)
+      t = 'onbekend'
+    }
     if (!byTrack[t]) byTrack[t] = []
     byTrack[t].push(form)
   }
-  return Object.entries(byTrack)
-    .sort(([a], [b]) => (TRACK_META[a]?.order ?? 99) - (TRACK_META[b]?.order ?? 99))
-    .map(([track, trackForms]) => ({
+  // Iterate over TRACK_META (not over the forms present) so a track with an
+  // emptyHint still renders when it has no forms yet.
+  return Object.entries(TRACK_META)
+    .filter(([track, meta]) => byTrack[track]?.length || meta.emptyHint)
+    .sort(([, a], [, b]) => a.order - b.order)
+    .map(([track, meta]) => ({
       track,
-      label: TRACK_META[track]?.label ?? track,
-      description: TRACK_META[track]?.description ?? '',
-      forms: [...trackForms].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+      label: meta.label,
+      description: meta.description,
+      emptyHint: meta.emptyHint,
+      forms: [...(byTrack[track] ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     }))
 })
 </script>
@@ -919,6 +972,15 @@ const trackGroups = computed(() => {
   margin: 0;
 }
 
+.track-empty {
+  color: var(--invulhulp-color-text-subtle);
+  max-inline-size: 60ch;
+  margin: 0;
+  padding: var(--rvo-space-md);
+  border: 1px dashed var(--rvo-color-grijs-400);
+  border-radius: var(--rvo-border-radius-md, 4px);
+}
+
 .card-row {
   display: flex;
   align-items: stretch;
@@ -978,6 +1040,27 @@ const trackGroups = computed(() => {
 .form-card__title {
   color: var(--rvo-color-lintblauw);
   margin: 0 0 var(--rvo-space-xs);
+}
+
+/* Subject-domain facet: which domains this form touches, independent of the
+   lifecycle track it is filed under. */
+.form-card__domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rvo-space-2xs);
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--rvo-space-xs);
+}
+
+.form-card__domain {
+  font-size: var(--rvo-font-size-2xs, 0.75rem);
+  line-height: 1.4;
+  color: var(--invulhulp-color-text-subtle);
+  background: var(--rvo-color-lichtblauw-150);
+  border-radius: var(--rvo-border-radius-md, 4px);
+  padding: 0 var(--rvo-space-2xs);
+  white-space: nowrap;
 }
 
 .form-card__desc {

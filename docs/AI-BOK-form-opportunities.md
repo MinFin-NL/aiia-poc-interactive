@@ -7,19 +7,30 @@
 > Elk nieuw formulier is in dit systeem een JSON-bestand in `public/forms/` + één regel in
 > `public/forms/index.json` (zie [`project_form_registry`](../CLAUDE.md) / geheugen). Geen
 > codewijzigingen nodig. Dat maakt de drempel om er een paar toe te voegen laag.
+>
+> **Update (juli 2026):** de vijf templates uit §2 zijn alle vijf gebouwd, en drie ervan zijn
+> daarna weer **verwijderd** — Maturity Quick Scan (C), Shadow AI Inventory (D) en Governance
+> Charter (E) beschrijven een *organisatie* of *afdeling*, terwijl een dossier één project of
+> systeem beschrijft. Ze staan in de git-historie. Alleen de EU AI Act Checklist (A) en de Model
+> Card (B) zijn gebleven. Zie [`sporen-en-roadmap.md`](sporen-en-roadmap.md) voor de indeling en
+> het criterium; §3 en verder van dit document zijn nog wél open.
 
 ## 1. Wat we nu al hebben
 
-| Track | Formulier | Dekt |
+| Spoor (`track`) | Formulier | Dekt |
 |---|---|---|
-| project | intake, aanbiedingsformulier, ppm, psa | projectinitiatie & architectuur |
-| compliance | quickscan (BIO/BBN) | informatiebeveiligingsniveau |
-| assessment | prescandpia, dpia, aiia, iama | privacy, AI-impact, grondrechten/algoritmes |
+| verkennen | intake, quickscan (BIO/BBN), prescandpia | afbakening, beveiligingsniveau, DPIA-triage |
+| besluiten | aanbiedingsformulier | business case & portfolioafweging |
+| ontwerpen | ppm, psa | projectplan & architectuur |
+| toetsen | dpia, aiia, iama, euaiact | privacy, AI-impact, grondrechten, EU AI Act |
+| ingebruikname | modelcard | AI-systeemregistratie |
+| beheer | *(leeg)* | — |
 
-**Gaten die de AI-BOK direct aanwijst:** we hebben *impact*-assessments (DPIA/AIIA/IAMA) maar
+**Gaten die de AI-BOK destijds aanwees:** we hadden *impact*-assessments (DPIA/AIIA/IAMA) maar
 géén **EU AI Act-conformiteit**, géén **AI-systeemregistratie/model card**, géén
-**organisatie-brede volwassenheidsmeting**, en géén **shadow-AI-inventarisatie**. De AI-BOK
-levert voor precies die gaten kant-en-klare templates (Appendix, p. 190–204).
+**organisatie-brede volwassenheidsmeting**, en géén **shadow-AI-inventarisatie**. De eerste twee
+zijn gedicht (A en B). De laatste twee zijn *bewust* open gelaten: het zijn geen gaten in deze
+tool, want ze gaan over de organisatie in plaats van over een project.
 
 ## 2. Direct bruikbare templates uit de AI-BOK (laaghangend fruit)
 
@@ -31,7 +42,7 @@ formaat dat onze JSON-schema aankan.
 - **Bron:** Template 3 (p. 196–198).
 - **Wat:** risiconiveau bepalen (minimaal / beperkt / hoog / onaanvaardbaar) en per niveau een
   cumulatieve checklist afwerken (M1–M5, B1–B8, H1–H15, O1–O3).
-- **Track:** `assessment` (of nieuwe track `eu-ai-act`).
+- **Spoor:** `toetsen` · **domains:** `["ai"]`.
 - **Waarom sterk:** vult het grootste inhoudelijke gat; complementeert AIIA/IAMA (impact) met
   *wettelijke conformiteit*. Sluit aan op onze checkbox-ondersteuning en `decision gate`-patroon
   (risiconiveau stuurt welke secties verplicht zijn). Zeer geschikt voor AI-modus bulk-invullen.
@@ -43,7 +54,7 @@ formaat dat onze JSON-schema aankan.
 - **Wat:** centrale registratie per AI-systeem: basisinfo, eigenaar, beoogd gebruik, gebruikte
   data, technische details, beperkingen & bias, compliance-status (DPIA vereist/uitgevoerd,
   conformiteitsbeoordeling, goedkeuringsstatus, evaluatiedata).
-- **Track:** `project` of nieuwe track `registratie`.
+- **Spoor:** `ingebruikname` · **domains:** `["ai", "data"]`.
 - **Waarom sterk:** dit is het overheids-"algoritmeregister"-equivalent op systeemniveau; een
   natuurlijk sluitstuk na intake/PSA. Veel velden zijn afleidbaar uit reeds ingevulde formulieren
   → sterke cross-form mapping (intake → model card).
@@ -52,7 +63,7 @@ formaat dat onze JSON-schema aankan.
 - **Bron:** Template 4 (p. 199–201).
 - **Wat:** 12 vragen (één per kennisgebied KA1–KA12), score 1–5, optelling → volwassenheidsniveau
   met interpretatie en aanbevelingen.
-- **Track:** `compliance` of `assessment`.
+- **Spoor:** geen — **verwijderd** (organisatieniveau, past niet in een projectdossier).
 - **Waarom interessant:** een *organisatie/afdeling*-brede zelfscan i.p.v. per-systeem. Nieuw
   type invulhulp (scoringsmodel + berekend totaal). Vergt lichte featurecheck: kunnen we een
   som/gemiddelde tonen? Zo niet, dan als tekstuele score-invoer met interpretatietabel.
@@ -62,14 +73,14 @@ formaat dat onze JSON-schema aankan.
 - **Wat:** per afdeling inventariseren welke (ongeautoriseerde) AI-tools in gebruik zijn, met
   datatype, risicoclassificatie, eigenaar en actie (formaliseren/blokkeren/monitoren) + checklist
   van veelvoorkomende tools (ChatGPT, Copilot, Claude, Gemini, …).
-- **Track:** `intake`-achtig / `compliance`.
+- **Spoor:** geen — **verwijderd** (afdelingsniveau, past niet in een projectdossier).
 - **Waarom interessant:** sterk tabel-gedreven → past bij onze table-question-ondersteuning.
   Goede "instap"-oefening voor organisaties die nog niets hebben.
 
 ### E. AI Governance Charter (1 pagina)
 - **Bron:** Template 1 (p. 192–193).
 - **Wat:** scope, 5–6 principes, governance-organen, rollen & verantwoordelijkheden.
-- **Track:** `project` / beleidsniveau.
+- **Spoor:** geen — **verwijderd** (organisatieniveau, past niet in een projectdossier).
 - **Kanttekening:** minder een "assessment", meer een beleidsdocument. Waardevol als
   document-generator, maar minder afhankelijk van AI-modus/grounding. Lagere prioriteit.
 

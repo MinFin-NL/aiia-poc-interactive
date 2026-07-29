@@ -12,11 +12,16 @@ export async function loadForm(id: string): Promise<FormConfig> {
   return config
 }
 
+/** Subject domain of a form. Orthogonal to `track` (which is the lifecycle
+ *  phase): a form is shown under one track but can touch several domains. */
+export type FormDomain = 'privacy' | 'beveiliging' | 'ai' | 'data' | 'project'
+
 export interface FormIndexEntry {
   id: string
   title: string
   track?: string
   order?: number
+  domains?: FormDomain[]
   shortDescription?: string
 }
 
@@ -24,7 +29,7 @@ export async function loadAvailableForms(): Promise<FormIndexEntry[]> {
   const res = await fetch('/forms/index.json')
   if (!res.ok) throw new Error('Could not load form index')
   const raw = await res.json() as { forms: FormIndexEntry[] }
-  return raw.forms.map((f) => ({ id: f.id, title: f.title ?? f.id, track: f.track, order: f.order, shortDescription: f.shortDescription }))
+  return raw.forms.map((f) => ({ id: f.id, title: f.title ?? f.id, track: f.track, order: f.order, domains: f.domains, shortDescription: f.shortDescription }))
 }
 
 export async function loadCrossFormMappings(): Promise<CrossFormMapping[]> {
