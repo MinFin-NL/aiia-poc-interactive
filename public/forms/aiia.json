@@ -33,43 +33,6 @@
     { "type": "subsections", "sectionId": "deel_b", "condition": { "storeKey": "goDecision", "value": true } },
     { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
   ],
-  "riskQuestions": [
-    {
-      "id": "r1",
-      "text": "Maakt het systeem gebruik van subliminale technieken om het gedrag van personen te beïnvloeden buiten hun bewustzijn, of maakt het gebruik van kwetsbaarheden van specifieke groepen (leeftijd, handicap) om hun gedrag te beïnvloeden op een manier die hen of anderen schade berokkent?",
-      "guidance": "Dit betreft systemen die verboden zijn onder de AI-verordening (Art. 5 lid 1a/b).",
-      "yesLeadsTo": "onaanvaardbaar",
-      "noLeadsTo": "r2"
-    },
-    {
-      "id": "r2",
-      "text": "Maakt het systeem gebruik van \"social scoring\" door overheidsinstanties (beoordeling van burgers op basis van sociaal gedrag of persoonlijkheidskenmerken met nadelige gevolgen)?",
-      "guidance": "Dit betreft Art. 5 lid 1c van de AI-verordening.",
-      "yesLeadsTo": "onaanvaardbaar",
-      "noLeadsTo": "r3"
-    },
-    {
-      "id": "r3",
-      "text": "Maakt het systeem gebruik van real-time biometrische identificatie op afstand in de openbare ruimte voor rechtshandhavingsdoeleinden (zonder uitdrukkelijke wettelijke grondslag)?",
-      "guidance": "Dit betreft Art. 5 lid 1d van de AI-verordening.",
-      "yesLeadsTo": "onaanvaardbaar",
-      "noLeadsTo": "r4"
-    },
-    {
-      "id": "r4",
-      "text": "Wordt het systeem gebruikt voor profilering van individuen, biometrische identificatie, of inzet in kritieke infrastructuur, onderwijs, werkgelegenheid, essentiële diensten, rechtshandhaving, migratie/grenscontrole, of democratische processen (zoals vermeld in Bijlage III van de AI-verordening)?",
-      "guidance": "Dit zijn de hoog-risico categorieën van Bijlage III van de AI-verordening.",
-      "yesLeadsTo": "hoog",
-      "noLeadsTo": "r5"
-    },
-    {
-      "id": "r5",
-      "text": "Is het systeem een generatief AI-systeem, maakt het gebruik van emotieherkenning, of genereert het deepfakes of synthetische media?",
-      "guidance": "Deze systemen vallen onder de transparantievereisten (Art. 50) van de AI-verordening.",
-      "yesLeadsTo": "beperkt",
-      "noLeadsTo": "minimaal"
-    }
-  ],
   "riskLevelInfo": {
     "onaanvaardbaar": {
       "label": "Onaanvaardbaar risico",

@@ -156,6 +156,23 @@ describe('ydocCodec round-trip', () => {
     expect(restored.forms.dpia.goDecision).toBe(true)
   })
 
+  it('round-trips a beslishulp run, and leaves forms without one undefined', () => {
+    const original = fixture()
+    original.forms.aiia.beslishulp = {
+      treeVersion: '1.0.0',
+      steps: [{ questionId: '1.1', answerIndex: 0, answerLabel: 'Ja', labelsAdded: [] }],
+      labels: ['aanbieder', 'hoog-risico AI'],
+      conclusionId: '12.0.2',
+      completedAt: 1_752_000_400_000,
+      completedBy: 'A. Ambtenaar',
+    }
+    const restored = yDocToDossier(dossierToYDoc(original))
+    expect(restored.forms.aiia.beslishulp).toEqual(original.forms.aiia.beslishulp)
+    // Absent stays absent: a dossier that never ran the beslishulp must serialize
+    // exactly as it did before the feature existed.
+    expect(restored.forms.dpia.beslishulp).toBeUndefined()
+  })
+
   it('handles a second, empty form without inventing content', () => {
     const restored = yDocToDossier(dossierToYDoc(fixture()))
     expect(restored.forms.dpia.answers).toEqual({})

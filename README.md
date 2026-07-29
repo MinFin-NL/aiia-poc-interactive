@@ -9,6 +9,7 @@ A web application that helps Dutch government employees fill in AI-related compl
 ## Features
 
 - **11 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quick scan BIO, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier) → *Ontwerpen* (PPM Projectplan, PSA) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist) → *In gebruik nemen* (AI-systeemregistratie/Model Card) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Two of these are derived from the **AI Body of Knowledge** and harmonized with MinBZK schemas — see [AI Body of Knowledge forms & MinBZK harmonization](#ai-body-of-knowledge-forms--minbzk-harmonization).
+- **Beslishulp AI-verordening (MinBZK)** — The official [ai-verordening-beslishulp](https://github.com/MinBZK/ai-verordening-beslishulp) decision tree runs inside the app as a modal, launched from a tile fused to the EU AI Act card on the dossier page. It determines whether the AI-verordening applies, which role you hold (aanbieder, gebruiksverantwoordelijke, importeur, distributeur) and which risk group the system falls in, with the upstream explanations, sources and obligations intact. The outcome is stored on the dossier and supplies the risk classification (Bijlage 1) of the AI Impact Assessment. The decision tree is vendored (`vendor/ai-verordening-beslishulp/`, EUPL-1.2) and built into a runtime asset with `npm run beslishulp:build`.
 - **Login via Keycloak (SSO)** — The backend acts as an OpenID Connect backend-for-frontend: users log in through Keycloak, and a signed session cookie gates every API call. A `--dev` flag (backend) and `VITE_AUTH_BYPASS` (frontend) bypass the login for local development.
 - **User management** — Beheerders (admins) can create, edit, reset passwords for, and delete users straight from the app via the Keycloak Admin API.
 - **Dossier management** — Group source documents and form answers into named dossiers; switch between dossiers to work on separate projects simultaneously. Dossiers are stored server-side (with a debounced localStorage cache), so work survives across devices and sessions.
@@ -87,6 +88,8 @@ Twee relevante voorbeelden:
 | Licentie | EUPL-1.2 | EUPL-1.2 | EUPL-1.2 |
 
 Een typische workflow zou zijn: gebruik eerst een **beslishulp** om vast te stellen welke assessments verplicht zijn, en gebruik daarna **findocs** (of par-dpia-form) om die assessments in te vullen.
+
+Die eerste stap zit inmiddels in findocs zelf: de **AI-Verordening Beslishulp** van MinBZK is geïntegreerd als modal (zie [Features](#features)). De beslisboom wordt als gepinde kopie meegeleverd onder `vendor/ai-verordening-beslishulp/` en blijft daarmee herleidbaar tot de upstream bron; inhoudelijke vragen over de beslisboom horen bij MinBZK (ai-verordening@minbzk.nl), niet bij findocs.
 
 ## AI Body of Knowledge forms & MinBZK harmonization
 

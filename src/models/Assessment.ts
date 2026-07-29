@@ -132,13 +132,10 @@ export interface RiskLevel {
   label?: string
 }
 
-export interface RiskQuestion {
-  id: string
-  text: string
-  guidance?: string
-  yesLeadsTo: 'onaanvaardbaar' | 'hoog' | 'beperkt' | 'minimaal' | string
-  noLeadsTo: 'onaanvaardbaar' | 'hoog' | 'beperkt' | 'minimaal' | string
-}
+// A form-local yes/no risk questionnaire used to live here (`riskQuestions`).
+// The risk classification now runs on the vendored MinBZK Beslishulp
+// AI-verordening instead — see src/utils/beslishulp.ts and RiskClassification.vue.
+// `riskLevelInfo` below stays: it is how a form words the four levels.
 
 // ── Form config types (JSON-driven form registry) ────────────────────────────
 
@@ -205,7 +202,6 @@ export interface FormConfig {
   features: FormFeatures
   navigation: NavStep[]
   sections: Section[]
-  riskQuestions?: RiskQuestion[]
   riskLevelInfo?: Record<string, RiskLevelInfoEntry>
 }
 

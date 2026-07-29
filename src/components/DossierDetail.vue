@@ -195,9 +195,21 @@
             <div v-if="idx > 0" class="card-connector" aria-hidden="true">
               {{ connectorGlyph(group, idx) }}
             </div>
+            <!-- The beslishulp host form is rendered as a pair: its card keeps
+                 every affordance the others have, with the beslishulp tile fused
+                 to its leading edge. -->
+            <div class="form-slot" :class="{ 'form-slot--paired': form.id === BESLISHULP_HOST_FORM_ID }">
+              <BeslishulpTile
+                v-if="form.id === BESLISHULP_HOST_FORM_ID"
+                :run="store.beslishulpRun"
+                @open="beslishulpModal?.open()"
+              />
             <article
               class="rvo-card rvo-card--outline rvo-card--padding--md form-card"
-              :class="{ 'form-card--ai-mode': aiModeActive.has(form.id) }"
+              :class="{
+                'form-card--ai-mode': aiModeActive.has(form.id),
+                'form-card--paired': form.id === BESLISHULP_HOST_FORM_ID,
+              }"
             >
               <div class="form-card__body">
                 <h3 class="rvo-heading rvo-heading--md form-card__title">{{ form.title }}</h3>
@@ -209,6 +221,14 @@
                 <p class="rvo-text rvo-text--sm form-card__desc">{{ form.shortDescription }}</p>
               </div>
               <div class="form-card__actions">
+                <!-- The beslishulp verdict, echoed on the card it belongs to. -->
+                <span
+                  v-if="form.id === BESLISHULP_HOST_FORM_ID && store.beslishulpRun"
+                  class="rvo-tag rvo-tag--pill form-card__status form-card__verdict"
+                  :class="`form-card__verdict--${verdictTone}`"
+                >
+                  {{ verdictLabel }}
+                </span>
                 <span
                   v-if="statusFor(form.id)"
                   class="rvo-tag rvo-tag--pill form-card__status"
@@ -243,6 +263,7 @@
                 />
               </div>
             </article>
+            </div>
           </template>
         </div>
       </section>
@@ -280,6 +301,7 @@
       ref="shareDialog"
       :dossier-id="store.activeDossierId"
     />
+    <BeslishulpModal ref="beslishulpModal" />
   </div>
 </template>
 
@@ -297,6 +319,9 @@ import EntityGraph from './EntityGraph.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import ShareDialog from './ShareDialog.vue'
 import AiModeToggle from './AiModeToggle.vue'
+import BeslishulpModal from './BeslishulpModal.vue'
+import BeslishulpTile from './BeslishulpTile.vue'
+import { BESLISHULP_HOST_FORM_ID, isOutOfScope, riskLevelFor, verdictLevelLabel } from '../utils/beslishulp'
 import { fetchDossier, saveDossier } from '../services/dossierService'
 
 defineEmits<{ open: [id: string] }>()
@@ -321,6 +346,26 @@ const shareDialog = ref<InstanceType<typeof ShareDialog> | null>(null)
 const shareError = ref('')
 const aiModeErrorDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
 const aiModeErrorFormId = ref<string | null>(null)
+const beslishulpModal = ref<InstanceType<typeof BeslishulpModal> | null>(null)
+
+// Verdict echoed as a tag on the EU AI Act card. Level only — the tile beside
+// it already spells out the roles, and the tag has one line to work with.
+const verdictLabel = computed(() =>
+  store.beslishulpRun
+    ? verdictLevelLabel(new Set(store.beslishulpRun.labels), store.beslishulpRun.conclusionId)
+    : '',
+)
+const verdictTone = computed(() => {
+  const run = store.beslishulpRun
+  if (!run) return 'neutral'
+  if (isOutOfScope(new Set(run.labels), run.conclusionId)) return 'info'
+  switch (riskLevelFor(new Set(run.labels))) {
+    case 'onaanvaardbaar': return 'error'
+    case 'hoog': return 'warning'
+    case 'beperkt': return 'info'
+    default: return 'success'
+  }
+})
 
 watch(aiModeError, (errors) => {
   const formId = Object.keys(errors)[0]
@@ -1004,6 +1049,12 @@ const trackGroups = computed(() => {
   align-self: center;
 }
 
+/* One card, or — for the beslishulp host form — the tile-plus-card pair. */
+.form-slot {
+  display: flex;
+  align-items: stretch;
+}
+
 .form-card {
   inline-size: 210px;
   flex-shrink: 0;
@@ -1016,6 +1067,27 @@ const trackGroups = computed(() => {
 .form-card:hover {
   box-shadow: 0 2px 8px rgb(21 66 115 / 0.12);
 }
+
+/* Fused to the beslishulp tile: no rounding or hairline on the joined edge, so
+   the pair reads as a single framed object. */
+.form-card--paired {
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  border-inline-start-color: var(--rvo-color-lintblauw);
+}
+
+.form-slot--paired:hover .form-card--paired {
+  box-shadow: 0 2px 8px rgb(21 66 115 / 0.12);
+}
+
+.form-card__verdict {
+  border: 1px solid transparent;
+}
+
+.form-card__verdict--success { background: #e6f6ec; color: #1d6b3a; border-color: #b7e4c7; }
+.form-card__verdict--info    { background: var(--rvo-color-lichtblauw-150); color: var(--rvo-color-lintblauw); border-color: var(--rvo-color-lichtblauw-300); }
+.form-card__verdict--warning { background: #fdf3e0; color: #8a5a00; border-color: #f0d49b; }
+.form-card__verdict--error   { background: #fdecea; color: #8f2436; border-color: #f5c2bd; }
 
 /* AI Mode active: animated gradient border + pulsing glow */
 .form-card--ai-mode {

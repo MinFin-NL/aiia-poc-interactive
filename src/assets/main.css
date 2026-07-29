@@ -17,6 +17,17 @@
   --invulhulp-color-border-strong: var(--rvo-color-grijs-300);
   --invulhulp-color-text-muted: var(--rvo-color-grijs-700);
   --invulhulp-color-text-subtle: var(--rvo-color-grijs-600);
+
+  /* RVO's component CSS masks its chevrons with --rvo-icon-* tokens, but those
+     are defined in @nl-rvo/assets/icons/index.css — a 5000-line sheet that would
+     emit every icon as a build asset, so we don't import it. Without the token
+     the mask resolves to nothing and the ::after renders as a solid coloured
+     block (visible on every <details class="rvo-expandable-content">). Define
+     just the two chevrons we actually use. Static url() on purpose: a runtime
+     one breaks in the production build (see the icon-mask note in
+     DossierDetail.vue). */
+  --rvo-icon-delta-omlaag: url('@nl-rvo/assets/icons/functioneel/delta-omlaag.svg');
+  --rvo-icon-delta-omhoog: url('@nl-rvo/assets/icons/functioneel/delta-omhoog.svg');
 }
 
 body {

@@ -8,6 +8,7 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "forms:build": "node scripts/convert-form.mjs dpia && node scripts/convert-form.mjs prescandpia && node scripts/convert-form.mjs iama",
+    "beslishulp:build": "node scripts/convert-beslishulp.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

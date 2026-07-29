@@ -6,132 +6,132 @@
         <p class="rvo-text rvo-text--sm risk-classification__kicker">Bijlage 1</p>
         <h1 class="rvo-heading rvo-heading--xl risk-classification__title">Risicoclassificatie AI-verordening</h1>
         <p class="rvo-text risk-classification__lead">
-          Beantwoord de onderstaande vragen om het risiconiveau van uw AI-systeem te bepalen volgens de EU AI-verordening (2024/1689).
+          De risicogroep van dit AI-systeem wordt bepaald met de <strong>Beslishulp AI-verordening</strong> van
+          MinBZK — dezelfde beslisboom die het Algoritmekader hanteert. De uitkomst geldt voor het hele dossier
+          en wordt hier overgenomen als risiconiveau voor dit assessment.
         </p>
       </div>
 
-      <!-- Completed: show result -->
-      <div v-if="result" class="rvo-layout-column rvo-layout-gap--lg">
-        <div
-          class="rvo-alert rvo-alert--padding-md"
-          :class="`rvo-alert--${alertModifier}`"
-        >
+      <!-- Not run yet: the beslishulp is the way in. -->
+      <div v-if="!run" class="rvo-layout-column rvo-layout-gap--lg">
+        <div class="rvo-alert rvo-alert--info rvo-alert--padding-md">
           <div class="rvo-alert__container">
-            <strong>{{ resultInfo?.label }}</strong><br />
-            {{ resultInfo?.description }}
+            De beslishulp is voor dit dossier nog niet doorlopen. Doorloop de vragen om de risicogroep vast te stellen;
+            u kunt daarna terugkeren naar dit assessment.
           </div>
         </div>
-
-        <div class="rvo-layout-row rvo-layout-gap--md risk-classification__result-actions">
-          <button @click="restart" class="rvo-button rvo-button--secondary">
-            Opnieuw classificeren
-          </button>
-          <button @click="onConfirm" class="rvo-button rvo-button--primary">
-            Bevestigen en doorgaan →
-          </button>
-        </div>
-      </div>
-
-      <!-- Question flow -->
-      <div v-else class="rvo-layout-column rvo-layout-gap--xl">
-        <div class="rvo-layout-column rvo-layout-gap--xs">
-          <div class="rvo-text rvo-text--sm risk-classification__progress-label">
-            Vraag {{ currentIndex + 1 }} van {{ riskQuestions.length }}
-          </div>
-          <progress
-            class="invulhulp-progress"
-            :value="currentIndex"
-            :max="riskQuestions.length"
-            :aria-label="`Vraag ${currentIndex + 1} van ${riskQuestions.length}`"
-          />
-        </div>
-
-        <article class="risk-classification__card">
-          <p class="rvo-text rvo-text--md risk-classification__question">
-            {{ currentQuestion?.text }}
-          </p>
-          <p v-if="currentQuestion?.guidance" class="rvo-text rvo-text--sm risk-classification__guidance">
-            {{ currentQuestion?.guidance }}
-          </p>
-        </article>
-
-        <div class="rvo-layout-row rvo-layout-gap--md risk-classification__choices">
-          <button @click="answer('yes')" class="rvo-button rvo-button--primary risk-classification__choice">
-            Ja
-          </button>
-          <button @click="answer('no')" class="rvo-button rvo-button--secondary risk-classification__choice">
-            Nee
-          </button>
-        </div>
-
-        <button
-          v-if="currentIndex > 0"
-          @click="back"
-          class="rvo-button rvo-button--tertiary risk-classification__back"
-        >
-          ← Vorige vraag
+        <button type="button" class="rvo-button rvo-button--primary risk-classification__start" @click="openModal">
+          <span class="risk-classification__start-icon" aria-hidden="true" />
+          Beslishulp AI-verordening doorlopen
         </button>
       </div>
 
+      <!-- Run available: show it, then let the user adopt it for this assessment. -->
+      <div v-else class="rvo-layout-column rvo-layout-gap--lg">
+        <div class="rvo-alert rvo-alert--padding-md" :class="`rvo-alert--${alertModifier}`">
+          <!-- One element inside the container: rvo-alert lays its children out
+               in a row, so a bare <strong> + <br> would sit beside the text. -->
+          <div class="rvo-alert__container">
+            <div>
+              <strong>{{ verdict }}</strong><br />
+              <template v-if="levelInfo">{{ levelInfo.description }}</template>
+              <template v-else>{{ conclusionText }}</template>
+            </div>
+          </div>
+        </div>
+
+        <section v-if="conclusionText && levelInfo" class="risk-classification__conclusion">
+          <h2 class="rvo-heading rvo-heading--md risk-classification__subtitle">Conclusie van de beslishulp</h2>
+          <p class="rvo-text rvo-text--sm">{{ conclusionText }}</p>
+        </section>
+
+        <section v-if="run.labels.length > 0">
+          <h2 class="rvo-heading rvo-heading--md risk-classification__subtitle">Vastgestelde kenmerken</h2>
+          <ul class="risk-classification__labels">
+            <li v-for="label in run.labels" :key="label" class="risk-classification__label">{{ label }}</li>
+          </ul>
+        </section>
+
+        <p class="rvo-text rvo-text--sm risk-classification__meta">
+          Doorlopen op {{ completedOn }}<template v-if="run.completedBy"> door {{ run.completedBy }}</template>
+          · {{ run.steps.length }} {{ run.steps.length === 1 ? 'vraag' : 'vragen' }} beantwoord
+          <template v-if="adopted"> · overgenomen in dit assessment</template>
+        </p>
+
+        <div class="rvo-layout-row rvo-layout-gap--md risk-classification__result-actions">
+          <button type="button" class="rvo-button rvo-button--secondary" @click="openModal">
+            Beslishulp bekijken of herzien
+          </button>
+          <button type="button" class="rvo-button rvo-button--primary" @click="onConfirm">
+            {{ adopted ? 'Doorgaan →' : 'Overnemen en doorgaan →' }}
+          </button>
+        </div>
+      </div>
     </div>
+
+    <BeslishulpModal ref="beslishulpModal" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { FormConfig, RiskLevelValue } from '../models/Assessment'
+import { computed, ref } from 'vue'
+import type { FormConfig } from '../models/Assessment'
 import { useAssessmentStore } from '../stores/assessmentStore'
+import { loadBeslishulpTree } from '../services/beslishulpLoader'
+import BeslishulpModal from './BeslishulpModal.vue'
+import { riskLevelFor, verdictSummary, type BeslishulpTree } from '../utils/beslishulp'
 
 const props = defineProps<{ formConfig: FormConfig }>()
 const emit = defineEmits<{ confirmed: [] }>()
 
 const store = useAssessmentStore()
-const currentIndex = ref(0)
-const history = ref<number[]>([])
-const result = ref<RiskLevelValue>(null)
+const beslishulpModal = ref<InstanceType<typeof BeslishulpModal> | null>(null)
+// Only needed to show the conclusion text belonging to the stored conclusionId;
+// the verdict itself is derived from the labels the run recorded.
+const tree = ref<BeslishulpTree | null>(null)
 
-const riskQuestions = computed(() => props.formConfig.riskQuestions ?? [])
-const riskLevelInfo = computed(() => props.formConfig.riskLevelInfo ?? {})
+const run = computed(() => store.beslishulpRun)
+const labels = computed(() => new Set(run.value?.labels ?? []))
+const verdict = computed(() => verdictSummary(labels.value, run.value?.conclusionId))
+const level = computed(() => (run.value ? riskLevelFor(labels.value) : null))
 
-const currentQuestion = computed(() => riskQuestions.value[currentIndex.value])
-const resultInfo = computed(() => result.value ? riskLevelInfo.value[result.value] : null)
+/** Whether this assessment already carries the beslishulp's verdict. */
+const adopted = computed(() => !!level.value && store.riskLevel === level.value)
 
-const alertModifier = computed(() => {
-  const c = resultInfo.value?.color
-  if (c === 'error' || c === 'warning' || c === 'success') return c
-  return 'info'
+const levelInfo = computed(() => (level.value ? (props.formConfig.riskLevelInfo?.[level.value] ?? null) : null))
+
+const conclusionText = computed(() => {
+  const id = run.value?.conclusionId
+  if (!id || !tree.value) return ''
+  return tree.value.conclusions.find((c) => c.conclusionId === id)?.conclusion ?? ''
 })
 
-function answer(choice: 'yes' | 'no') {
-  const q = currentQuestion.value
-  if (!q) return
-  const next = choice === 'yes' ? q.yesLeadsTo : q.noLeadsTo
+const alertModifier = computed(() => {
+  const c = levelInfo.value?.color
+  return c === 'error' || c === 'warning' || c === 'success' ? c : 'info'
+})
 
-  history.value.push(currentIndex.value)
+const completedOn = computed(() =>
+  run.value
+    ? new Date(run.value.completedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '',
+)
 
-  const isLevel = ['onaanvaardbaar', 'hoog', 'beperkt', 'minimaal'].includes(next)
-  if (isLevel) {
-    result.value = next as RiskLevelValue
-    store.setRiskLevel(next as RiskLevelValue)
-  } else {
-    const idx = riskQuestions.value.findIndex((rq) => rq.id === next)
-    if (idx !== -1) currentIndex.value = idx
-  }
+// Best-effort: without the tree we still show the verdict and the level
+// description from the form config, just not the upstream conclusion sentence.
+loadBeslishulpTree()
+  .then((t) => { tree.value = t })
+  .catch(() => { tree.value = null })
+
+function openModal() {
+  beslishulpModal.value?.open()
 }
 
-function back() {
-  const prev = history.value.pop()
-  if (prev !== undefined) currentIndex.value = prev
-  result.value = null
-}
-
-function restart() {
-  currentIndex.value = 0
-  history.value = []
-  result.value = null
-}
-
+/** Adopt the beslishulp verdict as this assessment's risk level. Explicit, so
+ *  the assessment never silently changes level when someone redoes the
+ *  beslishulp from the dossier page. */
 function onConfirm() {
+  if (level.value) store.setRiskLevel(level.value)
   store.markSectionCompleted('risk')
   emit('confirmed')
 }
@@ -158,38 +158,47 @@ function onConfirm() {
   margin-block-start: var(--rvo-space-sm);
 }
 
-.risk-classification__progress-label {
-  color: var(--invulhulp-color-text-subtle);
+.risk-classification__subtitle {
+  color: var(--rvo-color-lintblauw);
+  margin: 0 0 var(--rvo-space-2xs);
 }
 
-.risk-classification__card {
-  padding: var(--rvo-space-md);
-  background: var(--rvo-color-wit);
-  border: 1px solid var(--invulhulp-color-border);
-  border-inline-start: 4px solid var(--invulhulp-color-mandatory);
+.risk-classification__start {
+  align-self: flex-start;
+  gap: var(--rvo-space-2xs);
+}
+
+.risk-classification__start-icon {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  flex-shrink: 0;
+  background-color: currentColor;
+  /* Static stylesheet url() — see the NLDS icon-mask note in DossierDetail.vue. */
+  -webkit-mask: url('@nl-rvo/assets/icons/gebruiksvoorwerpen/weegschaal.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/gebruiksvoorwerpen/weegschaal.svg') center / contain no-repeat;
+}
+
+.risk-classification__labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rvo-space-2xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.risk-classification__label {
+  font-size: var(--rvo-font-size-sm);
+  padding: 0 var(--rvo-space-2xs);
+  background: var(--rvo-color-lichtblauw-150);
+  border: 1px solid var(--rvo-color-lichtblauw-300);
   border-radius: var(--rvo-border-radius-md);
+  color: var(--rvo-color-lintblauw);
 }
 
-.risk-classification__question {
-  font-weight: var(--rvo-font-weight-semibold);
-  margin: 0 0 var(--rvo-space-xs);
-}
-
-.risk-classification__guidance {
+.risk-classification__meta {
   color: var(--invulhulp-color-text-subtle);
   margin: 0;
-}
-
-.risk-classification__choices {
-  align-items: stretch;
-}
-
-.risk-classification__choice {
-  flex: 1;
-}
-
-.risk-classification__back {
-  align-self: flex-start;
 }
 
 .risk-classification__result-actions {

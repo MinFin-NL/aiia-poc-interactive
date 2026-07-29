@@ -32,6 +32,7 @@ import {
   type DossierPayload,
 } from './ydocCodec'
 import type { AnswerSourceMeta, QuestionAttachment, RiskLevelValue } from '../models/Assessment'
+import type { BeslishulpRun } from '../utils/beslishulp'
 
 /** Transaction origin tag for edits made through this wrapper, so `onChange`
  *  can tell a local edit from a synced remote one. */
@@ -187,6 +188,12 @@ export class DossierDoc {
 
   setRiskLevel(formId: string, level: RiskLevelValue): void {
     this.setMeta(formId, 'riskLevel', level)
+  }
+
+  /** Record the Beslishulp AI-verordening run (null clears it). Stored whole:
+   *  a run is replaced atomically, never merged step by step. */
+  setBeslishulp(formId: string, run: BeslishulpRun | null): void {
+    this.setMeta(formId, 'beslishulp', run)
   }
 
   setGoDecision(formId: string, decision: boolean | null): void {

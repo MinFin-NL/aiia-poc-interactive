@@ -11,6 +11,7 @@ import {
 import { DossierDoc, SEED_ORIGIN } from '../collab/dossierDoc'
 import { connectDossier, disconnectAll, getProvider } from '../collab/dossierTransport'
 import type { DossierPayload } from '../collab/ydocCodec'
+import { BESLISHULP_HOST_FORM_ID, riskLevelFor, type BeslishulpRun } from '../utils/beslishulp'
 
 export type FormId = string
 export type DossierId = string
@@ -27,6 +28,10 @@ export interface FormState {
   completedSections: string[]
   riskLevel: RiskLevelValue
   goDecision: boolean | null
+  // The Beslishulp AI-verordening run for this dossier. Only ever set on
+  // BESLISHULP_HOST_FORM_ID — see the comment there for why it hangs off a form.
+  // Optional: absent in dossiers persisted before this feature existed.
+  beslishulp?: BeslishulpRun
 }
 
 export interface DocumentOntology {
@@ -185,6 +190,12 @@ export const useAssessmentStore = defineStore('assessment', {
     completedSections(): string[] { return this.activeForm.completedSections },
     riskLevel(): RiskLevelValue { return this.activeForm.riskLevel },
     goDecision(): boolean | null { return this.activeForm.goDecision },
+
+    /** The dossier's Beslishulp AI-verordening run, wherever it is stored.
+     *  The single read path — see BESLISHULP_HOST_FORM_ID. */
+    beslishulpRun(): BeslishulpRun | null {
+      return this.activeDossier.forms[BESLISHULP_HOST_FORM_ID]?.beslishulp ?? null
+    },
     showPartB(): boolean { return this.activeForm.goDecision === true },
 
     getAnswer(): (questionId: string) => string | string[] {
@@ -497,9 +508,29 @@ export const useAssessmentStore = defineStore('assessment', {
     },
 
     setRiskLevel(level: RiskLevelValue) {
-      const id = this.activeDossierId
       const formId = this.activeDossier.activeFormId
-      if (id && formId) this._docFor(id)?.setRiskLevel(formId, level)
+      if (formId) this.setRiskLevelForForm(formId, level)
+    },
+
+    /** Risk level of a named form — needed for forms that aren't the open one
+     *  (the beslishulp runs from the dossier page, with no form open at all). */
+    setRiskLevelForForm(formId: FormId, level: RiskLevelValue) {
+      const id = this.activeDossierId
+      if (!id) return
+      if (!this.dossiers[id]?.forms[formId]) this.dossiers[id].forms[formId] = initialFormState()
+      this._docFor(id)?.setRiskLevel(formId, level)
+    },
+
+    /** Record (or clear, with null) the dossier's beslishulp run and mirror its
+     *  verdict onto the host form's risk level. Other forms adopt that verdict
+     *  explicitly — see the AIIA risk view — rather than having it pushed at them. */
+    setBeslishulpRun(run: BeslishulpRun | null) {
+      const id = this.activeDossierId
+      if (!id) return
+      const formId = BESLISHULP_HOST_FORM_ID
+      if (!this.dossiers[id].forms[formId]) this.dossiers[id].forms[formId] = initialFormState()
+      this._docFor(id)?.setBeslishulp(formId, run)
+      this.setRiskLevelForForm(formId, run ? riskLevelFor(new Set(run.labels)) : null)
     },
 
     setGoDecision(decision: boolean) {
@@ -552,6 +583,7 @@ export const useAssessmentStore = defineStore('assessment', {
           target.riskLevel = incoming.riskLevel
           target.goDecision = incoming.goDecision
           target.completedSections = incoming.completedSections
+          target.beslishulp = incoming.beslishulp
         }
         // Seeding (opening) is not an edit — don't bump updatedAt or persist.
         if (origin === SEED_ORIGIN) return
