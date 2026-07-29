@@ -3,9 +3,17 @@ import type { FormConfig, CrossFormMapping, Question } from '../models/Assessmen
 const cache = new Map<string, FormConfig>()
 let mappingsCache: CrossFormMapping[] | null = null
 
+// The form registry and definitions live at stable URLs, so a browser that
+// cached them before nginx sent Cache-Control keeps serving its own copy —
+// new bundle, old form data, every form under "Niet ingedeeld". Server headers
+// don't apply retroactively to an already-stored entry, so ask the fetch layer
+// to revalidate: 'no-cache' still uses the cache, it just always checks with
+// the server first (a cheap 304 when nothing changed).
+const REVALIDATE: RequestInit = { cache: 'no-cache' }
+
 export async function loadForm(id: string): Promise<FormConfig> {
   if (cache.has(id)) return cache.get(id)!
-  const res = await fetch(`/forms/${id}.json`)
+  const res = await fetch(`/forms/${id}.json`, REVALIDATE)
   if (!res.ok) throw new Error(`Form not found: ${id}`)
   const config = await res.json() as FormConfig
   cache.set(id, config)
@@ -26,7 +34,7 @@ export interface FormIndexEntry {
 }
 
 export async function loadAvailableForms(): Promise<FormIndexEntry[]> {
-  const res = await fetch('/forms/index.json')
+  const res = await fetch('/forms/index.json', REVALIDATE)
   if (!res.ok) throw new Error('Could not load form index')
   const raw = await res.json() as { forms: FormIndexEntry[] }
   return raw.forms.map((f) => ({ id: f.id, title: f.title ?? f.id, track: f.track, order: f.order, domains: f.domains, shortDescription: f.shortDescription }))
@@ -34,7 +42,7 @@ export async function loadAvailableForms(): Promise<FormIndexEntry[]> {
 
 export async function loadCrossFormMappings(): Promise<CrossFormMapping[]> {
   if (mappingsCache) return mappingsCache
-  const res = await fetch('/forms/crossFormMappings.json')
+  const res = await fetch('/forms/crossFormMappings.json', REVALIDATE)
   mappingsCache = res.ok ? (await res.json() as CrossFormMapping[]) : []
   return mappingsCache
 }

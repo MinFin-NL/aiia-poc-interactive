@@ -450,7 +450,13 @@ async function extractPptxText(file: File): Promise<string> {
 async function extractPdfText(file: File): Promise<string> {
   const pdfjs = await import('pdfjs-dist')
   const worker = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default
-  pdfjs.GlobalWorkerOptions.workerSrc = worker
+  // The worker's content never changes between builds, so Vite keeps giving it
+  // the same hashed filename — and browsers that cached it while nginx still
+  // served .mjs as application/octet-stream keep replaying that wrong MIME
+  // type, which blocks the module worker no matter what the server now sends.
+  // A version query yields a URL those caches have never seen. Bump it if a
+  // cached worker response ever needs invalidating again.
+  pdfjs.GlobalWorkerOptions.workerSrc = `${worker}?v=2`
 
   const doc = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise
   const parts: string[] = []
