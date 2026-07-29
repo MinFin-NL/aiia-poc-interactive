@@ -189,10 +189,23 @@ overwegen waard, maar staat los van de indeling.
 ## 5. Waar het in de code zit
 
 - `public/forms/index.json` — `track`, `order`, `domains` per formulier
-- `src/components/DossierDetail.vue` — `TRACK_META` (labels, beschrijvingen, volgorde,
-  `emptyHint`), `trackGroups`, `connectorGlyph`, `DOMAIN_LABELS`
+- `src/utils/tracks.ts` — `TRACK_META` (labels, beschrijvingen, volgorde, `emptyHint`),
+  `TrackId`, `TRACK_IDS`, `groupFormsByTrack`, `trackLabel`, `connectorGlyph`
+- `src/components/DossierDetail.vue` — de fasebalk bovenaan (`.phase-rail`, met per fase
+  een NLDS-icoon in een cirkel die zich vult naar `done/total`), de verticale tijdlijn
+  (`.track-timeline`) en `DOMAIN_LABELS`. De faseknoppen scrollen naar `#fase-<track>`.
+  De icoon-maskers staan als **statische** `url()`-regels in het `<style>`-blok, één per
+  fase — een runtime `:style`-binding levert in de productiebuild witte vierkanten op.
+- `src/composables/useFormProgress.ts` — `trackSummary`: afgerond/totaal per fase
+- `src/components/DossierList.vue` — de fasebalk op de dossierkaart
+- `src/components/AppHeader.vue` — de fase-kruimel (`dossier › Toetsen › DPIA`)
 - `src/services/formLoader.ts` — `FormIndexEntry`, `FormDomain`
 - `.claude/skills/forms/SKILL.md` — de dev-contract voor het toevoegen van een formulier
+
+> **Woordkeuze:** de gebruikersinterface zegt consequent **"fase"**; *spoor* / `track`
+> blijft de term in de code, de form-registry en deze documentatie. Uitzondering: de
+> `console.warn` bij een onbekende track en de beschrijving van het `onbekend`-spoor
+> richten zich op de ontwikkelaar die `index.json` bewerkt en zeggen dus "spoor".
 
 Een onbekende `track` in `index.json` belandt in een zichtbaar `onbekend`-spoor en logt een
 `console.warn` — vroeger viel zo'n typo stil in de assessments-groep.

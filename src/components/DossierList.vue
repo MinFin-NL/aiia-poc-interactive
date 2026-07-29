@@ -48,6 +48,26 @@
                   {{ d.documents.length }} {{ d.documents.length === 1 ? 'document' : 'documenten' }}
                   · {{ summaryFor(d).done }}/{{ summaryFor(d).total }} formulieren afgerond
                 </span>
+                <!-- One segment per lifecycle phase, in order, filled to the
+                     share of that phase's forms that are done. Hidden from AT:
+                     the whole card is one button, so a label here would append
+                     six more clauses to its accessible name — and the line
+                     above already announces the total. The per-phase numbers
+                     are on the dossier page, under proper phase headings. -->
+                <span class="dossier-card__phases" aria-hidden="true">
+                  <span
+                    v-for="p in phasesFor(d)"
+                    :key="p.track"
+                    class="dossier-card__phase"
+                    :class="{ 'dossier-card__phase--empty': p.total === 0 }"
+                    :title="p.title"
+                  >
+                    <span
+                      class="dossier-card__phase-fill"
+                      :style="{ inlineSize: p.total ? `${(p.done / p.total) * 100}%` : '0' }"
+                    />
+                  </span>
+                </span>
                 <span class="rvo-text rvo-text--sm dossier-card__date">
                   Laatst bewerkt: {{ formatDate(d.updatedAt ?? d.createdAt) }}
                 </span>
@@ -76,10 +96,11 @@
 import { ref, onMounted } from 'vue'
 import { useAssessmentStore, type Dossier } from '../stores/assessmentStore'
 import { useFormProgress } from '../composables/useFormProgress'
+import { TRACK_IDS, TRACK_META } from '../utils/tracks'
 import ConfirmDialog from './ConfirmDialog.vue'
 
 const store = useAssessmentStore()
-const { dossierSummary } = useFormProgress()
+const { dossierSummary, trackSummary } = useFormProgress()
 const createDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
 
 const roleLabels = { viewer: 'Lezen', editor: 'Bewerken', owner: 'Eigenaar' } as const
@@ -90,6 +111,17 @@ onMounted(() => {
 
 function summaryFor(d: Dossier) {
   return dossierSummary(d)
+}
+
+function phasesFor(d: Dossier) {
+  const counts = trackSummary(d)
+  return TRACK_IDS.map((track) => ({
+    track,
+    ...counts[track],
+    title: counts[track].total === 0
+      ? `${TRACK_META[track].label}: nog geen formulieren`
+      : `${TRACK_META[track].label}: ${counts[track].done} van ${counts[track].total} afgerond`,
+  }))
 }
 
 const dateFormat = new Intl.DateTimeFormat('nl-NL', { dateStyle: 'medium' })
@@ -209,6 +241,36 @@ function onCreateConfirmed(name: string) {
 .dossier-card__shared {
   align-self: flex-start;
   font-size: var(--rvo-font-size-xs);
+}
+
+/* Phase bar: the same six lifecycle phases as the dossier timeline, so the
+   overview already shows how far a dossier is along the process. */
+.dossier-card__phases {
+  display: flex;
+  gap: 3px;
+  inline-size: 100%;
+  margin-block: var(--rvo-space-3xs);
+}
+
+.dossier-card__phase {
+  display: block;
+  flex: 1;
+  block-size: 5px;
+  border-radius: 999px;
+  background: var(--rvo-color-lichtblauw-300);
+  overflow: hidden;
+}
+
+/* A phase without forms yet (beheer) — visibly present, visibly unfillable. */
+.dossier-card__phase--empty {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--rvo-color-grijs-400);
+}
+
+.dossier-card__phase-fill {
+  display: block;
+  block-size: 100%;
+  background: var(--rvo-color-lintblauw);
 }
 
 .dossier-card__date {

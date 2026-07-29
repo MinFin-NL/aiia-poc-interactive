@@ -59,6 +59,36 @@
         </div>
       </section>
 
+      <!-- Phase rail: the whole lifecycle in one row, as a table of contents
+           for the timeline below. Each circle fills from the bottom with the
+           share of that phase's forms that are afgerond. -->
+      <nav class="phase-rail" aria-label="Fasen in dit dossier">
+        <ol class="phase-rail__list">
+          <li v-for="group in railGroups" :key="group.track" class="phase-rail__item">
+            <button
+              type="button"
+              class="phase-rail__step"
+              :aria-label="phaseRailLabel(group)"
+              @click="goToPhase(group.track)"
+            >
+              <span
+                class="phase-rail__circle"
+                :class="[`phase-rail__circle--${markerState(group)}`, `phase-rail__circle--icon-${group.track}`]"
+                :style="{ '--phase-fill': phaseFill(group) }"
+              >
+                <span class="phase-rail__icon" aria-hidden="true" />
+              </span>
+              <span class="phase-rail__label">{{ group.label }}</span>
+              <span class="phase-rail__count">
+                {{ trackCount(group).total > 0
+                  ? `${trackCount(group).done}/${trackCount(group).total}`
+                  : '—' }}
+              </span>
+            </button>
+          </li>
+        </ol>
+      </nav>
+
       <!-- Brondocumenten upload -->
       <section class="portal-card" aria-labelledby="docs-title">
         <div class="portal-card__header">
@@ -179,21 +209,48 @@
         <p v-else-if="!isUploading" class="docs-empty rvo-text rvo-text--sm">Nog geen documenten geüpload.</p>
       </section>
 
-      <!-- Track sections -->
-      <section v-for="group in trackGroups" :key="group.track" class="track-section" :aria-labelledby="`track-${group.track}-title`">
-        <div class="track-header">
-          <h2 :id="`track-${group.track}-title`" class="rvo-heading rvo-heading--xl track-title">{{ group.label }}</h2>
-          <p class="rvo-text track-desc">{{ group.description }}</p>
+      <!-- Lifecycle timeline: one phase per step, always expanded. The spine is
+           the point of the page — it is what makes the forms read as phases of
+           a process rather than as six unrelated lists. -->
+      <ol class="track-timeline">
+      <li
+        v-for="group in trackGroups"
+        :key="group.track"
+        :id="`fase-${group.track}`"
+        class="track-phase"
+        :aria-labelledby="`track-${group.track}-title`"
+      >
+        <div
+          class="track-phase__marker"
+          :class="`track-phase__marker--${markerState(group)}`"
+          aria-hidden="true"
+        >
+          <svg v-if="markerState(group) === 'done'" class="track-phase__check" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" focusable="false"><path fill="currentColor" d="m41.262 6.164c-1.133-.836-2.707-.676-3.641.367l-15.879 17.77-9.547-8.27a2.7 2.7 0 0 0 -3.516-.027 2.71 2.71 0 0 0 -.586 3.469l11.563 19.301a2.72 2.72 0 0 0 2.316 1.316c.957 0 1.836-.492 2.328-1.301l17.66-29.043c.727-1.195.426-2.75-.699-3.582zm0 0"/></svg>
+          <template v-else-if="group.phaseNumber > 0">{{ group.phaseNumber }}</template>
         </div>
 
-        <p v-if="group.forms.length === 0" class="rvo-text rvo-text--sm track-empty">
-          {{ group.emptyHint }}
-        </p>
+        <div class="track-phase__body">
+          <div class="track-header">
+            <p v-if="group.phaseNumber > 0" class="track-eyebrow">
+              Fase {{ group.phaseNumber }} van {{ group.phaseCount }}
+            </p>
+            <div class="track-title-row">
+              <h2 :id="`track-${group.track}-title`" class="rvo-heading rvo-heading--xl track-title">{{ group.label }}</h2>
+              <span v-if="trackCount(group).total > 0" class="rvo-text rvo-text--sm track-count">
+                {{ trackCount(group).done }}/{{ trackCount(group).total }} afgerond
+              </span>
+            </div>
+            <p class="rvo-text track-desc">{{ group.description }}</p>
+          </div>
 
-        <div v-else class="card-row">
-          <!-- Connector + card travel as one unit, so a wrapping row never
-               strands a lone glyph at the end of the line above. -->
-          <template v-for="(form, idx) in group.forms" :key="form.id">
+          <p v-if="group.forms.length === 0" class="rvo-text rvo-text--sm track-empty">
+            {{ group.emptyHint }}
+          </p>
+
+          <div v-else class="card-row">
+            <!-- Connector + card travel as one unit, so a wrapping row never
+                 strands a lone glyph at the end of the line above. -->
+            <template v-for="(form, idx) in group.forms" :key="form.id">
             <div class="card-chain-item">
             <div v-if="idx > 0" class="card-connector" aria-hidden="true">
               {{ connectorGlyph(group, idx) }}
@@ -268,9 +325,11 @@
             </article>
             </div>
             </div>
-          </template>
+            </template>
+          </div>
         </div>
-      </section>
+      </li>
+      </ol>
 
     </div>
 
@@ -318,6 +377,7 @@ import { useAssessmentStore } from '../stores/assessmentStore'
 import { useAiMode } from '../composables/useAiMode'
 import { useFormProgress } from '../composables/useFormProgress'
 import type { FormProgress } from '../utils/formProgress'
+import { groupFormsByTrack, connectorGlyph, type TrackGroup } from '../utils/tracks'
 import DocumentOntology from './DocumentOntology.vue'
 import EntityGraph from './EntityGraph.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
@@ -342,7 +402,7 @@ const showGraph = ref(false)
 const hasAnyOntology = computed(() => store.documents.some(d => !!d.ontology))
 
 const { aiModeActive, aiModeProgress, aiModeDone, aiModeTotal, aiModeError, aiModePhase, readyDocIds, startAiMode, cancelAiMode, dismissAiModeDone, dismissAiModeError, hasSmoothingUndo, undoSmoothing } = useAiMode()
-const { progressFor } = useFormProgress()
+const { progressFor, trackSummary } = useFormProgress()
 
 const renameDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
 const deleteDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
@@ -624,60 +684,6 @@ function formatSize(bytes: number): string {
   return `${(bytes / 1024).toFixed(1)} KB`
 }
 
-// Sporen are one axis only: the lifecycle phase of the project. The subject
-// domain (privacy / beveiliging / ai / data) is a facet on the card, not a
-// heading — see FormIndexEntry.domains.
-//
-// `emptyHint` is shown instead of cards for a track we deliberately want
-// visible while it has no forms yet: the gap is information, not an omission.
-const TRACK_META: Record<string, { label: string; description: string; order: number; emptyHint?: string }> = {
-  verkennen: {
-    label: 'Verkennen & afbakenen',
-    description: 'Bepaal wat je gaat doen en welke zwaardere instrumenten je daarvoor nodig hebt.',
-    order: 1,
-  },
-  besluiten: {
-    label: 'Onderbouwen & besluiten',
-    description: 'Bouw de business case op voor de portfolioafweging en leg het besluit vast.',
-    order: 2,
-  },
-  ontwerpen: {
-    label: 'Ontwerpen',
-    description: 'Leg de aanpak, de architectuurkaders en de gegevensstromen vast.',
-    order: 3,
-  },
-  toetsen: {
-    label: 'Toetsen',
-    description: 'De volledige impact assessments voor privacy, grondrechten en AI — deze voeden elkaar over en weer.',
-    order: 4,
-  },
-  ingebruikname: {
-    label: 'In gebruik nemen',
-    description: 'Registreer en publiceer wat er daadwerkelijk live gaat.',
-    order: 5,
-  },
-  beheer: {
-    label: 'Beheren & evalueren',
-    description: 'Herijking, incidenten en monitoring gedurende de levensduur van het systeem.',
-    order: 6,
-    emptyHint: 'Voor deze fase zijn nog geen formulieren beschikbaar. Verplichtingen zoals periodieke herijking (AVG art. 35 lid 11), incidentregistratie en post-market monitoring lopen door ná ingebruikname — die instrumenten staan op de roadmap.',
-  },
-  onbekend: {
-    label: 'Niet ingedeeld',
-    description: 'Deze formulieren hebben een onbekend spoor in index.json en zijn daardoor niet ingedeeld.',
-    order: 98,
-  },
-}
-
-// Bidirectional glyph where answers genuinely flow both ways: across the whole
-// toetsen track (DPIA ↔ AIIA and friends), and for the PPM ↔ PSA pair.
-function connectorGlyph(group: { track: string; forms: FormIndexEntry[] }, idx: number): string {
-  if (group.track === 'toetsen') return '↔'
-  const pair = new Set([group.forms[idx - 1]?.id, group.forms[idx]?.id])
-  if (pair.has('ppm') && pair.has('psa')) return '↔'
-  return '→'
-}
-
 const DOMAIN_LABELS: Record<string, string> = {
   privacy: 'Privacy',
   beveiliging: 'Beveiliging',
@@ -690,36 +696,63 @@ function domainLabel(domain: string): string {
   return DOMAIN_LABELS[domain] ?? domain
 }
 
-const trackGroups = computed(() => {
-  const byTrack: Record<string, FormIndexEntry[]> = {}
-  for (const form of forms.value) {
-    // An unknown track used to fall through to the assessments group, which hid
-    // typos in index.json. Surface them instead.
-    let t = form.track ?? 'onbekend'
-    if (!TRACK_META[t]) {
-      console.warn(`[forms] Onbekend spoor "${form.track}" voor formulier "${form.id}" — controleer public/forms/index.json`)
-      t = 'onbekend'
-    }
-    if (!byTrack[t]) byTrack[t] = []
-    byTrack[t].push(form)
-  }
-  // Iterate over TRACK_META (not over the forms present) so a track with an
-  // emptyHint still renders when it has no forms yet.
-  return Object.entries(TRACK_META)
-    .filter(([track, meta]) => byTrack[track]?.length || meta.emptyHint)
-    .sort(([, a], [, b]) => a.order - b.order)
-    .map(([track, meta]) => ({
-      track,
-      label: meta.label,
-      description: meta.description,
-      emptyHint: meta.emptyHint,
-      forms: [...(byTrack[track] ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
-    }))
+const trackGroups = computed(() => groupFormsByTrack(forms.value))
+
+// Per-phase completion, recomputed whenever answers change so the timeline
+// marker fills in as the user finishes forms in that phase.
+const trackCounts = computed(() => {
+  const dossier = store.activeDossierId ? store.dossiers[store.activeDossierId] : null
+  return dossier ? trackSummary(dossier) : null
 })
+
+function trackCount(group: TrackGroup): { done: number; total: number } {
+  if (group.track === 'onbekend') return { done: 0, total: 0 }
+  return trackCounts.value?.[group.track] ?? { done: 0, total: group.forms.length }
+}
+
+// The rail is the lifecycle, so the `onbekend` bucket — which is a symptom of a
+// typo in index.json, not a phase — stays out of it. It is still rendered as a
+// section in the timeline below.
+const railGroups = computed(() => trackGroups.value.filter((g) => g.phaseNumber > 0))
+
+/** How full the rail circle is: the share of this phase's forms that are done.
+ *  Any progress at all gets a visible sliver, so "started" never reads as
+ *  "untouched" — one form out of nine is 11% and would otherwise vanish. */
+function phaseFill(group: TrackGroup): string {
+  const { done, total } = trackCount(group)
+  if (total === 0 || done === 0) return '0%'
+  if (done === total) return '100%'
+  return `${Math.max(12, Math.round((done / total) * 100))}%`
+}
+
+function phaseRailLabel(group: TrackGroup): string {
+  const { done, total } = trackCount(group)
+  const progress = total === 0 ? 'nog geen formulieren' : `${done} van ${total} afgerond`
+  return `Fase ${group.phaseNumber} van ${group.phaseCount}: ${group.label} — ${progress}`
+}
+
+function goToPhase(track: string) {
+  const el = document.getElementById(`fase-${track}`)
+  el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+/** Marker state on the spine: filled+check when the phase is finished, a solid
+ *  dot while it is under way, an outline when nothing has been started, and a
+ *  dashed outline for a phase that has no forms yet (`beheer`). */
+function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
+  const { done, total } = trackCount(group)
+  if (total === 0) return 'empty'
+  if (done === total) return 'done'
+  return done > 0 || group.forms.some((f) => statusFor(f.id)?.status === 'bezig') ? 'busy' : 'todo'
+}
 </script>
 
 <style scoped>
 .portal-page {
+  /* Shared by the phase rail and the timeline spine. lichtblauw-300 is
+     invisible against the lichtblauw-150 page background — tint the page's own
+     lintblauw down instead, as the card shadows do. */
+  --track-line: rgb(21 66 115 / 0.22);
   padding: var(--rvo-space-3xl) 0 var(--rvo-space-4xl);
   background: var(--rvo-color-lichtblauw-150);
   min-height: 100%;
@@ -1008,12 +1041,290 @@ const trackGroups = computed(() => {
   margin: 0;
 }
 
-.track-section {
-  margin-block-end: var(--rvo-space-3xl);
+/* ---- Phase rail ------------------------------------------------------- */
+
+.phase-rail {
+  margin-block-end: var(--rvo-space-2xl);
+  padding: var(--rvo-space-lg) var(--rvo-space-md);
+  background: var(--rvo-color-wit);
+  border: 1px solid var(--rvo-color-lichtblauw-300);
+  border-radius: var(--rvo-border-radius-md);
+  box-shadow: 0 1px 3px rgb(21 66 115 / 0.06), 0 4px 12px rgb(21 66 115 / 0.04);
+  /* Six phases don't fit a phone; scroll the rail rather than the page. */
+  overflow-x: auto;
+}
+
+.phase-rail__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: flex-start;
+  min-inline-size: 34rem;
+  --rail-circle-size: 2.75rem;
+}
+
+.phase-rail__item {
+  flex: 1;
+  position: relative;
+}
+
+/* The connector runs behind the circles, from this step's centre to the next. */
+.phase-rail__item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  inset-block-start: calc(var(--rail-circle-size) / 2 - 1px);
+  inset-inline-start: 50%;
+  inline-size: 100%;
+  block-size: 2px;
+  background: var(--track-line);
+}
+
+.phase-rail__step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--rvo-space-2xs);
+  inline-size: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  padding: var(--rvo-space-2xs) var(--rvo-space-3xs);
+}
+
+/* Hover lands on the circle and the label, never on the cell: a filled block
+   would paint over the connector line running behind it. */
+.phase-rail__step:hover .phase-rail__circle {
+  border-color: var(--rvo-color-lintblauw);
+  box-shadow: 0 0 0 4px var(--rvo-color-lichtblauw-300);
+}
+
+.phase-rail__step:hover .phase-rail__label {
+  text-decoration: underline;
+}
+
+.phase-rail__step:focus-visible {
+  outline: none;
+}
+
+.phase-rail__step:focus-visible .phase-rail__circle {
+  outline: 2px solid var(--rvo-color-lintblauw);
+  outline-offset: 3px;
+}
+
+.phase-rail__step:focus-visible .phase-rail__label {
+  text-decoration: underline;
+}
+
+/* The circle fills from the bottom up to --phase-fill. The wash is a light
+   tint rather than full lintblauw so the icon stays legible at any level;
+   only a completed phase goes solid (see --done below). */
+.phase-rail__circle {
+  inline-size: var(--rail-circle-size);
+  block-size: var(--rail-circle-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 2px solid var(--track-line);
+  color: var(--rvo-color-lintblauw);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  background:
+    linear-gradient(
+      to top,
+      var(--rvo-color-lichtblauw-750) 0 var(--phase-fill, 0%),
+      var(--rvo-color-wit) var(--phase-fill, 0%) 100%
+    );
+}
+
+.phase-rail__circle--busy {
+  border-color: var(--rvo-color-lintblauw);
+}
+
+.phase-rail__circle--done {
+  border-color: var(--rvo-color-lintblauw);
+  background: var(--rvo-color-lintblauw);
+  color: var(--rvo-color-wit);
+}
+
+/* A phase with no forms yet (beheer) — deliberately visible, visibly unfillable. */
+.phase-rail__circle--empty {
+  border-style: dashed;
+  border-color: var(--rvo-color-grijs-400);
+  color: var(--rvo-color-grijs-500);
+  background: var(--rvo-color-wit);
+}
+
+.phase-rail__icon {
+  display: block;
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
+  background-color: currentColor;
+}
+
+/* Static mask URLs so Vite resolves the NLDS icons in the production build —
+   a runtime url(...) binding renders as a white square. One rule per phase. */
+.phase-rail__circle--icon-verkennen .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/navigatie/kompas.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/navigatie/kompas.svg') center / contain no-repeat;
+}
+.phase-rail__circle--icon-besluiten .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-lijnen-en-lint.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-lijnen-en-lint.svg') center / contain no-repeat;
+}
+.phase-rail__circle--icon-ontwerpen .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-potlood.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-potlood.svg') center / contain no-repeat;
+}
+.phase-rail__circle--icon-toetsen .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/klembord-met-loep.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/op-kantoor/klembord-met-loep.svg') center / contain no-repeat;
+}
+.phase-rail__circle--icon-ingebruikname .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/functioneel/publicatie.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/functioneel/publicatie.svg') center / contain no-repeat;
+}
+.phase-rail__circle--icon-beheer .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/pijlen-in-cirkel-om-document.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/op-kantoor/pijlen-in-cirkel-om-document.svg') center / contain no-repeat;
+}
+
+.phase-rail__label {
+  font-size: var(--rvo-font-size-2xs, 0.75rem);
+  line-height: 1.3;
+  font-weight: var(--rvo-font-weight-semibold);
+  color: var(--rvo-color-lintblauw);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.phase-rail__count {
+  font-size: var(--rvo-font-size-2xs, 0.75rem);
+  color: var(--invulhulp-color-text-subtle);
+}
+
+/* ---- Timeline --------------------------------------------------------- */
+
+/* Vertical lifecycle timeline. The spine is drawn per phase (not once on the
+   list) so it can stop cleanly at the last marker instead of trailing into the
+   whitespace below the final card row. */
+.track-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  --track-marker-size: 2.25rem;
+  --track-gutter: 3.25rem;
+}
+
+.track-phase {
+  position: relative;
+  scroll-margin-block-start: var(--rvo-space-lg);
+  padding-inline-start: var(--track-gutter);
+  padding-block-end: var(--rvo-space-3xl);
+}
+
+.track-phase:last-child {
+  padding-block-end: 0;
+}
+
+/* The connecting line: from just under this marker down to the next one. */
+.track-phase::before {
+  content: "";
+  position: absolute;
+  inset-block-start: var(--track-marker-size);
+  inset-block-end: 0;
+  inset-inline-start: calc(var(--track-marker-size) / 2 - 1px);
+  inline-size: 2px;
+  background: var(--track-line);
+}
+
+.track-phase:last-child::before {
+  display: none;
+}
+
+.track-phase__marker {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: var(--track-marker-size);
+  block-size: var(--track-marker-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--rvo-font-size-sm);
+  font-weight: var(--rvo-font-weight-bold);
+  box-sizing: border-box;
+  background: var(--rvo-color-wit);
+  color: var(--rvo-color-lintblauw);
+  border: 2px solid var(--track-line);
+}
+
+.track-phase__marker--todo {
+  border-color: var(--track-line);
+  color: var(--invulhulp-color-text-subtle);
+}
+
+.track-phase__marker--busy {
+  border-color: var(--rvo-color-lintblauw);
+  color: var(--rvo-color-lintblauw);
+  box-shadow: inset 0 0 0 3px var(--rvo-color-lichtblauw-150);
+}
+
+.track-phase__marker--done {
+  background: var(--rvo-color-lintblauw);
+  border-color: var(--rvo-color-lintblauw);
+  color: var(--rvo-color-wit);
+}
+
+/* A phase with no forms yet (beheer) — deliberately visible, visibly unfilled. */
+.track-phase__marker--empty {
+  border-style: dashed;
+  border-color: var(--rvo-color-grijs-400);
+  color: var(--rvo-color-grijs-500);
+}
+
+.track-phase__check {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.track-eyebrow {
+  margin: 0 0 var(--rvo-space-3xs);
+  font-size: var(--rvo-font-size-2xs, 0.75rem);
+  font-weight: var(--rvo-font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--invulhulp-color-text-subtle);
+}
+
+.track-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--rvo-space-sm);
+  flex-wrap: wrap;
+}
+
+.track-count {
+  color: var(--invulhulp-color-text-subtle);
+  white-space: nowrap;
 }
 
 .track-header {
+  /* Reserve the marker's height so short headings still clear the spine. */
+  min-block-size: var(--track-marker-size);
   margin-block-end: var(--rvo-space-md);
+}
+
+@media (max-width: 640px) {
+  .track-timeline {
+    --track-marker-size: 1.75rem;
+    --track-gutter: 2.5rem;
+  }
 }
 
 .track-title {

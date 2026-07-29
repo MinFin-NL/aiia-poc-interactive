@@ -81,8 +81,8 @@ const features = [
   },
   {
     icon: samenhangIcon,
-    title: 'Samenhangende sporen',
-    desc: 'Van intake en business case tot PSA, BIO-quickscan en DPIA — formulieren delen antwoorden over de sporen heen.',
+    title: 'Samenhangende fasen',
+    desc: 'Van intake en business case tot PSA, BIO-quickscan en DPIA — de formulieren staan op volgorde van projectfase en delen antwoorden over de fasen heen.',
   },
 ]
 

@@ -61,6 +61,14 @@
           <span class="invulhulp-header__crumb-icon" aria-hidden="true" />
           {{ store.activeDossier.name }}
         </span>
+        <!-- Lifecycle phase of the open form. Not a link: there is no
+             per-phase destination, the phase only exists as a grouping. -->
+        <template v-if="activePhaseLabel">
+          <span class="invulhulp-header__crumb-sep invulhulp-header__crumb-sep--phase" aria-hidden="true">›</span>
+          <span class="invulhulp-header__crumb invulhulp-header__crumb--phase">
+            {{ activePhaseLabel }}
+          </span>
+        </template>
         <template v-if="activeFormTitle">
           <span class="invulhulp-header__crumb-sep" aria-hidden="true">›</span>
           <span class="invulhulp-header__crumb invulhulp-header__crumb--current" aria-current="page">
@@ -89,6 +97,7 @@ import emblemUrl from '@nl-rvo/assets/images/emblem.svg'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { useAuthStore } from '../stores/authStore'
 import { loadAvailableForms, type FormIndexEntry } from '../services/formLoader'
+import { trackIdFor, trackLabel } from '../utils/tracks'
 import ConfirmDialog from './ConfirmDialog.vue'
 import PresenceBar from './PresenceBar.vue'
 
@@ -119,6 +128,15 @@ const showBreadcrumb = computed(
 const activeFormTitle = computed(() => {
   if (store.activeFormId === null) return null
   return availableForms.value.find((f) => f.id === store.activeFormId)?.title ?? null
+})
+
+const activePhaseLabel = computed(() => {
+  if (store.activeFormId === null) return null
+  const track = availableForms.value.find((f) => f.id === store.activeFormId)?.track
+  // A form with a typo'd track is already surfaced on the dossier page; don't
+  // repeat "Niet ingedeeld" in the breadcrumb of every one of its views.
+  if (!track || trackIdFor(track, store.activeFormId) === 'onbekend') return null
+  return trackLabel(track)
 })
 
 const resetTitle = computed(() => {
@@ -305,5 +323,19 @@ function openResetDialog() {
 .invulhulp-header__crumb-sep {
   color: rgb(255 255 255 / 0.4);
   user-select: none;
+}
+
+/* The phase is context, not a destination — quieter than the two crumbs it
+   sits between, and the first thing to go when the row gets tight. */
+.invulhulp-header__crumb--phase {
+  color: rgb(255 255 255 / 0.75);
+  font-weight: var(--rvo-font-weight-normal);
+}
+
+@media (max-width: 640px) {
+  .invulhulp-header__crumb--phase,
+  .invulhulp-header__crumb-sep--phase {
+    display: none;
+  }
 }
 </style>

@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { loadAvailableForms, loadForm, type FormIndexEntry } from '../services/formLoader'
 import { formProgress, type FormProgress } from '../utils/formProgress'
+import { TRACK_IDS, trackIdFor, type TrackId } from '../utils/tracks'
 import type { FormConfig } from '../models/Assessment'
 import type { Dossier } from '../stores/assessmentStore'
 
@@ -46,5 +47,23 @@ export function useFormProgress() {
     return { done, total: formIndex.value.length }
   }
 
-  return { formIndex, progressFor, dossierSummary, ready: () => loadPromise! }
+  /**
+   * Completion per lifecycle phase, for the dossier timeline and the phase bar
+   * on the dossier cards. Every phase is present, including ones without forms
+   * (`beheer`), so callers can render the full lifecycle without holes.
+   */
+  function trackSummary(dossier: Dossier): Record<TrackId, { done: number; total: number }> {
+    const out = Object.fromEntries(
+      TRACK_IDS.map((t) => [t, { done: 0, total: 0 }]),
+    ) as Record<TrackId, { done: number; total: number }>
+    for (const entry of formIndex.value) {
+      const t = trackIdFor(entry.track, entry.id)
+      if (t === 'onbekend') continue
+      out[t].total++
+      if (progressFor(dossier, entry.id)?.status === 'afgerond') out[t].done++
+    }
+    return out
+  }
+
+  return { formIndex, progressFor, dossierSummary, trackSummary, ready: () => loadPromise! }
 }
