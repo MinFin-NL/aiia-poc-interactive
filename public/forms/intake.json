@@ -2,6 +2,13 @@
   "id": "intake",
   "version": "2.0",
   "title": "Intakeformulier nieuwe IV-verzoeken",
+  "source": {
+    "instrument": "Intakeformulier IV-verzoek",
+    "publisher": "Ministerie van Financiën",
+    "reference": "Intern intakeformulier voor het IV-intakeboard",
+    "derivation": "original",
+    "note": "Digitalisering van het eigen intakeformulier; geen extern origineel."
+  },
   "aiContext": "Dit is een intakeformulier waarmee een organisatieonderdeel van het Ministerie van Financiën een nieuw IV-verzoek (IT-/informatievoorziening) aanmeldt bij het intakeboard. De antwoorden moeten zakelijk en feitelijk zijn en gaan over de opdrachtgever, het probleem dat wordt opgelost, de aanleiding, de doelstelling, de doelgroep, de urgentie, de afhankelijkheden en het benodigde budget.",
   "meta": {
     "homeComponent": "HomePage",

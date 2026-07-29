@@ -1,0 +1,457 @@
+{
+  "id": "verwerkingsregister",
+  "version": "1.0",
+  "title": "Verwerkingsregister (AVG art. 30)",
+  "aiContext": "Dit is een registratie voor het verwerkingsregister van het Ministerie van Financiën op grond van artikel 30 AVG. Het legt per verwerking de verplichte registratie-elementen vast: verwerkingsverantwoordelijke en FG, doeleinden, categorieën betrokkenen en persoonsgegevens, ontvangers, doorgiften buiten de EER, bewaartermijnen en een algemene beschrijving van de beveiligingsmaatregelen (art. 32 lid 1). Schrijf beknopt, juridisch nauwkeurig en in AVG-terminologie: het register is een verantwoordingsdocument dat aan de Autoriteit Persoonsgegevens getoond moet kunnen worden, geen beleidstekst. Formuleer per veld feitelijk en volledig, zonder toelichtende betogen.",
+  "source": {
+    "instrument": "Algemene verordening gegevensbescherming (AVG / Verordening (EU) 2016/679)",
+    "publisher": "Europese Unie",
+    "version": "Verordening (EU) 2016/679",
+    "url": "https://eur-lex.europa.eu/legal-content/NL/TXT/?uri=CELEX%3A32016R0679",
+    "reference": "artikel 30 lid 1 (registerplicht verwerkingsverantwoordelijke); beveiligingsbeschrijving conform artikel 32 lid 1",
+    "derivation": "derived",
+    "note": "Rechtstreeks afgeleid van de opsomming in art. 30 lid 1 sub a–g; er bestaat geen verplicht landelijk invulmodel. Roadmap: docs/sporen-en-roadmap.md §4.2 nr. 1."
+  },
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Verwerkingsregister",
+    "docTitle": "Registratie verwerkingsregister (AVG art. 30)",
+    "footerLabel": "Verwerkingsregister – MinFin",
+    "filename": "Verwerkingsregister.pdf",
+    "systemNamePlaceholder": "Bijv. Verwerking klachtafhandeling burgers",
+    "homeContent": {
+      "notice": "Eén registratie beschrijft één verwerking, niet één systeem: een systeem dat drie verschillende doeleinden dient, levert drie registraties op. De registerplicht geldt ongeacht of er een DPIA nodig was — zij is breder dan de DPIA-plicht. Let op — een dossier biedt op dit moment ruimte aan één exemplaar van dit formulier. Kent het project meerdere verwerkingen, registreer dan hier de belangrijkste en neem de overige op als losse bijlage of in een apart dossier.",
+      "description": "Artikel 30 AVG verplicht elke verwerkingsverantwoordelijke een register bij te houden van de verwerkingsactiviteiten onder zijn verantwoordelijkheid. Dit formulier legt de in lid 1 verplicht gestelde elementen vast: verantwoordelijke en FG, doeleinden, categorieën betrokkenen en gegevens, ontvangers, doorgiften buiten de EER, bewaartermijnen en een algemene beschrijving van de beveiligingsmaatregelen. Veel velden zijn af te leiden uit een eerder ingevulde DPIA of intake.",
+      "steps": [
+        "Deel A – Verwerking en verantwoordelijke: naam, doel, grondslag en betrokken partijen",
+        "Deel B – Gegevens en betrokkenen: categorieën betrokkenen, gegevens en bronnen",
+        "Deel C – Ontvangers en doorgifte: met wie gedeeld, en doorgifte buiten de EER",
+        "Deel D – Bewaring en beveiliging: bewaartermijnen, maatregelen en beheer van de registratie"
+      ],
+      "buttonLabel": "Starten met de registratie"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "vr_a" },
+    { "type": "subsections", "sectionId": "vr_b" },
+    { "type": "subsections", "sectionId": "vr_c" },
+    { "type": "subsections", "sectionId": "vr_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "vr_a",
+      "title": "Deel A: Verwerking en verantwoordelijke",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "vra1",
+          "title": "De verwerking",
+          "questions": [
+            {
+              "id": "vr_a.naam",
+              "officialId": "art30-1",
+              "text": "Naam van de verwerking",
+              "guidance": "Een korte, herkenbare aanduiding zoals die in het register komt te staan.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "vr_a.nummer",
+              "text": "Registratienummer in het verwerkingsregister",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            },
+            {
+              "id": "vr_a.omschrijving",
+              "text": "Korte omschrijving van de verwerking",
+              "guidance": "Wat gebeurt er feitelijk: welke gegevens worden van wie verzameld, wat gebeurt ermee en met welk resultaat?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "vr_a.doel",
+              "officialId": "art30-1-b",
+              "text": "Wat zijn de doeleinden van de verwerking?",
+              "guidance": "Artikel 30 lid 1 sub b. Omschrijf elk doel afzonderlijk en specifiek. 'Bedrijfsvoering' of 'dienstverlening' is te ruim om als doel te gelden.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "vr_a.grondslag",
+              "text": "Op welke grondslag berust de verwerking?",
+              "guidance": "Kies de grondslag uit artikel 6 lid 1 AVG. Bij een wettelijke verplichting of publieke taak: noem de concrete wettelijke bepaling.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Wettelijke verplichting (art. 6 lid 1 sub c)",
+                "Vervulling van een taak van algemeen belang of openbaar gezag (art. 6 lid 1 sub e)",
+                "Uitvoering van een overeenkomst (art. 6 lid 1 sub b)",
+                "Toestemming (art. 6 lid 1 sub a)",
+                "Gerechtvaardigd belang (art. 6 lid 1 sub f)",
+                "Vitaal belang (art. 6 lid 1 sub d)"
+              ],
+              "followUp": "Noem de concrete wettelijke bepaling of onderbouw de gekozen grondslag."
+            },
+            {
+              "id": "vr_a.bijzonder_grondslag",
+              "text": "Als er bijzondere of strafrechtelijke persoonsgegevens worden verwerkt: op welke uitzondering berust dat?",
+              "guidance": "Artikel 9 lid 2 of artikel 10 AVG, met de nationale bepaling (UAVG) erbij. Laat leeg als dit niet speelt.",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        },
+        {
+          "id": "vra2",
+          "title": "Verantwoordelijke en betrokken partijen",
+          "questions": [
+            {
+              "id": "vr_a.verantwoordelijke",
+              "officialId": "art30-1-a",
+              "text": "Wie is de verwerkingsverantwoordelijke?",
+              "guidance": "Artikel 30 lid 1 sub a: naam en contactgegevens van de verwerkingsverantwoordelijke (de rechtspersoon, met het verantwoordelijke organisatieonderdeel erbij).",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "vr_a.proceseigenaar",
+              "text": "Wie is de proceseigenaar of interne verantwoordelijke voor deze verwerking?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "vr_a.fg",
+              "text": "Contactgegevens van de Functionaris voor Gegevensbescherming (FG)",
+              "guidance": "Artikel 30 lid 1 sub a.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "vr_a.gezamenlijk",
+              "text": "Is er sprake van gezamenlijke verwerkingsverantwoordelijkheid (art. 26 AVG)?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Nee",
+                "Ja",
+                "Onduidelijk — nog vast te stellen"
+              ],
+              "followUp": "Noem de andere verantwoordelijke(n) en beschrijf hoe de onderlinge verdeling is vastgelegd."
+            },
+            {
+              "id": "vr_a.verwerkers",
+              "text": "Welke verwerkers zijn bij deze verwerking betrokken?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "verwerker", "label": "Verwerker" },
+                { "id": "rol", "label": "Wat doet deze partij" },
+                { "id": "overeenkomst", "label": "Verwerkersovereenkomst", "type": "select", "options": ["Ja, gesloten", "Nee, nog niet gesloten", "Niet van toepassing"] },
+                { "id": "locatie", "label": "Land van verwerking" }
+              ],
+              "notesLabel": "Toelichting op de betrokken verwerkers en subverwerkers"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vr_b",
+      "title": "Deel B: Gegevens en betrokkenen",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "vrb1",
+          "title": "Categorieën",
+          "questions": [
+            {
+              "id": "vr_b.betrokkenen",
+              "officialId": "art30-1-c",
+              "text": "Welke categorieën betrokkenen worden verwerkt?",
+              "guidance": "Artikel 30 lid 1 sub c. Bijv. burgers die een aanvraag indienen, medewerkers, contactpersonen van bedrijven.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "vr_b.categorieen",
+              "officialId": "art30-1-c",
+              "text": "Welke categorieën persoonsgegevens worden verwerkt?",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "Identificerende gegevens (naam, adres, geboortedatum)",
+                "Burgerservicenummer of ander wettelijk identificatienummer",
+                "Contactgegevens",
+                "Financiële en fiscale gegevens",
+                "Gegevens over werk, opleiding of inkomen",
+                "Gegevens over gebruik van diensten of voorzieningen",
+                "Locatiegegevens",
+                "Digitale identificatiegegevens (IP-adres, sessie, apparaat)",
+                "Beeld- of geluidsmateriaal",
+                "Bijzondere persoonsgegevens (art. 9 AVG)",
+                "Strafrechtelijke gegevens (art. 10 AVG)",
+                "Gegevens over kinderen"
+              ]
+            },
+            {
+              "id": "vr_b.specificatie",
+              "text": "Specificeer de verwerkte gegevens per categorie",
+              "guidance": "Werk de aangevinkte categorieën uit tot concrete gegevensvelden. Bij bijzondere of strafrechtelijke gegevens: benoem exact welke.",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "categorie", "label": "Categorie" },
+                { "id": "gegevens", "label": "Concrete gegevens" },
+                { "id": "betrokkenen", "label": "Van welke betrokkenen" },
+                { "id": "noodzaak", "label": "Waarom noodzakelijk voor het doel" }
+              ],
+              "notesLabel": "Aanvullende toelichting op de gegevensspecificatie"
+            },
+            {
+              "id": "vr_b.bronnen",
+              "text": "Uit welke bronnen zijn de gegevens afkomstig?",
+              "guidance": "Verzameld bij de betrokkene zelf, of verkregen uit een andere bron? Bij het laatste geldt de informatieplicht van artikel 14 AVG.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "vr_b.aantal",
+              "text": "Hoeveel betrokkenen omvat de verwerking (orde van grootte)?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Minder dan 100",
+                "100 tot 10.000",
+                "10.000 tot 1 miljoen",
+                "Meer dan 1 miljoen",
+                "Onbekend"
+              ]
+            },
+            {
+              "id": "vr_b.geautomatiseerd",
+              "text": "Is er sprake van geautomatiseerde besluitvorming of profilering (art. 22 AVG)?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Nee",
+                "Ja, profilering zonder geautomatiseerd besluit met rechtsgevolg",
+                "Ja, uitsluitend geautomatiseerde besluitvorming met rechtsgevolg of vergelijkbaar effect",
+                "Onbekend"
+              ],
+              "followUp": "Beschrijf de logica op hoofdlijnen en de waarborgen die zijn getroffen."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vr_c",
+      "title": "Deel C: Ontvangers en doorgifte",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "vrc1",
+          "title": "Ontvangers",
+          "questions": [
+            {
+              "id": "vr_c.ontvangers",
+              "officialId": "art30-1-d",
+              "text": "Aan welke categorieën ontvangers worden de gegevens verstrekt?",
+              "guidance": "Artikel 30 lid 1 sub d. Ook ontvangers in derde landen en internationale organisaties tellen mee. Interne ontvangers binnen dezelfde verantwoordelijke zijn geen 'ontvanger' in de zin van dit artikel, maar vermeld ze wel als de gegevens buiten het eigen organisatieonderdeel gaan.",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "ontvanger", "label": "Categorie ontvanger" },
+                { "id": "doel", "label": "Doel van de verstrekking" },
+                { "id": "grondslag", "label": "Grondslag of wettelijke bepaling" },
+                { "id": "frequentie", "label": "Frequentie", "type": "select", "options": ["Structureel", "Periodiek", "Incidenteel", "Op verzoek"] }
+              ],
+              "notesLabel": "Toelichting op de verstrekkingen"
+            },
+            {
+              "id": "vr_c.geen",
+              "text": "Worden de gegevens niet aan derden verstrekt?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Correct: er vinden geen verstrekkingen aan derden plaats",
+                "Er vinden wel verstrekkingen plaats (zie de tabel hierboven)"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vrc2",
+          "title": "Doorgifte buiten de EER",
+          "questions": [
+            {
+              "id": "vr_c.doorgifte",
+              "officialId": "art30-1-e",
+              "text": "Vindt er doorgifte plaats naar een land buiten de EER of naar een internationale organisatie?",
+              "guidance": "Artikel 30 lid 1 sub e. Denk ook aan opslag bij een cloudleverancier buiten de EER en aan support- of beheertoegang vanuit een derde land: ook dat is doorgifte.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Nee",
+                "Ja, naar een land met een adequaatheidsbesluit",
+                "Ja, met passende waarborgen (art. 46 AVG)",
+                "Ja, op grond van een uitzondering (art. 49 AVG)",
+                "Onbekend"
+              ],
+              "followUp": "Noem het land, de ontvanger en de toegepaste grondslag."
+            },
+            {
+              "id": "vr_c.waarborgen",
+              "text": "Welke waarborgen zijn bij de doorgifte getroffen?",
+              "guidance": "Bijv. standaardcontractbepalingen, een uitgevoerde transfer impact assessment (DTIA), aanvullende technische maatregelen zoals versleuteling met sleutelbeheer binnen de EER. Laat leeg als er geen doorgifte is.",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vr_d",
+      "title": "Deel D: Bewaring, beveiliging en beheer",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "vrd1",
+          "title": "Bewaartermijnen",
+          "questions": [
+            {
+              "id": "vr_d.bewaartermijn",
+              "officialId": "art30-1-f",
+              "text": "Welke bewaartermijnen gelden voor de verschillende categorieën gegevens?",
+              "guidance": "Artikel 30 lid 1 sub f. Noem per categorie de termijn en de grondslag ervoor (selectielijst Archiefwet, wettelijke bewaarplicht, of eigen afweging op grond van art. 5 lid 1 sub e AVG).",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "categorie", "label": "Categorie gegevens" },
+                { "id": "termijn", "label": "Bewaartermijn" },
+                { "id": "startpunt", "label": "Vanaf welk moment" },
+                { "id": "grondslag", "label": "Grondslag van de termijn" },
+                { "id": "daarna", "label": "Daarna", "type": "select", "options": ["Vernietigen", "Overbrengen naar archief", "Anonimiseren"] }
+              ],
+              "notesLabel": "Toelichting op de bewaartermijnen"
+            },
+            {
+              "id": "vr_d.verwijdering",
+              "text": "Is de verwijdering of vernietiging feitelijk ingericht?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, geautomatiseerd",
+                "Ja, via een periodieke procedure",
+                "Nee, nog niet ingericht",
+                "Onbekend"
+              ],
+              "followUp": "Beschrijf hoe de verwijdering plaatsvindt, ook in back-ups en afgeleide bestanden."
+            }
+          ]
+        },
+        {
+          "id": "vrd2",
+          "title": "Beveiliging",
+          "questions": [
+            {
+              "id": "vr_d.maatregelen",
+              "officialId": "art30-1-g",
+              "text": "Geef een algemene beschrijving van de technische en organisatorische beveiligingsmaatregelen",
+              "guidance": "Artikel 30 lid 1 sub g, verwijzend naar artikel 32 lid 1. Een beschrijving op hoofdlijnen volstaat — het register is geen beveiligingsplan. Sluit aan bij de maatregelen uit de Quick scan BIO en de PSA.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "vr_d.maatregeltypen",
+              "text": "Welke maatregelen zijn getroffen?",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "Toegangsbeheer op basis van rollen en het need-to-know-beginsel",
+                "Meerfactorauthenticatie",
+                "Versleuteling van gegevens in rust",
+                "Versleuteling van gegevens tijdens transport",
+                "Pseudonimisering of anonimisering",
+                "Logging van toegang en bewerkingen",
+                "Periodieke beoordeling van autorisaties",
+                "Back-up en herstelprocedure",
+                "Geheimhoudingsverklaringen en bewustwording bij medewerkers",
+                "Penetratietest of beveiligingsaudit",
+                "Incidentprocedure en meldproces datalekken"
+              ]
+            },
+            {
+              "id": "vr_d.bbn",
+              "text": "Welk beveiligingsniveau (BBN) is vastgesteld?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "BBN1",
+                "BBN2",
+                "BBN3",
+                "Nog niet bepaald"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vrd3",
+          "title": "Samenhang en beheer van de registratie",
+          "questions": [
+            {
+              "id": "vr_d.dpia",
+              "text": "Is voor deze verwerking een DPIA uitgevoerd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, DPIA uitgevoerd",
+                "Nee, uit de pre-scan bleek dat het niet verplicht is",
+                "Nee, nog niet uitgevoerd maar wel nodig",
+                "Nog niet beoordeeld"
+              ],
+              "followUp": "Verwijs naar het DPIA-document of de pre-scan en de datum daarvan."
+            },
+            {
+              "id": "vr_d.rechten",
+              "text": "Hoe kunnen betrokkenen hun rechten uitoefenen?",
+              "guidance": "Beschrijf de route voor inzage, correctie, verwijdering, beperking, bezwaar en dataportabiliteit, en wie de verzoeken afhandelt.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "vr_d.status",
+              "text": "Wat is de status van deze registratie?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Concept",
+                "Vastgesteld en opgenomen in het register",
+                "In herziening",
+                "Beëindigd — de verwerking vindt niet meer plaats"
+              ]
+            },
+            {
+              "id": "vr_d.actualisatie",
+              "text": "Wanneer is de registratie voor het laatst geactualiseerd en wanneer wordt zij herzien?",
+              "guidance": "Het register moet actueel zijn. Noem naast een vaste herzieningstermijn ook de gebeurtenissen die tussentijds tot bijwerking leiden: nieuwe ontvanger, gewijzigd doel, andere leverancier.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

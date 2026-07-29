@@ -10,6 +10,12 @@
 >
 > Zie ook: [`AI-BOK-form-opportunities.md`](AI-BOK-form-opportunities.md),
 > [`DAMA-DMBOK-form-opportunities.md`](DAMA-DMBOK-form-opportunities.md).
+>
+> **Inmiddels achterhaald op één punt.** De Beslishulp AI-verordening is gebouwd, maar niet als
+> iframe-embed met een uitkomst-contract (§4): de beslisboom is gevendord, geconverteerd naar een
+> runtime-asset en draait lokaal in de app. Wat er daarna nog ontbreekt — een register voor
+> meerdere beslishulpen, kandidaat-beslishulpen, en de herkomstvraag — staat in
+> [`beslishulp-uitbreiding-en-lineage.md`](beslishulp-uitbreiding-en-lineage.md).
 
 ## 0. Referenties (beslishulpen)
 

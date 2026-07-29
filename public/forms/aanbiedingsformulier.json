@@ -2,6 +2,14 @@
   "id": "aanbiedingsformulier",
   "version": "2.0",
   "title": "PPM Aanbiedingsformulier (Outline Businesscase)",
+  "source": {
+    "instrument": "PPM-aanbiedingsformulier (outline business case)",
+    "publisher": "Ministerie van Financiën",
+    "version": "2.0",
+    "reference": "Intern portfoliomanagement-sjabloon voor het portfoliobesluit",
+    "derivation": "original",
+    "note": "Digitalisering van het eigen aanbiedingsformulier; geen extern origineel."
+  },
   "aiContext": "Dit is een PPM-aanbiedingsformulier dat de outline business case voor een portfoliobesluit bij het Ministerie van Financiën beschrijft: belang, nut en noodzaak, afhankelijkheden, risico's, impact, planning, baten en kosten van een I-projectinitiatief. Schrijf zakelijk en onderbouwend.",
   "meta": {
     "homeComponent": "HomePage",

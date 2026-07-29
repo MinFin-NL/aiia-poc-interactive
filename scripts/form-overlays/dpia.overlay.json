@@ -4,6 +4,15 @@
     "id": "dpia",
     "version": "3.0",
     "title": "Data Protection Impact Assessment",
+    "source": {
+      "instrument": "Model DPIA Rijksdienst (urn:nl:dpia)",
+      "publisher": "Ministerie van Binnenlandse Zaken en Koninkrijksrelaties",
+      "version": "3.0",
+      "url": "https://github.com/MinBZK/par-dpia-form",
+      "reference": "vendor/par-dpia-form/dpia.yaml (upstream sources/dpia.yaml, commit 3d76a6d5da166b0dc089ca80740ac7be64fb7ab8)",
+      "derivation": "generated",
+      "note": "Gegenereerd met `npm run forms:build`; niet handmatig bewerken. Elke vraag draagt de upstream task-id als officialId. Zie docs/SCHEMA_HARMONIZATION.md."
+    },
     "aiContext": "Dit is een volledige Data Protection Impact Assessment (DPIA) volgens het Model DPIA Rijksdienst v3.0 en artikel 35 AVG voor het Ministerie van Financiën: beschrijving van de verwerking, rechtmatigheid, noodzaak en proportionaliteit, risico's voor betrokkenen en mitigerende maatregelen. Schrijf juridisch nauwkeurig in AVG-terminologie.",
     "meta": {
       "homeComponent": "DpiaHomePage",

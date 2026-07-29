@@ -2,6 +2,15 @@
   "id": "euaiact",
   "version": "0.1",
   "title": "EU AI Act Compliance Checklist",
+  "source": {
+    "instrument": "AI Body of Knowledge (AI-BOK) — Template 3: EU AI Act Compliance Checklist",
+    "publisher": "Jan Willem van Veen",
+    "version": "v1.0 (2026)",
+    "reference": "Appendix 'Templates, Checklists and Quick Start', Template 3 (p. 196–198); sluitsectie uit MinBZK/task-registry instrument conformity_assessment_eu_ai_act (urn:nl:aivt:tr:ca:1.0)",
+    "url": "https://github.com/MinBZK/task-registry/blob/main/instruments/conformity_assessment_eu_ai_act.yaml",
+    "derivation": "harmonized",
+    "note": "AI-BOK-templates mogen vrij worden gebruikt en aangepast (p. 204), met bronvermelding. De velden van de EU-conformiteitsverklaring dragen hun URN als officialId."
+  },
   "aiContext": "Dit is een EU AI Act Compliance Checklist: hiermee wordt het risiconiveau van een AI-systeem onder de AI-verordening (Verordening (EU) 2024/1689) bepaald (onaanvaardbaar, hoog, beperkt of minimaal) en per niveau cumulatief nagelopen aan welke verplichtingen wordt voldaan. De checklist sluit af met de EU-conformiteitsverklaring voor hoog-risico AI-systemen (artikel 47 en bijlage V AI-verordening), geharmoniseerd met het MinBZK task-registry instrument 'conformity_assessment_eu_ai_act' (urn:nl:aivt:tr:ca:1.0). Schrijf in juridische en compliance-termen; gebruik de rolbegrippen 'aanbieder' en 'gebruiksverantwoordelijke' uit artikel 3 AI-verordening.",
   "meta": {
     "homeComponent": "HomePage",

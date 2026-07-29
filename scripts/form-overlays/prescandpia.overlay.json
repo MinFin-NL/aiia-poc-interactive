@@ -4,6 +4,15 @@
     "id": "prescandpia",
     "version": "2.0",
     "title": "Pre-scan DPIA",
+    "source": {
+      "instrument": "Pre-scan DPIA (urn:nl:prescan)",
+      "publisher": "Ministerie van Binnenlandse Zaken en Koninkrijksrelaties",
+      "version": "2.0",
+      "url": "https://github.com/MinBZK/par-dpia-form",
+      "reference": "vendor/par-dpia-form/prescandpia.yaml (upstream sources/prescan.yaml, commit 3d76a6d5da166b0dc089ca80740ac7be64fb7ab8)",
+      "derivation": "generated",
+      "note": "Gegenereerd met `npm run forms:build`; niet handmatig bewerken. Elke vraag draagt de upstream task-id als officialId. Zie docs/SCHEMA_HARMONIZATION.md."
+    },
     "aiContext": "Dit is een Pre-scan DPIA volgens het officiële model van MinBZK (urn:nl:prescan v2.0) voor het Ministerie van Financiën: een snelle toets die op basis van risicofactoren (o.a. AP/EDPB-criteria, internationale doorgiften, basisregistraties, algoritmes en kinderrechten) bepaalt of een volledige DPIA — en eventueel een DTIA of IAMA — nodig is. Schrijf juridisch nauwkeurig in privacy- en AVG-terminologie.",
     "meta": {
       "homeComponent": "HomePage",

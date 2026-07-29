@@ -1,0 +1,383 @@
+{
+  "id": "toegankelijkheid",
+  "version": "1.0",
+  "title": "Toegankelijkheidsverklaring",
+  "aiContext": "Dit is de voorbereiding van een toegankelijkheidsverklaring voor een website of mobiele app van het Ministerie van Financiën, op grond van het Tijdelijk besluit digitale toegankelijkheid overheid en de norm EN 301 549 (die WCAG 2.1 niveau AA overneemt). Het legt vast welke digitale voorziening het betreft, welk onderzoek is uitgevoerd, welke onderdelen niet toegankelijk zijn en waarom, welke verbetermaatregelen lopen en hoe gebruikers een probleem kunnen melden. Schrijf feitelijk en concreet, en beschrijf niet-toegankelijke onderdelen vanuit het gevolg voor de gebruiker (wat kan iemand niet doen) in plaats van uitsluitend in technische succescriteria.",
+  "source": {
+    "instrument": "Tijdelijk besluit digitale toegankelijkheid overheid; model toegankelijkheidsverklaring (DigiToegankelijk)",
+    "publisher": "Rijksoverheid / Logius — DigiToegankelijk",
+    "url": "https://www.digitoegankelijk.nl/",
+    "reference": "Richtlijn (EU) 2016/2102 en Uitvoeringsbesluit (EU) 2018/1523 (modelverklaring); toegankelijkheidsnorm EN 301 549 / WCAG 2.1 niveau AA",
+    "derivation": "harmonized",
+    "note": "Voorbereidingsformulier: de officiële verklaring wordt gepubliceerd via het invulhulpmiddel op digitoegankelijk.nl en opgenomen in het register. Dit formulier verzamelt de benodigde inhoud in het dossier; controleer de exacte statusaanduiding en modelteksten tegen het actuele model vóór publicatie. Roadmap: docs/sporen-en-roadmap.md §4.2 nr. 3."
+  },
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Toegankelijkheidsverklaring",
+    "docTitle": "Toegankelijkheidsverklaring — voorbereiding",
+    "footerLabel": "Toegankelijkheidsverklaring – MinFin",
+    "filename": "Toegankelijkheidsverklaring.pdf",
+    "systemNamePlaceholder": "Bijv. www.voorbeeld.nl of de app Voorbeeld",
+    "homeContent": {
+      "notice": "Dit formulier bereidt de verklaring voor; het publiceert haar niet. De officiële toegankelijkheidsverklaring wordt opgesteld met het invulhulpmiddel op digitoegankelijk.nl en opgenomen in het centrale register. Eén verklaring geldt voor één website of app.",
+      "description": "Overheidsinstanties zijn verplicht hun websites en mobiele apps toegankelijk te maken volgens EN 301 549 (WCAG 2.1 niveau AA) en daarover een toegankelijkheidsverklaring te publiceren. Dit formulier verzamelt alles wat die verklaring nodig heeft: de voorziening, het uitgevoerde onderzoek, de nalevingsstatus, de niet-toegankelijke onderdelen met hun gevolgen voor gebruikers, de verbetermaatregelen met planning, en de meld- en klachtroute. De uitkomst is de inhoud waarmee de officiële verklaring wordt ingevuld.",
+      "steps": [
+        "Deel A – De voorziening: welke website of app, wie is verantwoordelijk",
+        "Deel B – Onderzoek: hoe is de toegankelijkheid onderzocht en door wie",
+        "Deel C – Bevindingen: nalevingsstatus, niet-toegankelijke onderdelen en alternatieven",
+        "Deel D – Verbetering en publicatie: maatregelen, planning, meldroute en borging"
+      ],
+      "buttonLabel": "Starten met de toegankelijkheidsverklaring"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "tv_a" },
+    { "type": "subsections", "sectionId": "tv_b" },
+    { "type": "subsections", "sectionId": "tv_c" },
+    { "type": "subsections", "sectionId": "tv_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "tv_a",
+      "title": "Deel A: De digitale voorziening",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "tva1",
+          "title": "Identificatie",
+          "questions": [
+            {
+              "id": "tv_a.naam",
+              "text": "Naam van de website of mobiele app",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "tv_a.url",
+              "text": "Op welk webadres of welke app is de verklaring van toepassing?",
+              "guidance": "Noem het volledige adres. Als de verklaring slechts een deel van een domein dekt, geef dan exact aan welk deel — en welk deel onder een andere verklaring valt.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "tv_a.type",
+              "text": "Om wat voor voorziening gaat het?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Publieke website",
+                "Besloten webapplicatie (login vereist)",
+                "Mobiele app",
+                "Intranet of extranet",
+                "Combinatie van website en app"
+              ],
+              "followUp": "Licht toe wat de voorziening doet en voor wie."
+            },
+            {
+              "id": "tv_a.doelgroep",
+              "text": "Wie gebruiken deze voorziening?",
+              "guidance": "Beschrijf de doelgroep en of gebruik vrijwillig is of noodzakelijk. Bij een voorziening die burgers moeten gebruiken om aan een verplichting te voldoen of een recht uit te oefenen, weegt ontoegankelijkheid aanzienlijk zwaarder.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "tv_a.uitzonderingen",
+              "text": "Vallen er onderdelen buiten de wettelijke reikwijdte?",
+              "guidance": "Het besluit kent uitzonderingen, onder meer voor bepaalde archieven, kaarten en content van derden waarover de instantie geen zeggenschap heeft. Vink alleen aan wat werkelijk buiten de reikwijdte valt en licht dat toe.",
+              "type": "checkbox",
+              "importance": "optional",
+              "options": [
+                "Vooraf opgenomen tijdgebonden media gepubliceerd vóór de ingangsdatum",
+                "Online kaarten en karteringsdiensten (niet voor navigatiedoeleinden)",
+                "Content van derden die niet wordt gefinancierd of ontwikkeld door en niet onder zeggenschap staat van de instantie",
+                "Reproducties van erfgoedstukken",
+                "Archieven met content die niet meer wordt bijgewerkt",
+                "Kantoorbestandsformaten gepubliceerd vóór de ingangsdatum",
+                "Geen uitzonderingen van toepassing"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tva2",
+          "title": "Verantwoordelijkheid",
+          "questions": [
+            {
+              "id": "tv_a.instantie",
+              "text": "Welke overheidsinstantie is verantwoordelijk?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "tv_a.eigenaar",
+              "text": "Wie is de product- of applicatie-eigenaar?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "tv_a.leverancier",
+              "text": "Welke leverancier(s) bouwen of beheren de voorziening?",
+              "guidance": "Vermeld ook of toegankelijkheidseisen contractueel zijn vastgelegd en of de leverancier verantwoordelijk is voor het oplossen van bevindingen.",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tv_b",
+      "title": "Deel B: Onderzoek",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "tvb1",
+          "title": "Uitgevoerd onderzoek",
+          "questions": [
+            {
+              "id": "tv_b.onderzoek",
+              "text": "Is er een toegankelijkheidsonderzoek uitgevoerd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, een volledig onderzoek door een onafhankelijke partij",
+                "Ja, een volledig onderzoek in eigen beheer",
+                "Ja, een gedeeltelijk of steekproefsgewijs onderzoek",
+                "Nee, alleen een quickscan of automatische controle",
+                "Nee, nog geen onderzoek uitgevoerd"
+              ],
+              "followUp": "Beschrijf wie het onderzoek heeft uitgevoerd en wanneer."
+            },
+            {
+              "id": "tv_b.methode",
+              "text": "Welke onderzoeksmethode is gebruikt?",
+              "guidance": "Bijv. de WCAG-EM evaluatiemethode, een handmatige expertbeoordeling, een test met hulpmiddelen (screenreader, toetsenbordnavigatie, vergroting) of een geautomatiseerde scan. Automatische scans detecteren maar een deel van de criteria — vermeld dus altijd of er ook handmatig is getest.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "tv_b.omvang",
+              "text": "Welke onderdelen zijn onderzocht?",
+              "guidance": "Noem de onderzochte pagina's of schermen en waarom juist die zijn gekozen (representatieve steekproef, kritieke gebruikersroutes, meest bezochte pagina's).",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "tv_b.norm",
+              "text": "Tegen welke norm en welk niveau is getoetst?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "EN 301 549 met WCAG 2.1 niveau AA",
+                "EN 301 549 met WCAG 2.2 niveau AA",
+                "Alleen WCAG niveau A",
+                "Anders"
+              ],
+              "followUp": "Licht toe welke versie en welk niveau precies zijn gehanteerd."
+            },
+            {
+              "id": "tv_b.hulpmiddelen",
+              "text": "Is er getest met gebruikers of met hulpmiddelen?",
+              "type": "checkbox",
+              "importance": "optional",
+              "options": [
+                "Getest met een screenreader",
+                "Getest met alleen toetsenbordbediening",
+                "Getest met vergroting of aangepaste weergave",
+                "Getest met spraakbediening",
+                "Getest met gebruikers met een beperking",
+                "Alleen geautomatiseerd getest",
+                "Niet getest"
+              ]
+            },
+            {
+              "id": "tv_b.rapport",
+              "text": "Waar is het onderzoeksrapport te vinden?",
+              "guidance": "De verklaring verwijst naar het onderzoeksresultaat. Noem de vindplaats en de datum van het rapport.",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tv_c",
+      "title": "Deel C: Bevindingen",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "tvc1",
+          "title": "Nalevingsstatus",
+          "questions": [
+            {
+              "id": "tv_c.status",
+              "text": "Welke nalevingsstatus geldt voor deze voorziening?",
+              "guidance": "Het officiële model kent statussen A tot en met D. Controleer de exacte aanduiding en de bijbehorende modeltekst in het invulhulpmiddel op digitoegankelijk.nl voordat u publiceert — de omschrijving hieronder is bedoeld om de juiste categorie te kiezen, niet om de modeltekst te vervangen.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Voldoet volledig aan de toegankelijkheidseisen",
+                "Voldoet gedeeltelijk — een deel van de eisen wordt nog niet gehaald",
+                "Voldoet nog niet, maar de eerste maatregelen zijn genomen",
+                "Voldoet niet en er zijn nog geen maatregelen genomen"
+              ],
+              "followUp": "Onderbouw de gekozen status kort."
+            },
+            {
+              "id": "tv_c.bevindingen",
+              "text": "Welke onderdelen zijn niet toegankelijk?",
+              "guidance": "Beschrijf per bevinding wat een gebruiker hierdoor niet kan doen, niet alleen welk succescriterium faalt. 'Formulierlabels ontbreken' zegt een burger niets; 'wie een screenreader gebruikt kan niet zien welk veld om een rekeningnummer vraagt' wel.",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "onderdeel", "label": "Onderdeel of pagina" },
+                { "id": "probleem", "label": "Wat gaat er mis" },
+                { "id": "gevolg", "label": "Gevolg voor de gebruiker" },
+                { "id": "criterium", "label": "WCAG-succescriterium" },
+                { "id": "ernst", "label": "Ernst", "type": "select", "options": ["Blokkerend", "Ernstig", "Matig", "Klein"] }
+              ],
+              "notesLabel": "Toelichting op de bevindingen"
+            },
+            {
+              "id": "tv_c.blokkerend",
+              "text": "Zijn er bevindingen die het gebruik volledig onmogelijk maken voor een groep gebruikers?",
+              "guidance": "Blokkerende bevindingen op een kritieke route — inloggen, een aanvraag indienen, een bezwaar maken — verdienen een eigen behandeling en een strakkere termijn dan de rest.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "tvc2",
+          "title": "Onevenredige last en alternatieven",
+          "questions": [
+            {
+              "id": "tv_c.onevenredig",
+              "text": "Wordt voor een of meer onderdelen een beroep gedaan op onevenredige last?",
+              "guidance": "Onevenredige last is een uitzondering met een hoge drempel: zij moet per onderdeel worden onderbouwd met een afweging van de kosten tegen de baten voor gebruikers met een beperking, en kan niet worden gebaseerd op louter budgettaire prioritering.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Nee",
+                "Ja, voor een of meer specifieke onderdelen",
+                "Nog te beoordelen"
+              ],
+              "followUp": "Benoem de onderdelen en de onderbouwing van de afweging."
+            },
+            {
+              "id": "tv_c.onderbouwing",
+              "text": "Onderbouwing van het beroep op onevenredige last",
+              "guidance": "Beschrijf de afweging: welke inspanning zou nodig zijn, hoeveel gebruikers worden geraakt, hoe zwaar is het gevolg, en waarom weegt dat niet op. Vermeld ook wanneer de afweging opnieuw wordt gemaakt. Laat leeg als er geen beroep wordt gedaan.",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "tv_c.alternatief",
+              "text": "Welk toegankelijk alternatief is beschikbaar?",
+              "guidance": "Bij niet-toegankelijke onderdelen moet er een alternatieve route zijn: telefonisch, op papier, aan de balie of via een andere digitale voorziening. Beschrijf die route en hoe gebruikers ervan op de hoogte raken.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tv_d",
+      "title": "Deel D: Verbetering en publicatie",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "tvd1",
+          "title": "Verbetermaatregelen",
+          "questions": [
+            {
+              "id": "tv_d.maatregelen",
+              "text": "Welke maatregelen worden genomen om de toegankelijkheid te verbeteren?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "maatregel", "label": "Maatregel" },
+                { "id": "bevinding", "label": "Lost welke bevinding op" },
+                { "id": "verantwoordelijke", "label": "Verantwoordelijke" },
+                { "id": "termijn", "label": "Gereed uiterlijk" },
+                { "id": "status", "label": "Status", "type": "select", "options": ["Gepland", "In uitvoering", "Afgerond"] }
+              ],
+              "notesLabel": "Toelichting op de verbeteraanpak"
+            },
+            {
+              "id": "tv_d.structureel",
+              "text": "Welke structurele maatregelen voorkomen nieuwe toegankelijkheidsproblemen?",
+              "guidance": "Bijv. toegankelijkheidseisen in de definition of done, geautomatiseerde controles in de pijplijn, gebruik van een toegankelijk componentenbibliotheek zoals het NL Design System, en training van redacteuren. Zonder deze maatregelen komen dezelfde bevindingen bij het volgende onderzoek terug.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "tv_d.hervalidatie",
+              "text": "Wanneer wordt opnieuw onderzocht en de verklaring herzien?",
+              "guidance": "De verklaring moet actueel blijven. Noem de herzieningstermijn en de gebeurtenissen die tussentijds aanleiding geven, zoals een grote release of een nieuwe versie van de norm.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "tvd2",
+          "title": "Meldroute en publicatie",
+          "questions": [
+            {
+              "id": "tv_d.melden",
+              "text": "Hoe kunnen gebruikers een toegankelijkheidsprobleem melden?",
+              "guidance": "De verklaring moet een feedbackmechanisme bevatten. Noem het contactadres, telefoonnummer of formulier, en zorg dat de meldroute zelf toegankelijk is — een uitsluitend digitaal meldformulier op een ontoegankelijke site sluit precies de melders uit die het betreft.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "tv_d.reactietermijn",
+              "text": "Binnen welke termijn wordt op een melding gereageerd en wie handelt die af?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "tv_d.handhaving",
+              "text": "Is de handhavings- of klachtprocedure vermeld?",
+              "guidance": "Als een melding niet naar tevredenheid wordt afgehandeld, moet de gebruiker weten waar hij terecht kan (de nationale klacht- of handhavingsprocedure).",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, opgenomen in de verklaring",
+                "Nee, nog toe te voegen"
+              ],
+              "followUp": "Beschrijf de vermelde procedure."
+            },
+            {
+              "id": "tv_d.publicatie",
+              "text": "Waar wordt de verklaring gepubliceerd en is zij in het register opgenomen?",
+              "guidance": "De verklaring hoort vindbaar te zijn vanaf elke pagina van de voorziening (doorgaans in de footer) en opgenomen te zijn in het centrale register van toegankelijkheidsverklaringen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "tv_d.datum",
+              "text": "Datum waarop de verklaring is opgesteld of voor het laatst herzien",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "date"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

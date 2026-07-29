@@ -2,7 +2,12 @@
 
 Overzicht van alle koppelingen tussen formulieren. Antwoorden uit het bronformulier verschijnen automatisch als suggestie bij de betreffende vraag in het doelformulier. Bij tekstvragen kan het systeem via AI-synthese de inhoud omschrijven naar de context van de doelvraag.
 
-**Totaal: 74 koppelingen** verdeeld over 12 formulierparen.
+**Totaal: 152 koppelingen** verdeeld over 38 formulierparen.
+
+> De per-paar secties hieronder beschrijven de oorspronkelijke koppelingen; de tellingen erin zijn
+> niet allemaal bijgewerkt. De koppelingen van de zeven formulieren die in juli 2026 zijn
+> toegevoegd staan gebundeld in [§ Nieuwe formulieren](#nieuwe-formulieren-juli-2026) onderaan.
+> `public/forms/crossFormMappings.json` is de bron van waarheid.
 
 ---
 
@@ -175,3 +180,33 @@ Quick scan BIO → Prescan DPIA ────────────────
 | Uitoefening AVG-rechten door betrokkenen | Bezwaar- en beroepsprocedures voor betrokkenen |
 | Bewaartermijnen persoonsgegevens | Opslag en bewaartermijn inputdata |
 | Bewaartermijnen persoonsgegevens | Bewaartermijn outputdata |
+
+---
+
+## Nieuwe formulieren (juli 2026)
+
+De zeven formulieren die in juli 2026 zijn toegevoegd — Restrisico-acceptatie, Datakwaliteit-assessment,
+Dataset-registratie, Data-ethiektoets, Algoritmeregister-publicatie, Verwerkingsregister en
+Toegankelijkheidsverklaring — zijn met **65 koppelingen** aan de bestaande formulieren gehangen.
+Dat is bewust: nul koppelingen was destijds het meetbare symptoom dat een formulier niet in het
+dossiermodel paste (zie [`sporen-en-roadmap.md`](sporen-en-roadmap.md) §3).
+
+| Doelformulier | Bronnen | Koppelingen |
+|---|---|---|
+| Verwerkingsregister | DPIA (10), PSA (1) | 11 |
+| Algoritmeregister-publicatie | AIIA (13), Model Card (5), Datakwaliteit (1) | 19 |
+| Restrisico-acceptatie | DPIA (5), AIIA (2), Intake (1), Aanbiedingsformulier (1) | 9 |
+| Data-ethiektoets | AIIA (5), DPIA (4) | 9 |
+| Datakwaliteit-assessment | AIIA (5), PSA (1) | 6 |
+| Dataset-registratie | PSA (3), AIIA (2), DPIA (1), Verwerkingsregister (1) | 7 |
+| Toegankelijkheidsverklaring | AIIA (1), PSA (1) | 2 |
+
+De zwaartepunten volgen de inhoudelijke logica: het **Verwerkingsregister** vult zich vrijwel geheel
+uit de DPIA (doeleinden, categorieën, ontvangers, doorgifte, bewaartermijnen, maatregelen — de
+artikel 30-elementen staan daar al), en de **Algoritmeregister-publicatie** uit de AIIA en de Model
+Card, met als voornaamste bewerking het herschrijven naar begrijpelijke taal voor een openbaar
+register. De **Toegankelijkheidsverklaring** heeft er maar twee: zij gaat over de gebruikersinterface
+en deelt inhoudelijk weinig met de risico- en privacy-instrumenten.
+
+Twee koppelingen lopen tussen de nieuwe formulieren onderling: Datakwaliteit → Dataset-registratie
+(kwaliteitsoordeel en beperkingen) en Verwerkingsregister → Dataset-registratie (grondslag).

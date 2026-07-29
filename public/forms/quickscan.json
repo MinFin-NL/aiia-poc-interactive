@@ -2,6 +2,13 @@
   "id": "quickscan",
   "version": "1.0",
   "title": "Quick scan BIO Baselinetoets",
+  "source": {
+    "instrument": "Baseline Informatiebeveiliging Overheid (BIO) — baselinetoets BBN",
+    "publisher": "Ministerie van Binnenlandse Zaken en Koninkrijksrelaties / CIP",
+    "reference": "Baselinetoets voor de bepaling van het basisbeveiligingsniveau (BBN1–BBN3) op beschikbaarheid, integriteit en vertrouwelijkheid",
+    "derivation": "derived",
+    "note": "Afgeleide quickscan, geen volledig BIO2-instrument — zie docs/sporen-en-roadmap.md §4.3."
+  },
   "aiContext": "Dit is een Quick scan BIO Baselinetoets voor het Ministerie van Financiën: hiermee wordt het basisbeveiligingsniveau (BBN) bepaald op basis van beschikbaarheid, integriteit en vertrouwelijkheid, en wordt gescreend of een DPIA nodig is. Schrijf in informatiebeveiligings- en privacytermen.",
   "meta": {
     "homeComponent": "HomePage",

@@ -20,10 +20,10 @@
 | Spoor (`track`) | Formulier | Dekt |
 |---|---|---|
 | verkennen | intake, quickscan (BIO/BBN), prescandpia | afbakening, beveiligingsniveau, DPIA-triage |
-| besluiten | aanbiedingsformulier | business case & portfolioafweging |
-| ontwerpen | ppm, psa | projectplan & architectuur |
-| toetsen | dpia, aiia, iama, euaiact | privacy, AI-impact, grondrechten, EU AI Act |
-| ingebruikname | modelcard | AI-systeemregistratie |
+| besluiten | aanbiedingsformulier, restrisico | business case, portfolioafweging & restrisico-acceptatie |
+| ontwerpen | ppm, psa, datakwaliteit, datasetregistratie | projectplan, architectuur & de datalaag |
+| toetsen | dpia, aiia, iama, euaiact, dataethiek | privacy, AI-impact, grondrechten, EU AI Act, data-ethiek |
+| ingebruikname | modelcard, algoritmeregister, verwerkingsregister, toegankelijkheid | registratie & publicatieverplichtingen |
 | beheer | *(leeg)* | — |
 
 **Gaten die de AI-BOK destijds aanwees:** we hadden *impact*-assessments (DPIA/AIIA/IAMA) maar

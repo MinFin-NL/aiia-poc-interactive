@@ -1,0 +1,500 @@
+{
+  "id": "algoritmeregister",
+  "version": "1.0",
+  "title": "Algoritmeregister-publicatie",
+  "aiContext": "Dit is de voorbereiding van een publicatie in het Algoritmeregister van de Nederlandse overheid voor het Ministerie van Financiën. Het legt per algoritme of AI-systeem de publicatiegegevens vast: algemene informatie en doel, juridische grondslag en uitgevoerde toetsen, werking en gebruikte data, menselijke tussenkomst en toezicht, en de publicatiestatus. De tekst is bestemd voor een openbaar register en wordt gelezen door burgers, journalisten en volksvertegenwoordigers. Schrijf daarom in begrijpelijk Nederlands op B1-niveau: korte zinnen, geen jargon, geen afkortingen zonder uitleg, en beschrijf wat het algoritme voor mensen betekent in plaats van hoe het technisch werkt.",
+  "source": {
+    "instrument": "Standaard voor de publicatie van algoritmes — Algoritmeregister van de Nederlandse overheid",
+    "publisher": "Ministerie van Binnenlandse Zaken en Koninkrijksrelaties",
+    "url": "https://algoritmes.overheid.nl/",
+    "reference": "Veldenschema van het Algoritmeregister (algemene informatie, juridisch kader, werking, toezicht en verantwoording)",
+    "derivation": "harmonized",
+    "note": "Voorbereidingsformulier: de daadwerkelijke publicatie verloopt via het Algoritmeregister zelf. Het veldenschema upstream wordt doorontwikkeld — controleer de actuele velden vóór publicatie. Roadmap: docs/sporen-en-roadmap.md §4.2 nr. 4."
+  },
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Algoritmeregister-publicatie",
+    "docTitle": "Algoritmeregister-publicatie — voorbereiding",
+    "footerLabel": "Algoritmeregister – MinFin",
+    "filename": "Algoritmeregister-publicatie.pdf",
+    "systemNamePlaceholder": "Bijv. Risicoselectie aangiften",
+    "homeContent": {
+      "notice": "Alles wat u hier invult is bestemd voor een openbaar register. Schrijf voor een lezer zonder voorkennis en zonder belang bij de organisatie. Vermeld geen gegevens die de werking manipuleerbaar maken — beschrijf in dat geval wél dát er informatie is weggelaten en waarom.",
+      "description": "Overheidsorganisaties publiceren hun algoritmes in het Algoritmeregister zodat burgers kunnen zien welke algoritmes worden gebruikt, waarvoor, en met welke waarborgen. Dit formulier verzamelt de publicatiegegevens in het dossier: wat het algoritme doet en waarom, op welke wettelijke grondslag het rust, welke toetsen zijn uitgevoerd (DPIA, IAMA, AIIA), hoe het werkt, welke data het gebruikt, hoe mensen erop toezien en waar iemand terecht kan met vragen of bezwaar. Veel velden zijn af te leiden uit de AI Model Card en de eerder ingevulde assessments.",
+      "steps": [
+        "Deel A – Algemene informatie: naam, organisatie, doel en status",
+        "Deel B – Juridisch kader: grondslag, uitgevoerde toetsen en rechtsbescherming",
+        "Deel C – Werking en data: methode, gegevensbronnen en prestaties",
+        "Deel D – Toezicht en publicatie: menselijke tussenkomst, risicobeheer en publicatiegegevens"
+      ],
+      "buttonLabel": "Starten met de publicatievoorbereiding"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "ar_a" },
+    { "type": "subsections", "sectionId": "ar_b" },
+    { "type": "subsections", "sectionId": "ar_c" },
+    { "type": "subsections", "sectionId": "ar_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "ar_a",
+      "title": "Deel A: Algemene informatie",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "ara1",
+          "title": "Identificatie",
+          "questions": [
+            {
+              "id": "ar_a.naam",
+              "text": "Naam van het algoritme",
+              "guidance": "Kies een naam die voor een buitenstaander betekenis heeft. Interne project- of systeemnamen zeggen de lezer van het register niets.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ar_a.organisatie",
+              "text": "Welke organisatie gebruikt het algoritme?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ar_a.afdeling",
+              "text": "Welk organisatieonderdeel is verantwoordelijk?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ar_a.beschrijving",
+              "text": "Beschrijf in het kort wat het algoritme doet",
+              "guidance": "Drie tot vijf zinnen in begrijpelijk Nederlands. Beschrijf de situatie waarin het wordt gebruikt, wat erin gaat en wat eruit komt. Vermijd woorden als 'model', 'score' en 'feature' zonder uitleg.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_a.doel",
+              "text": "Waarom wordt dit algoritme gebruikt?",
+              "guidance": "Wat is het doel, en welk probleem lost het op? Beschrijf ook het beoogde effect: wat gaat er voor burgers of voor de uitvoering beter?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_a.categorie",
+              "text": "Welke publicatiecategorie is van toepassing?",
+              "guidance": "Impactvolle algoritmes hebben aanmerkelijke gevolgen voor personen of de samenleving en vragen om een uitgebreidere publicatie dan overige algoritmes.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Impactvol algoritme",
+                "Overig algoritme",
+                "Nog te bepalen"
+              ],
+              "followUp": "Onderbouw de indeling: welke gevolgen heeft het algoritme voor mensen?"
+            },
+            {
+              "id": "ar_a.status",
+              "text": "Wat is de status van het algoritme?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "In ontwikkeling",
+                "In gebruik",
+                "Buiten gebruik"
+              ],
+              "followUp": "Noem de datum waarop deze status is ingegaan."
+            },
+            {
+              "id": "ar_a.beleidsterrein",
+              "text": "Op welk beleidsterrein wordt het algoritme ingezet?",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            }
+          ]
+        },
+        {
+          "id": "ara2",
+          "title": "Toepassing",
+          "questions": [
+            {
+              "id": "ar_a.proces",
+              "text": "In welk proces wordt het algoritme gebruikt en op welk moment?",
+              "guidance": "Beschrijf de stap in het proces: gebeurt het vóór, tijdens of na een beoordeling door een medewerker, en wat gebeurt er met de uitkomst?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_a.geraakt",
+              "text": "Wie worden door het algoritme geraakt?",
+              "guidance": "Noem de groepen mensen of organisaties over wie het algoritme iets bepaalt of adviseert, en om hoeveel gevallen het ongeveer per jaar gaat.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_a.gevolg",
+              "text": "Welk gevolg heeft de uitkomst voor een individu?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "De uitkomst leidt tot een besluit met rechtsgevolg",
+                "De uitkomst bepaalt of iemand wordt geselecteerd voor controle of onderzoek",
+                "De uitkomst is een advies aan een medewerker, die zelfstandig beslist",
+                "De uitkomst wordt alleen gebruikt voor prioritering of planning",
+                "De uitkomst wordt alleen geaggregeerd gebruikt, niet per persoon"
+              ],
+              "followUp": "Beschrijf concreet wat een betrokkene ervan merkt."
+            },
+            {
+              "id": "ar_a.aivo",
+              "text": "Is het algoritme een AI-systeem in de zin van de AI-verordening?",
+              "guidance": "Neem hier de uitkomst over van de beslishulp AI-verordening en de EU AI Act-checklist, inclusief de rol (aanbieder of gebruiksverantwoordelijke) en de risicocategorie.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, en het valt in de categorie hoog risico",
+                "Ja, met beperkt risico (transparantieverplichtingen)",
+                "Ja, met minimaal risico",
+                "Nee, geen AI-systeem in de zin van de verordening",
+                "Nog niet vastgesteld"
+              ],
+              "followUp": "Noem de rol onder de verordening en verwijs naar de uitkomst van de beslishulp."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar_b",
+      "title": "Deel B: Juridisch kader",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "arb1",
+          "title": "Grondslag",
+          "questions": [
+            {
+              "id": "ar_b.grondslag",
+              "text": "Op welke wettelijke grondslag rust de inzet van dit algoritme?",
+              "guidance": "Noem de wet en het artikel dat de taak regelt waarvoor het algoritme wordt ingezet, en bij persoonsgegevens de AVG-grondslag.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_b.persoonsgegevens",
+              "text": "Worden er persoonsgegevens verwerkt?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, waaronder bijzondere of strafrechtelijke persoonsgegevens",
+                "Ja, gewone persoonsgegevens",
+                "Nee"
+              ],
+              "followUp": "Beschrijf welke categorieën gegevens worden gebruikt."
+            },
+            {
+              "id": "ar_b.register",
+              "text": "Is de verwerking opgenomen in het verwerkingsregister?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee, nog niet",
+                "Niet van toepassing — geen persoonsgegevens"
+              ],
+              "followUp": "Noem het registratienummer of de aanduiding in het register."
+            }
+          ]
+        },
+        {
+          "id": "arb2",
+          "title": "Uitgevoerde toetsen",
+          "questions": [
+            {
+              "id": "ar_b.toetsen",
+              "text": "Welke toetsen en assessments zijn uitgevoerd?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "toets", "label": "Toets", "type": "select", "options": ["DPIA", "Pre-scan DPIA", "IAMA", "AI Impact Assessment", "EU AI Act-conformiteitsbeoordeling", "Data-ethiektoets", "Quick scan BIO", "Datakwaliteit-assessment", "Externe audit of second opinion", "Overig"] },
+                { "id": "status", "label": "Status", "type": "select", "options": ["Uitgevoerd", "In uitvoering", "Gepland", "Niet van toepassing"] },
+                { "id": "datum", "label": "Datum" },
+                { "id": "uitkomst", "label": "Kernuitkomst" },
+                { "id": "openbaar", "label": "Openbaar", "type": "select", "options": ["Ja", "Gedeeltelijk", "Nee"] }
+              ],
+              "notesLabel": "Toelichting op de uitgevoerde toetsen"
+            },
+            {
+              "id": "ar_b.normenkaders",
+              "text": "Welke normenkaders of standaarden worden gevolgd?",
+              "type": "checkbox",
+              "importance": "optional",
+              "options": [
+                "Baseline Informatiebeveiliging Overheid (BIO)",
+                "AI-verordening (Verordening (EU) 2024/1689)",
+                "Algemene verordening gegevensbescherming (AVG)",
+                "Algemene beginselen van behoorlijk bestuur",
+                "Toetsingskader algoritmes van de Algemene Rekenkamer",
+                "ISO/IEC 42001 (AI-managementsysteem)",
+                "NEN- of ISO-normen voor informatiebeveiliging",
+                "Archiefwet",
+                "Anders"
+              ]
+            },
+            {
+              "id": "ar_b.grondrechten",
+              "text": "Welke grondrechten kunnen door het algoritme worden geraakt, en hoe wordt dat beperkt?",
+              "guidance": "Vat de kern samen uit de IAMA of AIIA. Noem de geraakte rechten, waarom de inzet niettemin gerechtvaardigd is, en welke waarborgen zijn getroffen.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "arb3",
+          "title": "Rechtsbescherming",
+          "questions": [
+            {
+              "id": "ar_b.uitleg",
+              "text": "Hoe wordt aan een betrokkene uitgelegd dat en hoe het algoritme is gebruikt?",
+              "guidance": "Beschrijf of dit gebeurt in het besluit zelf, op verzoek, of via een algemene publicatie, en in welke bewoordingen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_b.bezwaar",
+              "text": "Hoe kan iemand bezwaar maken of om een herbeoordeling vragen?",
+              "guidance": "Noem de route en of daarbij een mens de zaak opnieuw beoordeelt zonder gebruik van de algoritme-uitkomst.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_b.contact",
+              "text": "Waar kunnen burgers terecht met vragen over dit algoritme?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar_c",
+      "title": "Deel C: Werking en data",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "arc1",
+          "title": "Werking",
+          "questions": [
+            {
+              "id": "ar_c.type",
+              "text": "Wat voor type algoritme is het?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Regelgebaseerd: vaste, door mensen opgestelde regels",
+                "Statistisch of machine learning: patronen geleerd uit data",
+                "Combinatie van regels en machine learning",
+                "Generatieve AI of taalmodel",
+                "Anders"
+              ],
+              "followUp": "Beschrijf de gebruikte techniek in begrijpelijke taal."
+            },
+            {
+              "id": "ar_c.werking",
+              "text": "Hoe komt het algoritme tot een uitkomst?",
+              "guidance": "Leg de werking uit zoals u die aan een geïnteresseerde burger zou uitleggen: welke gegevens wegen mee, wat gebeurt daarmee, en wat komt eruit. Vermeld ook wat u bewust niet publiceert en waarom.",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            },
+            {
+              "id": "ar_c.kenmerken",
+              "text": "Welke kenmerken wegen het zwaarst mee in de uitkomst?",
+              "guidance": "Noem de belangrijkste variabelen. Vermeld uitdrukkelijk of kenmerken worden gebruikt die als indirecte aanduiding van herkomst, gezondheid of sociaal-economische positie kunnen werken — zoals postcode of nationaliteit — en hoe daarmee is omgegaan.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_c.leverancier",
+              "text": "Is het algoritme zelf ontwikkeld of ingekocht?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Zelf ontwikkeld",
+                "Ingekocht bij een leverancier",
+                "Ingekocht en aangepast",
+                "Open source, al dan niet aangepast"
+              ],
+              "followUp": "Noem de leverancier of de herkomst, en of de werking inzichtelijk is voor de organisatie zelf."
+            },
+            {
+              "id": "ar_c.broncode",
+              "text": "Is de broncode of documentatie openbaar?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Ja, de broncode is openbaar",
+                "Gedeeltelijk: documentatie wel, broncode niet",
+                "Nee",
+                "Nee, en publicatie zou de werking manipuleerbaar maken"
+              ],
+              "followUp": "Noem de vindplaats of de reden waarom niet wordt gepubliceerd."
+            }
+          ]
+        },
+        {
+          "id": "arc2",
+          "title": "Data",
+          "questions": [
+            {
+              "id": "ar_c.databronnen",
+              "text": "Welke gegevensbronnen gebruikt het algoritme?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "bron", "label": "Bron" },
+                { "id": "inhoud", "label": "Welke gegevens" },
+                { "id": "rol", "label": "Gebruikt als", "type": "select", "options": ["Trainingsdata", "Invoerdata tijdens gebruik", "Beide", "Validatie of controle"] },
+                { "id": "houder", "label": "Bronhouder" }
+              ],
+              "notesLabel": "Toelichting op de gebruikte gegevensbronnen"
+            },
+            {
+              "id": "ar_c.kwaliteit",
+              "text": "Wat is er bekend over de kwaliteit en representativiteit van deze data?",
+              "guidance": "Vat samen wat uit het datakwaliteit-assessment volgt: bekende gebreken, onder- of oververtegenwoordiging van groepen en wat dat voor de uitkomsten betekent.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_c.prestatie",
+              "text": "Hoe goed presteert het algoritme, en hoe is dat gemeten?",
+              "guidance": "Noem de gebruikte maatstaf en de uitkomst, met de betekenis erbij: wat betekent deze uitkomst voor het aantal mensen dat ten onrechte wordt geselecteerd of afgewezen? Vermeld ook of de prestatie per groep verschilt.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_c.beperkingen",
+              "text": "Wat zijn de bekende beperkingen van het algoritme?",
+              "guidance": "In welke situaties werkt het minder goed, en waarvoor mag de uitkomst niet worden gebruikt? Dit veld voorkomt oneigenlijk hergebruik.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar_d",
+      "title": "Deel D: Toezicht en publicatie",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "ard1",
+          "title": "Menselijke tussenkomst en toezicht",
+          "questions": [
+            {
+              "id": "ar_d.menselijk",
+              "text": "Hoe is de menselijke tussenkomst geregeld?",
+              "guidance": "Beschrijf wie de uitkomst beoordeelt, welke informatie die persoon daarbij heeft, en of hij bevoegd en in staat is om af te wijken. Vermeld hoe vaak er in de praktijk wordt afgeweken — dat cijfer laat zien of het toezicht betekenisvol is.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_d.monitoring",
+              "text": "Hoe wordt de werking van het algoritme gemonitord?",
+              "guidance": "Beschrijf welke metingen periodiek plaatsvinden, hoe vaak, wie ernaar kijkt en wat de norm is waarboven wordt ingegrepen. Neem ook op hoe wordt gecontroleerd op verschillen in uitkomsten tussen groepen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_d.risicos",
+              "text": "Welke risico's zijn onderkend en welke maatregelen zijn daartegen genomen?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "risico", "label": "Risico" },
+                { "id": "gevolg", "label": "Mogelijk gevolg voor mensen" },
+                { "id": "maatregel", "label": "Maatregel" }
+              ],
+              "notesLabel": "Toelichting op het risicobeheer"
+            },
+            {
+              "id": "ar_d.ingrijpen",
+              "text": "Wie kan het algoritme buiten werking stellen en wanneer gebeurt dat?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_d.verantwoordelijke",
+              "text": "Wie is verantwoordelijk voor het beheer en de doorontwikkeling?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            }
+          ]
+        },
+        {
+          "id": "ard2",
+          "title": "Publicatie",
+          "questions": [
+            {
+              "id": "ar_d.begrijpelijk",
+              "text": "Is de publicatietekst getoetst op begrijpelijkheid?",
+              "guidance": "Het register is bedoeld voor burgers. Laat de tekst lezen door iemand buiten het project, bij voorkeur met toetsing op taalniveau B1.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, getoetst en aangepast",
+                "Ja, intern gelezen maar niet formeel getoetst",
+                "Nee, nog niet getoetst"
+              ],
+              "followUp": "Beschrijf wie de tekst heeft beoordeeld."
+            },
+            {
+              "id": "ar_d.weggelaten",
+              "text": "Welke informatie is bewust niet gepubliceerd, en waarom?",
+              "guidance": "Bijvoorbeeld details die de werking manipuleerbaar zouden maken, of gegevens die tot personen herleidbaar zijn. Vermeld de weglating expliciet: onvermelde weglatingen ondermijnen het doel van het register.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_d.publicatiedatum",
+              "text": "Datum van publicatie of laatste actualisatie",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "date"
+            },
+            {
+              "id": "ar_d.actualisatie",
+              "text": "Wanneer en bij welke gebeurtenissen wordt de publicatie bijgewerkt?",
+              "guidance": "Noem zowel een vaste termijn als de gebeurtenissen die tussentijds tot bijwerking leiden: een nieuwe versie van het model, een gewijzigd doel, een nieuwe databron of een gewijzigde status.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ar_d.vindplaats",
+              "text": "Onder welke vermelding is het algoritme in het register opgenomen?",
+              "guidance": "Vul de link of het registratienummer in zodra de publicatie is geplaatst.",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

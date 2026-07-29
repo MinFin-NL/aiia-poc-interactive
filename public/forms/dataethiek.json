@@ -1,0 +1,381 @@
+{
+  "id": "dataethiek",
+  "version": "1.0",
+  "title": "Data-ethiektoets",
+  "aiContext": "Dit is een data-ethiektoets voor het Ministerie van Financiën, afgeleid van DAMA-DMBOK2 hoofdstuk 2 (Data Handling Ethics) en de daar gehanteerde Belmont-principes, vertaald naar gegevensverwerking: respect voor personen, weldoen (baten versus schade) en rechtvaardigheid. De toets is complementair aan de IAMA (grondrechten) en de AIIA (proportionaliteit) en legt de ethische afweging vast die daar impliciet blijft. Schrijf reflectief en concreet: benoem wie het raakt, waarom een keuze verdedigbaar is, en welke twijfels er zijn blijven bestaan. Vermijd geruststellende algemeenheden.",
+  "source": {
+    "instrument": "DAMA-DMBOK2 — Data Management Body of Knowledge, 2nd Edition",
+    "publisher": "DAMA International",
+    "version": "2nd Edition (2017)",
+    "reference": "hoofdstuk 2 (Data Handling Ethics), §3.1 — Belmont-principes (US National Commission / HHS, 1979) toegepast op data",
+    "derivation": "derived",
+    "note": "DAMA-DMBOK is een referentiekader zonder invul-template; dit formulier is afgeleid van de daarin beschreven ethische principes. Geen tekst overgenomen. Ontwerpspec: docs/DAMA-DMBOK-form-opportunities.md §4E."
+  },
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Data-ethiektoets",
+    "docTitle": "Data-ethiektoets",
+    "footerLabel": "Data-ethiektoets – MinFin",
+    "filename": "Data-ethiektoets.pdf",
+    "systemNamePlaceholder": "Bijv. Risicoselectie toeslagaanvragen",
+    "homeContent": {
+      "notice": "Deze toets vervangt geen DPIA en geen IAMA. Hij vult ze aan: waar de DPIA vraagt of iets mág en de IAMA of grondrechten worden geraakt, vraagt deze toets of het ook behoorlijk is. Vul hem bij voorkeur met meerdere mensen in — een ethische afweging van één persoon is vooral een mening.",
+      "description": "De data-ethiektoets beoordeelt een gegevensverwerking langs drie principes uit DAMA-DMBOK, ontleend aan het Belmont-rapport: respect voor personen (weten mensen wat er met hun gegevens gebeurt en hebben ze zeggenschap), weldoen (wegen de baten op tegen de mogelijke schade, en is er een minder ingrijpend alternatief) en rechtvaardigheid (worden groepen ongelijk behandeld, en zijn lasten en baten eerlijk verdeeld). U sluit af met een expliciete afweging en de voorwaarden waaronder de verwerking verantwoord is.",
+      "steps": [
+        "Deel A – Context: welke verwerking, wie raakt het, welk belang dient het",
+        "Deel B – Respect voor personen: transparantie, zeggenschap en verwachtingen",
+        "Deel C – Weldoen: baten, mogelijke schade en minder ingrijpende alternatieven",
+        "Deel D – Rechtvaardigheid en afweging: gelijke behandeling, verdeling en eindoordeel"
+      ],
+      "buttonLabel": "Starten met de data-ethiektoets"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "de_a" },
+    { "type": "subsections", "sectionId": "de_b" },
+    { "type": "subsections", "sectionId": "de_c" },
+    { "type": "subsections", "sectionId": "de_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "de_a",
+      "title": "Deel A: Context van de verwerking",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "dea1",
+          "title": "Wat en waarom",
+          "questions": [
+            {
+              "id": "de_a.verwerking",
+              "text": "Welke gegevensverwerking wordt getoetst?",
+              "guidance": "Beschrijf wat er feitelijk gebeurt met welke gegevens: verzamelen, koppelen, analyseren, beslissen. Blijf concreet — een ethische toets op een abstracte beschrijving levert een abstract antwoord op.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_a.belang",
+              "text": "Welk publiek belang dient deze verwerking?",
+              "guidance": "Benoem het doel in termen van maatschappelijke opbrengst, niet in termen van organisatiegemak. 'Efficiëntere afhandeling' is een middel; het belang erachter moet expliciet worden.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_a.betrokkenen",
+              "text": "Wie worden door deze verwerking geraakt?",
+              "guidance": "Noem alle groepen, ook de indirect geraakte: naast de personen in de data ook hun huisgenoten, hun omgeving, of groepen die met hen worden vergeleken.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_a.kwetsbaar",
+              "text": "Raakt de verwerking groepen in een kwetsbare positie?",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "Kinderen of jongeren",
+                "Mensen in een afhankelijke positie ten opzichte van de overheid (uitkering, toeslag, vergunning)",
+                "Mensen met een migratieachtergrond of niet-Nederlandse nationaliteit",
+                "Mensen met een beperking of chronische aandoening",
+                "Mensen met schulden of in armoede",
+                "Mensen met beperkte digitale of taalvaardigheid",
+                "Andere groep in een kwetsbare positie",
+                "Nee, geen specifieke kwetsbare groepen"
+              ]
+            },
+            {
+              "id": "de_a.gevolgen",
+              "text": "Welke gevolgen kan de uitkomst voor een individu hebben?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Rechtsgevolg: een besluit over recht, plicht, sanctie of toekenning",
+                "Ingrijpend feitelijk gevolg: bijv. selectie voor controle of onderzoek",
+                "Beperkt gevolg: prioritering of ondersteuning zonder direct nadeel",
+                "Geen individueel gevolg: uitsluitend geaggregeerd of beleidsmatig gebruik"
+              ],
+              "followUp": "Beschrijf het gevolg concreet: wat merkt de betrokkene ervan?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "de_b",
+      "title": "Deel B: Respect voor personen",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "deb1",
+          "title": "Transparantie en zeggenschap",
+          "description": "Het eerste Belmont-principe: mensen zijn geen datapunten maar personen met eigen oordeelsvermogen. Dat vraagt dat zij weten wat er gebeurt en, waar mogelijk, invloed hebben.",
+          "questions": [
+            {
+              "id": "de_b.weten",
+              "text": "Weten de betrokkenen dat hun gegevens op deze manier worden gebruikt?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, zij zijn hierover actief en begrijpelijk geïnformeerd",
+                "Deels: het staat in een algemene privacyverklaring maar wordt niet actief gecommuniceerd",
+                "Nee, zij zijn hierover niet geïnformeerd",
+                "Nee, en informeren is bewust achterwege gelaten"
+              ],
+              "followUp": "Licht toe hoe er geïnformeerd wordt, of waarom dat niet gebeurt."
+            },
+            {
+              "id": "de_b.verwachting",
+              "text": "Sluit dit gebruik aan bij wat betrokkenen redelijkerwijs konden verwachten toen zij hun gegevens verstrekten?",
+              "guidance": "De kernvraag bij hergebruik. Gegevens die zijn verstrekt voor een aanvraag en later worden gebruikt voor risicoselectie, verschuiven van dienstverlening naar toezicht — een verschuiving die mensen zelden verwachten.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, dit gebruik ligt in het verlengde van de oorspronkelijke verstrekking",
+                "Deels, het gebruik is verbreed maar blijft binnen hetzelfde domein",
+                "Nee, dit gebruik wijkt wezenlijk af van de oorspronkelijke context",
+                "Niet van toepassing — de gegevens zijn niet door betrokkenen verstrekt"
+              ],
+              "followUp": "Onderbouw het antwoord en beschrijf hoe met een eventuele afwijking is omgegaan."
+            },
+            {
+              "id": "de_b.zeggenschap",
+              "text": "Welke zeggenschap hebben betrokkenen over dit gebruik?",
+              "guidance": "Beschrijf de feitelijke mogelijkheden: bezwaar maken, correctie vragen, uitleg krijgen, of afzien van deelname. Als er bij een wettelijke taak geen keuze is, benoem dat eerlijk en beschrijf wat er wél openstaat.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_b.uitleg",
+              "text": "Kan aan een betrokkene worden uitgelegd hoe een uitkomst tot stand is gekomen?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, in begrijpelijke taal en op individueel niveau",
+                "Ja, maar alleen technisch of op hoofdlijnen",
+                "Nee, de werking is niet op individueel niveau uitlegbaar",
+                "Niet van toepassing"
+              ],
+              "followUp": "Beschrijf hoe de uitleg eruitziet, of wat de belemmering is."
+            },
+            {
+              "id": "de_b.menselijk",
+              "text": "Is er betekenisvolle menselijke tussenkomst voordat de uitkomst gevolgen krijgt?",
+              "guidance": "Betekenisvol wil zeggen: de beoordelaar heeft de bevoegdheid, de informatie en de tijd om af te wijken — en doet dat in de praktijk ook wel eens. Een aftekening zonder afwijkingsmogelijkheid is geen tussenkomst.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, met aantoonbare ruimte om af te wijken",
+                "Ja, maar in de praktijk wordt zelden afgeweken",
+                "Nee, de uitkomst werkt automatisch door",
+                "Niet van toepassing"
+              ],
+              "followUp": "Licht toe hoe de tussenkomst is ingericht en geborgd."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "de_c",
+      "title": "Deel C: Weldoen — baten en schade",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "dec1",
+          "title": "Baten en schade",
+          "description": "Het tweede Belmont-principe: maximaliseer de baten en voorkom schade. Dat vraagt beide zijden expliciet te benoemen, niet alleen de bedoelde opbrengst.",
+          "questions": [
+            {
+              "id": "de_c.baten",
+              "text": "Welke baten levert deze verwerking op, en voor wie?",
+              "guidance": "Onderscheid baten voor de samenleving, voor de betrokkenen zelf en voor de organisatie. Maak zo concreet mogelijk wat er beter wordt en waaruit dat zou blijken.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_c.schade",
+              "text": "Welke schade kan deze verwerking veroorzaken?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "schade", "label": "Mogelijke schade" },
+                { "id": "wie", "label": "Wie wordt geraakt" },
+                { "id": "soort", "label": "Soort", "type": "select", "options": ["Materieel of financieel", "Immaterieel: stigmatisering of reputatie", "Beperking van rechten of toegang", "Verlies van privacy of autonomie", "Verlies van vertrouwen in de overheid", "Overig"] },
+                { "id": "kans", "label": "Kans", "type": "select", "options": ["Groot", "Reëel", "Klein"] },
+                { "id": "maatregel", "label": "Beperkende maatregel" }
+              ],
+              "notesLabel": "Toelichting op de schade-analyse"
+            },
+            {
+              "id": "de_c.onbedoeld",
+              "text": "Welk onbedoeld gebruik of misbruik van deze data of uitkomsten is denkbaar?",
+              "guidance": "Denk aan hergebruik voor een ander doel, aan koppeling met andere bronnen, en aan wat er zou gebeuren als de dataset uitlekt of in andere handen komt. Het gaat om wat mogelijk is, niet om wat bedoeld is.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_c.dataminimalisatie",
+              "text": "Worden er gegevens verwerkt die voor het doel niet nodig zijn?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Nee, uitsluitend wat noodzakelijk is",
+                "Ja, er wordt meer verzameld dan strikt nodig 'voor het geval dat'",
+                "Ja, omdat de bron niet fijnmaziger geleverd kan worden",
+                "Onbekend"
+              ],
+              "followUp": "Beschrijf welke gegevens het betreft en waarom ze niet worden weggelaten."
+            }
+          ]
+        },
+        {
+          "id": "dec2",
+          "title": "Alternatieven",
+          "questions": [
+            {
+              "id": "de_c.alternatief",
+              "text": "Welk minder ingrijpend alternatief is overwogen?",
+              "guidance": "Bijv. minder gegevens, geaggregeerd in plaats van individueel, steekproef in plaats van integraal, of een niet-datagedreven aanpak. Beschrijf wat is overwogen en waarom het is afgevallen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_c.nietdoen",
+              "text": "Wat gebeurt er als deze verwerking niet plaatsvindt?",
+              "guidance": "Het nulalternatief. Als het antwoord hierop weinig concreet is, is dat een signaal dat de noodzaak nog niet scherp is.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_c.proportioneel",
+              "text": "Staat de inbreuk in verhouding tot het te bereiken doel?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, de inbreuk is beperkt en het belang is zwaarwegend",
+                "Ja, mits de genoemde maatregelen worden getroffen",
+                "Twijfelachtig — nadere afweging nodig",
+                "Nee, de inbreuk weegt niet op tegen het doel"
+              ],
+              "followUp": "Onderbouw de proportionaliteitsafweging."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "de_d",
+      "title": "Deel D: Rechtvaardigheid en afweging",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "ded1",
+          "title": "Gelijke behandeling",
+          "description": "Het derde Belmont-principe: lasten en baten moeten eerlijk verdeeld zijn, en gelijke gevallen gelijk worden behandeld.",
+          "questions": [
+            {
+              "id": "de_d.ongelijk",
+              "text": "Leidt de verwerking tot ongelijke behandeling van groepen?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Nee, er is geen aanwijzing voor onderscheid tussen groepen",
+                "Ja, maar het onderscheid is objectief gerechtvaardigd en onderbouwd",
+                "Ja, en de rechtvaardiging is nog niet vastgesteld",
+                "Onbekend — niet onderzocht"
+              ],
+              "followUp": "Beschrijf welk onderscheid ontstaat, tussen welke groepen, en waaruit dat blijkt."
+            },
+            {
+              "id": "de_d.proxy",
+              "text": "Bevat de data kenmerken die als indirecte aanduiding (proxy) van een beschermd kenmerk kunnen werken?",
+              "guidance": "Postcode, naam, geboorteland van een ouder, taalvoorkeur en type inkomen kunnen alle als proxy fungeren voor herkomst, etniciteit of sociaal-economische positie. Het weglaten van het beschermde kenmerk zelf haalt het onderscheid er dus niet uit.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_d.getoetst",
+              "text": "Is op ongelijke uitkomsten tussen groepen getoetst?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, met een kwantitatieve analyse van de uitkomsten per groep",
+                "Ja, kwalitatief beoordeeld",
+                "Nee, nog niet getoetst",
+                "Nee, en toetsing is niet mogelijk omdat de benodigde kenmerken ontbreken"
+              ],
+              "followUp": "Beschrijf de methode en de uitkomst, of waarom toetsing niet mogelijk is."
+            },
+            {
+              "id": "de_d.verdeling",
+              "text": "Zijn de lasten en baten eerlijk verdeeld?",
+              "guidance": "Wie draagt het risico van een fout, en wie plukt de vruchten van de verwerking? Als die twee niet dezelfde groep zijn, verdient dat expliciete verantwoording.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_d.fout",
+              "text": "Wie draagt de gevolgen van een fout, en hoe wordt die hersteld?",
+              "guidance": "Beschrijf hoe een fout aan het licht komt, hoe snel die wordt hersteld, en of de betrokkene daarvoor zelf in actie moet komen.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "ded2",
+          "title": "Eindafweging",
+          "questions": [
+            {
+              "id": "de_d.dilemma",
+              "text": "Welk dilemma of welke twijfel is bij deze toets blijven staan?",
+              "guidance": "Een toets zonder resterende twijfel is meestal een toets die niet diep genoeg is gegaan. Benoem waar de discussie over ging en welke argumenten tegenover elkaar stonden.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_d.deelnemers",
+              "text": "Wie hebben aan deze toets deelgenomen?",
+              "guidance": "Noem rollen en perspectieven. Vermeld ook of betrokkenen of hun vertegenwoordigers zelf zijn geraadpleegd (AVG art. 35 lid 9).",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_d.voorwaarden",
+              "text": "Onder welke voorwaarden is de verwerking ethisch verantwoord?",
+              "guidance": "Formuleer de voorwaarden zo dat later controleerbaar is of ze zijn nagekomen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "de_d.oordeel",
+              "text": "Eindoordeel van de data-ethiektoets",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Verantwoord — geen aanvullende voorwaarden",
+                "Verantwoord onder de genoemde voorwaarden",
+                "Nog niet verantwoord — eerst aanvullend onderzoek of aanpassing nodig",
+                "Niet verantwoord — de verwerking moet worden heroverwogen"
+              ],
+              "followUp": "Onderbouw het eindoordeel en benoem wie het vaststelt."
+            },
+            {
+              "id": "de_d.herijking",
+              "text": "Wanneer wordt deze toets opnieuw gedaan?",
+              "guidance": "Noem zowel een termijn als de gebeurtenissen die eerder aanleiding geven: uitbreiding van het gebruik, nieuwe databron, of signalen over ongelijke uitkomsten.",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

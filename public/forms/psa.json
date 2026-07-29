@@ -2,6 +2,13 @@
   "id": "psa",
   "version": "1.0",
   "title": "Project Start Architectuur (PSA)",
+  "source": {
+    "instrument": "Project Start Architectuur (PSA)",
+    "publisher": "Ministerie van Financiën",
+    "reference": "Intern PSA-sjabloon, opgezet langs de lagen van het NORA-vijflaagsmodel (organisatie, informatie, applicatie, technologie) plus wet- en regelgeving, beveiliging en privacy",
+    "derivation": "original",
+    "note": "Digitalisering van het eigen PSA-sjabloon; geen extern invulinstrument als origineel."
+  },
   "aiContext": "Dit is een Project Start Architectuur (PSA) voor het Ministerie van Financiën: het beschrijft de organisatie-, informatie-, applicatie- en technologielaag na afronding van het project, plus wet- en regelgeving, beveiliging en privacy. Schrijf in architectuur- en compliance-termen.",
   "meta": {
     "homeComponent": "HomePage",

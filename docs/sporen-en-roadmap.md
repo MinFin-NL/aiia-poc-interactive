@@ -60,10 +60,10 @@ een facet — het antwoordt op *wat raakt dit?*, een andere vraag.
 | Spoor (`track`) | Formulieren nu |
 |---|---|
 | `verkennen` — Verkennen & afbakenen | intake, quickscan (BIO), prescandpia |
-| `besluiten` — Onderbouwen & besluiten | aanbiedingsformulier |
-| `ontwerpen` — Ontwerpen | ppm, psa |
-| `toetsen` — Toetsen | dpia, aiia, iama, euaiact |
-| `ingebruikname` — In gebruik nemen | modelcard |
+| `besluiten` — Onderbouwen & besluiten | aanbiedingsformulier, restrisico |
+| `ontwerpen` — Ontwerpen | ppm, psa, datakwaliteit, datasetregistratie |
+| `toetsen` — Toetsen | dpia, aiia, iama, euaiact, dataethiek |
+| `ingebruikname` — In gebruik nemen | modelcard, algoritmeregister, verwerkingsregister, toegankelijkheid |
 | `beheer` — Beheren & evalueren | *(leeg, bewust zichtbaar)* |
 
 `beheer` is leeg en wordt tóch getoond, met een `emptyHint` in `TRACK_META`. Het gat
@@ -81,10 +81,11 @@ dat object moet passen bij het dossier dat ze bevat:
 
 | Formulier | Eenheid van analyse |
 |---|---|
-| intake, aanbiedingsformulier, ppm, psa | **project** |
-| prescandpia, dpia | **verwerking** |
-| aiia, iama, euaiact, modelcard | **AI-systeem** |
-| quickscan | **informatiesysteem** |
+| intake, aanbiedingsformulier, ppm, psa, restrisico | **project** |
+| prescandpia, dpia, verwerkingsregister, dataethiek | **verwerking** |
+| aiia, iama, euaiact, modelcard, algoritmeregister | **AI-systeem** |
+| quickscan, toegankelijkheid | **informatiesysteem / voorziening** |
+| datakwaliteit, datasetregistratie | **dataset** |
 | ~~governancecharter~~ | ~~organisatie~~ |
 | ~~maturityscan~~ | ~~organisatie / afdeling~~ |
 | ~~shadowai~~ | ~~afdeling~~ |
@@ -109,6 +110,20 @@ dezelfde reden geparkeerd.
 De frictie project ↔ verwerking ↔ systeem is subtieler maar even echt: één project levert
 drie systemen en vijf verwerkingen op, en dat is nu niet uitdrukbaar.
 
+**Die frictie is met de uitbreiding van juli 2026 groter geworden, niet kleiner.** Het
+verwerkingsregister beschrijft één *verwerking* (art. 30 AVG kent geen 'project'), en de
+datakwaliteit- en dataset-formulieren beschrijven één *dataset*. Beide zijn fijnmaziger dan een
+dossier: een project met drie datasets zou drie datasheets moeten opleveren, en `Dossier` biedt
+er één. Dat is een andere fout dan bij de organisatiebrede formulieren — daar was het object
+te *groot* voor het dossier, hier is het te *klein* — maar het is dezelfde onderliggende
+beperking: `forms: Record<FormId, FormState>` staat precies één exemplaar van elk formulier toe.
+Anders dan de organisatiebrede formulieren zijn deze wél in het dossier bruikbaar (ze koppelen
+sterk aan de rest en beschrijven de kern van het project), dus ze zijn gebouwd met de kanttekening
+in de intro van elk formulier: registreer de belangrijkste dataset of verwerking, en neem de
+andere op als aanvullende registratie. Een echte oplossing vraagt herhaalbare formulierinstanties
+binnen een dossier — dat raakt `Dossier`-state, persistence, export en collab, en is daarmee
+hetzelfde soort ingreep als het organisatieniveau hierboven.
+
 ## 4. Roadmap: wat er ontbreekt
 
 ### 4.1 Het structurele gat: alles ná het besluit
@@ -125,17 +140,23 @@ bewaren en vernietigen. Vandaar dat `beheer` als leeg spoor zichtbaar is.
 Volgorde op (waarde × wettelijke hardheid) ÷ bouwkosten. Nrs. 1–4 zijn JSON-only en vormen
 samen de sterkste sprong.
 
+> **Status juli 2026:** nrs. **1, 2, 3, 4 en 9 zijn gebouwd** — samen met de data-ethiektoets
+> (`DAMA-DMBOK-form-opportunities.md` §4E) zijn dat zeven nieuwe formulieren. Nrs. 5–8 en 10 staan
+> nog open; nrs. 7, 8 en 10 vullen het lege `beheer`-spoor en daarmee het structurele gat uit §4.1,
+> dus dáár zit nu de grootste winst. Herkomst per formulier: de `source`-blokken in de form-JSON en
+> de lineage-tabel in de README.
+
 | # | Formulier | Spoor | Grondslag / bron | Waarom |
 |---|---|---|---|---|
-| 1 | **Verwerkingsregister** | `ingebruikname` | AVG art. 30 | Breder verplicht dan een DPIA en nu volledig afwezig. Sterk tabelgedreven → past op de bestaande table-questions. Vult zich grotendeels uit dpia + intake via `crossFormMappings`. |
-| 2 | **Restrisico-acceptatie / besluitformulier** | `besluiten` | sluitstuk van DPIA/AIIA/BIO | Klein formulier, groot effect. In elk risicoraamwerk is acceptatie door de verantwoordelijke eigenaar de sluitsteen; zonder handtekening bungelen alle assessments. Trekt restrisico's uit dpia/aiia/quickscan. |
-| 3 | **Toegankelijkheidsverklaring** | `ingebruikname` | Tijdelijk besluit digitale toegankelijkheid overheid; EN 301 549 / WCAG 2.1 AA | Wettelijk verplicht voor overheidsdiensten en nergens gedekt. **Er bestaat een officieel model** (DigiToegankelijk) — harmoniseren zoals bij `par-dpia-form`, niet zelf verzinnen. |
-| 4 | **Algoritmeregister-publicatie** | `ingebruikname` | Standaard van het Algoritmeregister | Vast veldenschema upstream → zelfde harmonisatie-aanpak. Sluit direct aan op de Model Card; veel velden zijn afleidbaar. |
+| 1 ✅ | **Verwerkingsregister** | `ingebruikname` | AVG art. 30 | Breder verplicht dan een DPIA en nu volledig afwezig. Sterk tabelgedreven → past op de bestaande table-questions. Vult zich grotendeels uit dpia + intake via `crossFormMappings`. |
+| 2 ✅ | **Restrisico-acceptatie / besluitformulier** | `besluiten` | sluitstuk van DPIA/AIIA/BIO | Klein formulier, groot effect. In elk risicoraamwerk is acceptatie door de verantwoordelijke eigenaar de sluitsteen; zonder handtekening bungelen alle assessments. Trekt restrisico's uit dpia/aiia/quickscan. |
+| 3 ✅ | **Toegankelijkheidsverklaring** | `ingebruikname` | Tijdelijk besluit digitale toegankelijkheid overheid; EN 301 549 / WCAG 2.1 AA | Wettelijk verplicht voor overheidsdiensten en nergens gedekt. **Er bestaat een officieel model** (DigiToegankelijk) — harmoniseren zoals bij `par-dpia-form`, niet zelf verzinnen. |
+| 4 ✅ | **Algoritmeregister-publicatie** | `ingebruikname` | Standaard van het Algoritmeregister | Vast veldenschema upstream → zelfde harmonisatie-aanpak. Sluit direct aan op de Model Card; veel velden zijn afleidbaar. |
 | 5 | **Inkoop- & leverancierstoets AI** | `ontwerpen` | ARBIT/GIBIT; EU-modelcontractbepalingen AI-inkoop (PIANOo); NeRDS "open, tenzij" | De overheid bouwt zelden zelf. Voor ingekochte AI is dit het dominante risico-oppervlak en er is geen instrument voor. Geen kant-en-klaar NL-invulinstrument → afleiden. Neem exit-strategie / vendor lock-in expliciet op. |
 | 6 | **Verwerkersovereenkomst-checklist** | `ontwerpen` | AVG art. 28 | Geen contract, wél een checklist of alle verplichte elementen erin staan. Klein en concreet. |
 | 7 | **Periodieke herijking** | `beheer` | AVG art. 35 lid 11; AI Act art. 72 | Vraagt een nieuw patroon — "wat is er veranderd sinds de vorige DPIA/AIIA" verwijst terug naar eerdere antwoorden. **Mogelijk codewerk** (versievergelijking). |
 | 8 | **Incidentregistratie & melding** | `beheer` | AVG art. 33/34; AI Act art. 73 | Tabelgedreven, JSON-only, met een beslisboom voor de meldplicht (past op het bestaande decision-gate-patroon). |
-| 9 | **Datakwaliteit + dataset-registratie** | `ontwerpen` | DAMA-DMBOK; ISO/IEC 25012; DCAT-AP-NL, MIM 1.2 | Al uitgewerkt in [`DAMA-DMBOK-form-opportunities.md`](DAMA-DMBOK-form-opportunities.md) §4A en §4C — dat document is de spec. DPIA, AIIA en Model Card leunen allemaal op de datalaag die nu nergens wordt vastgelegd. |
+| 9 ✅ | **Datakwaliteit + dataset-registratie** | `ontwerpen` | DAMA-DMBOK; ISO/IEC 25012; DCAT-AP-NL, MIM 1.2 | Al uitgewerkt in [`DAMA-DMBOK-form-opportunities.md`](DAMA-DMBOK-form-opportunities.md) §4A en §4C — dat document is de spec. DPIA, AIIA en Model Card leunen allemaal op de datalaag die nu nergens wordt vastgelegd. |
 | 10 | **Uitfaseringsplan** | `beheer` | Archiefwet; AVG art. 5 lid 1 sub e | Sluit de levenscyclus. Laagste urgentie, maar zonder dit blijft `beheer` half. |
 
 > **Bij het bouwen:** de artikelverwijzingen hierboven zijn de *aanleiding*, niet de inhoud.
@@ -149,7 +170,16 @@ samen de sterkste sprong.
   eigen product en past slecht in de dossier-vorm. Beter ernaar verwijzen dan half nabouwen.
   (De huidige quickscan blijft wat hij is: een BBN-bepaling, niet meer.)
 
-### 4.4 Losse inhoudelijke observatie
+### 4.4 Open ontwerpvraag: toepasselijkheid per formulier
+
+Alle dossiers tonen nu alle formulieren. Dat houdt op bij de toegankelijkheidsverklaring (nr.
+3): een koppelvlak of dataproduct zonder gebruikersinterface valt er niet onder, en een leeg
+formulier is niet te onderscheiden van een vergeten formulier. Analyse, opties en een
+voorlopige aanbeveling staan in
+[`toepasselijkheid-van-formulieren.md`](toepasselijkheid-van-formulieren.md) — nog te
+besluiten, er is niets aan de formulieren gewijzigd.
+
+### 4.5 Losse inhoudelijke observatie
 
 44 van de 87 cross-form-mappings lopen tussen DPIA en AIIA (23 heen, 21 terug). Dat is een
 sterk signaal van inhoudelijke duplicatie. De vraag of AIIA en IAMA allebei als volledig

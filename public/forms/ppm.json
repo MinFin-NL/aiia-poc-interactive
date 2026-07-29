@@ -2,6 +2,13 @@
   "id": "ppm",
   "version": "1.0",
   "title": "PPM Projectplan",
+  "source": {
+    "instrument": "PPM-projectplan",
+    "publisher": "Ministerie van Financiën",
+    "reference": "Intern projectmanagement-sjabloon (projectdefinitie, business case, aanpak, organisatie, producten)",
+    "derivation": "original",
+    "note": "Digitalisering van het eigen projectplansjabloon; geen extern origineel."
+  },
   "aiContext": "Dit is een PPM-projectplan voor het Ministerie van Financiën: het beschrijft de projectdefinitie, business case, aanpak, projectorganisatie en de op te leveren producten. Schrijf in formele projectmanagementtermen.",
   "meta": {
     "homeComponent": "HomePage",

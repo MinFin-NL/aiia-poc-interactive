@@ -1,0 +1,476 @@
+{
+  "id": "datakwaliteit",
+  "version": "1.0",
+  "title": "Datakwaliteit-assessment",
+  "aiContext": "Dit is een datakwaliteit-assessment (DQA) voor het Ministerie van Financiën, afgeleid van DAMA-DMBOK2 hoofdstuk 13 (Data Quality) en uitgelijnd met ISO/IEC 25012 en de DAMA-NL DDQ-dimensies. Het beoordeelt per dataset of gegevensverwerking de kwaliteit langs de kerndimensies volledigheid, uniciteit, tijdigheid, validiteit, juistheid en consistentie, en legt datakwaliteitsregels, meetmethoden, bevindingen en verbeterafspraken vast. Schrijf in feitelijke, meetbare data-managementtermen: noem waar mogelijk aantallen, percentages, meetfrequenties en normen in plaats van kwalitatieve uitspraken.",
+  "source": {
+    "instrument": "DAMA-DMBOK2 — Data Management Body of Knowledge, 2nd Edition",
+    "publisher": "DAMA International",
+    "version": "2nd Edition (2017)",
+    "reference": "hoofdstuk 13 (Data Quality); dimensies uitgelijnd met ISO/IEC 25012 en DAMA-NL DDQ",
+    "derivation": "derived",
+    "note": "DAMA-DMBOK is een referentiekader zonder invul-template; dit formulier is afgeleid van de daarin beschreven DQ-dimensies, regels en deliverables. Geen tekst overgenomen. Ontwerpspec: docs/DAMA-DMBOK-form-opportunities.md §4A."
+  },
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Datakwaliteit-assessment",
+    "docTitle": "Datakwaliteit-assessment (DQA)",
+    "footerLabel": "Datakwaliteit-assessment – MinFin",
+    "filename": "Datakwaliteit-assessment.pdf",
+    "systemNamePlaceholder": "Bijv. Basisadministratie debiteuren v2",
+    "homeContent": {
+      "notice": "Een datakwaliteit-assessment beoordeelt de dataset waarop een systeem, model of verwerking steunt. Betrek de data-eigenaar en de datasteward: zij kennen de bron, de regels en de bekende gebreken. Let op — een dossier biedt op dit moment ruimte aan één exemplaar van dit formulier. Steunt het project op meerdere datasets, beoordeel dan hier de belangrijkste en neem de overige op als losse bijlage of in een apart dossier.",
+      "description": "Dit assessment brengt de kwaliteit van een dataset of gegevensverwerking in kaart langs de kerndimensies uit DAMA-DMBOK: volledigheid, uniciteit, tijdigheid, validiteit, juistheid en consistentie. U legt per dimensie een oordeel met onderbouwing vast, beschrijft de datakwaliteitsregels en hoe die gemeten worden, registreert de geconstateerde issues en maakt afspraken over verbetering en bewaking. De uitkomst onderbouwt de datavragen in de DPIA, de AI Impact Assessment en de Model Card.",
+      "steps": [
+        "Deel A – Scope: welke dataset of verwerking, wie is eigenaar, waarvoor wordt de data gebruikt",
+        "Deel B – Kwaliteitsdimensies: oordeel en onderbouwing per DQ-dimensie",
+        "Deel C – Regels en meting: datakwaliteitsregels, meetmethode en meetfrequentie",
+        "Deel D – Bevindingen en verbetering: issues, verbeteracties, DQ-afspraken en restrisico"
+      ],
+      "buttonLabel": "Starten met het datakwaliteit-assessment"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "dq_a" },
+    { "type": "subsections", "sectionId": "dq_b" },
+    { "type": "subsections", "sectionId": "dq_c" },
+    { "type": "subsections", "sectionId": "dq_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "dq_a",
+      "title": "Deel A: Scope en context",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "dqa1",
+          "title": "Afbakening",
+          "description": "Beschrijf welke dataset of gegevensverwerking wordt beoordeeld en binnen welke context.",
+          "questions": [
+            {
+              "id": "dq_a.dataset",
+              "text": "Welke dataset of gegevensverwerking wordt beoordeeld?",
+              "guidance": "Noem de naam zoals die in de organisatie bekend staat, het bronsysteem en de afbakening (welke tabellen, velden of periode vallen er wel en niet onder).",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "dq_a.doel",
+              "text": "Waarvoor wordt deze data gebruikt?",
+              "guidance": "Beschrijf het gebruiksdoel: welk proces, besluit, rapportage of AI-model steunt op deze data? Hoe zwaarder het gebruik weegt, hoe hoger de kwaliteitseis.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "dq_a.aigebruik",
+              "text": "Wordt deze data gebruikt voor het trainen, valideren of voeden van een AI-systeem of algoritme?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, als trainings- of validatiedata",
+                "Ja, als invoerdata tijdens gebruik",
+                "Ja, zowel voor training als als invoerdata",
+                "Nee"
+              ],
+              "followUp": "Licht toe om welk systeem of model het gaat."
+            },
+            {
+              "id": "dq_a.persoonsgegevens",
+              "text": "Bevat de dataset persoonsgegevens?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, waaronder bijzondere persoonsgegevens",
+                "Ja, gewone persoonsgegevens",
+                "Nee, uitsluitend niet-herleidbare gegevens",
+                "Onbekend"
+              ],
+              "followUp": "Licht toe welke categorieën gegevens het betreft."
+            },
+            {
+              "id": "dq_a.omvang",
+              "text": "Wat is de omvang en actualiteit van de dataset?",
+              "guidance": "Bijv. aantal records, aantal attributen, historische diepte, en hoe vaak de data ververst wordt.",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        },
+        {
+          "id": "dqa2",
+          "title": "Eigenaarschap en herkomst",
+          "questions": [
+            {
+              "id": "dq_a.eigenaar",
+              "text": "Wie is de data-eigenaar?",
+              "guidance": "De functionaris die verantwoordelijk is voor de inhoud en het gebruik van deze data — geen team, maar een rol met naam.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "dq_a.steward",
+              "text": "Wie is de datasteward of beheerder?",
+              "guidance": "Degene die de dagelijkse kwaliteitsbewaking uitvoert: regels onderhoudt, meldingen afhandelt en correcties doorvoert.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "dq_a.herkomst",
+              "text": "Wat is de herkomst van de data (lineage)?",
+              "guidance": "Beschrijf de keten: primaire bron, tussenliggende systemen, bewerkingen en het punt waarop de data in dit gebruik terechtkomt. Vermeld of het om een basisregistratie, een aangeleverde dataset of eigen registratie gaat.",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            },
+            {
+              "id": "dq_a.brontype",
+              "text": "Wat voor soort bron betreft het?",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "Basisregistratie (bijv. BRP, Handelsregister, BAG)",
+                "Eigen registratie of administratie",
+                "Aangeleverd door een andere overheidsorganisatie",
+                "Ingekocht bij of aangeleverd door een externe partij",
+                "Door burgers of bedrijven zelf ingevoerd",
+                "Afgeleid of berekend uit andere data",
+                "Openbare of open data",
+                "Onbekend"
+              ]
+            },
+            {
+              "id": "dq_a.eerder",
+              "text": "Is de kwaliteit van deze data eerder beoordeeld?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Ja, met een formeel assessment",
+                "Ja, informeel of op onderdelen",
+                "Nee, dit is de eerste beoordeling"
+              ],
+              "followUp": "Beschrijf wanneer, door wie en met welke uitkomst."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dq_b",
+      "title": "Deel B: Kwaliteitsdimensies",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "dqb1",
+          "title": "Kerndimensies",
+          "description": "Beoordeel de dataset op de zes kerndimensies uit DAMA-DMBOK. Geef per dimensie een oordeel en onderbouw dat — bij voorkeur met een gemeten waarde (percentage, aantal afwijkingen) en niet alleen met een indruk. Kies 'Niet gemeten' als er geen meting achter zit; dat is een eerlijker antwoord dan een geschat oordeel.",
+          "questions": [
+            {
+              "id": "dq_b.volledigheid",
+              "text": "Volledigheid (completeness): zijn alle vereiste gegevens aanwezig?",
+              "guidance": "Kijk naar ontbrekende records én ontbrekende waarden in verplichte velden. Onderbouw met een vulgraad per kritiek attribuut.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Goed – voldoet aan de gestelde norm",
+                "Voldoende – kleine afwijkingen zonder gevolgen voor het gebruik",
+                "Matig – afwijkingen die het gebruik beïnvloeden",
+                "Onvoldoende – ongeschikt voor het beoogde gebruik",
+                "Niet gemeten"
+              ],
+              "followUp": "Onderbouw het oordeel met de gemeten vulgraad en de gehanteerde norm."
+            },
+            {
+              "id": "dq_b.uniciteit",
+              "text": "Uniciteit (uniqueness): komt elk object precies één keer voor?",
+              "guidance": "Denk aan dubbele registraties van dezelfde persoon, organisatie of transactie, en aan de sleutel waarop uniciteit wordt bepaald.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Goed – voldoet aan de gestelde norm",
+                "Voldoende – kleine afwijkingen zonder gevolgen voor het gebruik",
+                "Matig – afwijkingen die het gebruik beïnvloeden",
+                "Onvoldoende – ongeschikt voor het beoogde gebruik",
+                "Niet gemeten"
+              ],
+              "followUp": "Onderbouw het oordeel: welke sleutel is gebruikt en hoeveel duplicaten zijn aangetroffen?"
+            },
+            {
+              "id": "dq_b.tijdigheid",
+              "text": "Tijdigheid (timeliness): is de data actueel genoeg voor het gebruik?",
+              "guidance": "Beoordeel de vertraging tussen de gebeurtenis in de werkelijkheid en de verwerking in de data, afgezet tegen wat het gebruik vraagt.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Goed – voldoet aan de gestelde norm",
+                "Voldoende – kleine afwijkingen zonder gevolgen voor het gebruik",
+                "Matig – afwijkingen die het gebruik beïnvloeden",
+                "Onvoldoende – ongeschikt voor het beoogde gebruik",
+                "Niet gemeten"
+              ],
+              "followUp": "Onderbouw het oordeel: welke doorlooptijd is gemeten en welke is vereist?"
+            },
+            {
+              "id": "dq_b.validiteit",
+              "text": "Validiteit (validity): voldoen de waarden aan de gedefinieerde formaten, domeinen en regels?",
+              "guidance": "Bijv. geldige datumnotaties, waarden binnen een toegestane codelijst, correcte BSN- of KvK-structuur.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Goed – voldoet aan de gestelde norm",
+                "Voldoende – kleine afwijkingen zonder gevolgen voor het gebruik",
+                "Matig – afwijkingen die het gebruik beïnvloeden",
+                "Onvoldoende – ongeschikt voor het beoogde gebruik",
+                "Niet gemeten"
+              ],
+              "followUp": "Onderbouw het oordeel: welke regels zijn getoetst en hoeveel schendingen zijn gevonden?"
+            },
+            {
+              "id": "dq_b.juistheid",
+              "text": "Juistheid (accuracy): komt de data overeen met de werkelijkheid?",
+              "guidance": "De lastigste dimensie: juistheid vraagt een referentie buiten de dataset zelf (steekproef, controlebron, terugmelding). Beschrijf welke referentie is gebruikt.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Goed – voldoet aan de gestelde norm",
+                "Voldoende – kleine afwijkingen zonder gevolgen voor het gebruik",
+                "Matig – afwijkingen die het gebruik beïnvloeden",
+                "Onvoldoende – ongeschikt voor het beoogde gebruik",
+                "Niet gemeten"
+              ],
+              "followUp": "Onderbouw het oordeel: tegen welke referentie is getoetst en wat was de uitkomst?"
+            },
+            {
+              "id": "dq_b.consistentie",
+              "text": "Consistentie (consistency): is de data intern en tussen systemen met elkaar in overeenstemming?",
+              "guidance": "Denk aan dezelfde entiteit met verschillende waarden in twee systemen, of aan onderling strijdige velden binnen één record.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Goed – voldoet aan de gestelde norm",
+                "Voldoende – kleine afwijkingen zonder gevolgen voor het gebruik",
+                "Matig – afwijkingen die het gebruik beïnvloeden",
+                "Onvoldoende – ongeschikt voor het beoogde gebruik",
+                "Niet gemeten"
+              ],
+              "followUp": "Onderbouw het oordeel: welke systemen of velden zijn vergeleken en waar liepen ze uiteen?"
+            }
+          ]
+        },
+        {
+          "id": "dqb2",
+          "title": "Aanvullende dimensies",
+          "description": "Optionele dimensies die DAMA-DMBOK noemt naast de kern. Vul in wat relevant is voor het gebruiksdoel.",
+          "questions": [
+            {
+              "id": "dq_b.bruikbaarheid",
+              "text": "Bruikbaarheid en begrijpelijkheid: is de betekenis van de gegevens vastgelegd en te achterhalen?",
+              "guidance": "Bestaat er een begrippenkader, datawoordenboek of codeboek? Kunnen gebruikers zonder de bouwers erbij de velden juist interpreteren?",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "dq_b.representativiteit",
+              "text": "Representativiteit: dekt de dataset de populatie waarover uitspraken worden gedaan?",
+              "guidance": "Voor AI-toepassingen essentieel: onder- of oververtegenwoordiging van groepen in de data vertaalt zich rechtstreeks naar vertekende uitkomsten. Beschrijf bekende scheefheid en de gevolgen daarvan.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "dq_b.toegankelijkheid",
+              "text": "Toegankelijkheid en beschikbaarheid: is de data beschikbaar wanneer en voor wie dat nodig is?",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "dq_b.vertrouwen",
+              "text": "Vertrouwen: hoe kijken de gebruikers zelf naar de kwaliteit van deze data?",
+              "guidance": "Gebruikers die een dataset wantrouwen, bouwen schaduwadministraties. Dat signaal zegt vaak meer dan een meting.",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dq_c",
+      "title": "Deel C: Regels en meting",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "dqc1",
+          "title": "Datakwaliteitsregels",
+          "description": "Leg de regels vast waaraan de data moet voldoen, met de norm en de meting erbij. Een regel zonder norm en meting is een intentie, geen bewaking.",
+          "questions": [
+            {
+              "id": "dq_c.regels",
+              "text": "Welke datakwaliteitsregels gelden voor deze dataset?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "regel", "label": "Regel", "hint": "Bijv. 'BSN is gevuld en voldoet aan de elfproef'" },
+                { "id": "dimensie", "label": "Dimensie", "type": "select", "options": ["Volledigheid", "Uniciteit", "Tijdigheid", "Validiteit", "Juistheid", "Consistentie", "Overig"] },
+                { "id": "norm", "label": "Norm", "hint": "De grens waarboven de data acceptabel is, bijv. '≥ 99,5%'" },
+                { "id": "meting", "label": "Gemeten waarde" },
+                { "id": "oordeel", "label": "Voldoet", "type": "select", "options": ["Ja", "Nee", "Deels", "Niet gemeten"] }
+              ],
+              "notesLabel": "Toelichting op de regels en normen"
+            },
+            {
+              "id": "dq_c.meetmethode",
+              "text": "Hoe wordt de datakwaliteit gemeten?",
+              "guidance": "Beschrijf het instrument of script, de frequentie, wie de meting uitvoert en waar de uitkomsten worden vastgelegd (bijv. een DQ-dashboard).",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "dq_c.frequentie",
+              "text": "Met welke frequentie wordt gemeten?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Continu of bij elke verwerking",
+                "Dagelijks",
+                "Wekelijks of maandelijks",
+                "Per kwartaal of jaarlijks",
+                "Alleen ad hoc, bij aanleiding",
+                "Nog niet ingericht"
+              ]
+            },
+            {
+              "id": "dq_c.geautomatiseerd",
+              "text": "Is de meting geautomatiseerd en wordt er gealarmeerd bij overschrijding van een norm?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Ja, geautomatiseerd met alerting",
+                "Ja, geautomatiseerd zonder alerting",
+                "Nee, handmatige controle",
+                "Nog niet ingericht"
+              ],
+              "followUp": "Licht toe wie de signalen ontvangt en opvolgt."
+            },
+            {
+              "id": "dq_c.standaarden",
+              "text": "Aan welke standaarden of afspraken is de datadefinitie uitgelijnd?",
+              "guidance": "Bijv. ISO/IEC 25012 voor kwaliteitskenmerken, de DAMA-NL DDQ-dimensies, of sectorale gegevensstandaarden.",
+              "type": "checkbox",
+              "importance": "optional",
+              "options": [
+                "ISO/IEC 25012 (datakwaliteitsmodel)",
+                "DAMA-NL DDQ-dimensies",
+                "DCAT-AP-NL (dataset-metadata)",
+                "MIM 1.2 (informatiemodellering)",
+                "Sectorale of ketenafspraak",
+                "Interne organisatiestandaard",
+                "Geen expliciete standaard"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dq_d",
+      "title": "Deel D: Bevindingen en verbetering",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "dqd1",
+          "title": "Geconstateerde issues",
+          "questions": [
+            {
+              "id": "dq_d.issues",
+              "text": "Welke datakwaliteitsissues zijn geconstateerd?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "issue", "label": "Issue" },
+                { "id": "dimensie", "label": "Dimensie", "type": "select", "options": ["Volledigheid", "Uniciteit", "Tijdigheid", "Validiteit", "Juistheid", "Consistentie", "Overig"] },
+                { "id": "oorzaak", "label": "Vermoedelijke oorzaak" },
+                { "id": "gevolg", "label": "Gevolg voor het gebruik" },
+                { "id": "ernst", "label": "Ernst", "type": "select", "options": ["Hoog", "Middel", "Laag"] }
+              ],
+              "notesLabel": "Toelichting op de bevindingen"
+            },
+            {
+              "id": "dq_d.structureel",
+              "text": "Welke van deze issues zijn structureel en welke incidenteel?",
+              "guidance": "Structurele issues komen voort uit het ontwerp van het proces of systeem en keren terug na correctie; incidentele issues zijn eenmalig. Alleen de eerste categorie vraagt om een procesingreep.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "dqd2",
+          "title": "Verbetering en bewaking",
+          "questions": [
+            {
+              "id": "dq_d.acties",
+              "text": "Welke verbeteracties worden ondernomen?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "actie", "label": "Actie" },
+                { "id": "type", "label": "Type", "type": "select", "options": ["Correctie van bestaande data", "Aanpassing van het invoerproces", "Technische maatregel of validatie", "Afspraak met de bronhouder", "Aanvullende monitoring", "Overig"] },
+                { "id": "eigenaar", "label": "Verantwoordelijke" },
+                { "id": "termijn", "label": "Termijn" }
+              ],
+              "notesLabel": "Toelichting op de verbeteraanpak"
+            },
+            {
+              "id": "dq_d.afspraken",
+              "text": "Welke afspraken zijn gemaakt over de te leveren kwaliteit (DQ-SLA)?",
+              "guidance": "Leg vast welke normen structureel gelden, wie ze bewaakt, hoe er wordt gerapporteerd en wat er gebeurt bij overschrijding. Vermeld bij een externe bron of dit contractueel is vastgelegd.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "dq_d.terugmelding",
+              "text": "Is er een terugmeldvoorziening voor geconstateerde fouten?",
+              "guidance": "Voor basisregistraties is terugmelden wettelijk geregeld (Digimelding). Voor andere bronnen: is er een route waarlangs een gebruiker een fout kan melden en wordt die opgevolgd?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Ja, via Digimelding of een vergelijkbare voorziening",
+                "Ja, via een eigen meldproces",
+                "Nee, geen terugmeldroute",
+                "Niet van toepassing"
+              ],
+              "followUp": "Beschrijf de route en hoe meldingen worden opgevolgd."
+            },
+            {
+              "id": "dq_d.restrisico",
+              "text": "Welk restrisico blijft bestaan en is de data geschikt voor het beoogde gebruik?",
+              "guidance": "Sluit expliciet af: is de kwaliteit toereikend, toereikend onder voorwaarden, of niet toereikend? Benoem bij AI-gebruik nadrukkelijk wat de resterende gebreken betekenen voor de betrouwbaarheid van de uitkomsten.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "dq_d.oordeel",
+              "text": "Eindoordeel: is de datakwaliteit toereikend voor het beoogde gebruik?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, toereikend",
+                "Ja, mits de genoemde verbeteracties worden uitgevoerd",
+                "Nee, niet toereikend voor dit gebruik",
+                "Nog niet vast te stellen — eerst meten"
+              ],
+              "followUp": "Onderbouw het eindoordeel en benoem wie het vaststelt."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

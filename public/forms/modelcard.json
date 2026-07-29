@@ -2,6 +2,14 @@
   "id": "modelcard",
   "version": "0.1",
   "title": "AI-systeemregistratie (Model Card)",
+  "source": {
+    "instrument": "AI Body of Knowledge (AI-BOK) — Template 2: AI System Registration / Model Card",
+    "publisher": "Jan Willem van Veen",
+    "version": "v1.0 (2026)",
+    "reference": "Appendix 'Templates, Checklists and Quick Start', Template 2 (p. 194–196); veldstructuur uitgelijnd met het MinBZK-systemcard-concept",
+    "derivation": "harmonized",
+    "note": "AI-BOK-templates mogen vrij worden gebruikt en aangepast (p. 204), met bronvermelding."
+  },
   "aiContext": "Dit is een AI-systeemregistratie (Model Card): een gestandaardiseerd registratieformulier per AI-systeem in ontwikkeling of productie, dat de centrale registratie vormt voor governance, compliance en audit. Gebaseerd op de AI Body of Knowledge (Template 2, AI System Registration / Model Card) en het model card-concept (Mitchell et al., 2019). De velden sluiten aan op de systemcard-structuur van het MinBZK task-registry (naam, beschrijving, eigenaar). Schrijf feitelijk en registrerend; wees concreet over doel, data, model en beperkingen.",
   "meta": {
     "homeComponent": "HomePage",

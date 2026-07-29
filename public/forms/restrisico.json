@@ -1,0 +1,385 @@
+{
+  "id": "restrisico",
+  "version": "1.0",
+  "title": "Restrisico-acceptatie",
+  "aiContext": "Dit is een restrisico-acceptatieformulier voor het Ministerie van Financiën: het sluitstuk van de DPIA, de AI Impact Assessment, de IAMA en de Quick scan BIO. Het bundelt de risico's die na alle beheersmaatregelen overblijven, legt per risico een expliciet besluit vast (accepteren, aanvullend beheersen, of niet accepteren) en registreert wie dat besluit neemt, op welke termijn het geldig is en onder welke voorwaarden. Schrijf zakelijk en besluitvormend: een restrisico is pas bruikbaar beschreven als duidelijk is wat er kan gebeuren, hoe erg dat is, wie het draagt en wat het signaal is dat het zich voordoet.",
+  "source": {
+    "instrument": "Sluitstuk van de risico-instrumenten: Model DPIA Rijksdienst, AI Impact Assessment, IAMA en Quick scan BIO",
+    "publisher": "Ministerie van Financiën",
+    "reference": "Geen extern origineel; opgesteld naar het in elk risicoraamwerk (o.a. ISO 31000, BIO/ISO 27005) gangbare patroon van formele risicoacceptatie door de verantwoordelijke eigenaar",
+    "derivation": "original",
+    "note": "Roadmap: docs/sporen-en-roadmap.md §4.2 nr. 2. Bestaat om de losse assessments af te hechten: zonder expliciete acceptatie blijven geïdentificeerde restrisico's zonder eigenaar."
+  },
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Restrisico-acceptatie",
+    "docTitle": "Restrisico-acceptatie en besluitvorming",
+    "footerLabel": "Restrisico-acceptatie – MinFin",
+    "filename": "Restrisico-acceptatie.pdf",
+    "systemNamePlaceholder": "Bijv. Klantportaal persoonsgegevens v1",
+    "homeContent": {
+      "notice": "Vul dit formulier pas in als de onderliggende assessments zijn afgerond. Het verzamelt hun uitkomsten; het vervangt ze niet. De acceptatie moet worden vastgesteld door iemand die bevoegd is het risico te dragen — doorgaans de opdrachtgever of proceseigenaar, niet de projectleider.",
+      "description": "Elk assessment eindigt met risico's die na de maatregelen overblijven. Dit formulier brengt die restrisico's bij elkaar uit de DPIA, de AI Impact Assessment, de IAMA en de Quick scan BIO, weegt ze afzonderlijk en in samenhang, en legt per risico een expliciet besluit vast. Het resultaat is een ondertekend document waarin staat wie welk risico accepteert, onder welke voorwaarden en tot wanneer.",
+      "steps": [
+        "Deel A – Context: wat wordt in gebruik genomen, welke assessments liggen eronder",
+        "Deel B – Restrisico's: de risico's die na beheersing overblijven, per bron",
+        "Deel C – Weging: samenhang, risicobereidheid en aanvullende maatregelen",
+        "Deel D – Besluit: acceptatie, voorwaarden, geldigheidsduur en vaststelling"
+      ],
+      "buttonLabel": "Starten met de restrisico-acceptatie"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "rr_a" },
+    { "type": "subsections", "sectionId": "rr_b" },
+    { "type": "subsections", "sectionId": "rr_c" },
+    { "type": "subsections", "sectionId": "rr_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "rr_a",
+      "title": "Deel A: Context van het besluit",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "rra1",
+          "title": "Waarover wordt besloten",
+          "questions": [
+            {
+              "id": "rr_a.onderwerp",
+              "text": "Waarover wordt dit acceptatiebesluit genomen?",
+              "guidance": "Benoem het systeem, de verwerking of het project, met de versie of release erbij. Een acceptatie geldt voor een specifieke situatie, niet voor een naam.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_a.aanleiding",
+              "text": "Wat is de aanleiding voor dit besluit?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ingebruikname van een nieuw systeem of nieuwe verwerking",
+                "Wijziging van een bestaand systeem of bestaande verwerking",
+                "Uitbreiding van het gebruik of de doelgroep",
+                "Periodieke herbevestiging van een eerdere acceptatie",
+                "Geconstateerd risico of incident vraagt om een nieuw besluit"
+              ],
+              "followUp": "Licht de aanleiding kort toe."
+            },
+            {
+              "id": "rr_a.reikwijdte",
+              "text": "Wat valt binnen en wat valt buiten de reikwijdte van dit besluit?",
+              "guidance": "Wees expliciet over de grenzen. Een acceptatie die 'het hele programma' dekt, dekt in de praktijk niets aantoonbaar.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "rra2",
+          "title": "Onderliggende assessments",
+          "questions": [
+            {
+              "id": "rr_a.assessments",
+              "text": "Welke assessments liggen aan dit besluit ten grondslag?",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "DPIA",
+                "Pre-scan DPIA",
+                "AI Impact Assessment (AIIA)",
+                "IAMA",
+                "EU AI Act Compliance Checklist",
+                "Quick scan BIO / BBN-bepaling",
+                "Datakwaliteit-assessment",
+                "Data-ethiektoets",
+                "Beveiligingsonderzoek of penetratietest",
+                "Anders"
+              ]
+            },
+            {
+              "id": "rr_a.status",
+              "text": "Wat is de status van de onderliggende assessments?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "assessment", "label": "Assessment" },
+                { "id": "status", "label": "Status", "type": "select", "options": ["Afgerond en vastgesteld", "Afgerond, nog niet vastgesteld", "Concept", "Niet uitgevoerd"] },
+                { "id": "datum", "label": "Datum" },
+                { "id": "advies", "label": "Advies van de adviseur (FG, CISO, ethiek)" }
+              ],
+              "notesLabel": "Toelichting op de status van de assessments"
+            },
+            {
+              "id": "rr_a.adviezen",
+              "text": "Welke adviezen zijn uitgebracht en hoe is daarmee omgegaan?",
+              "guidance": "Noem het advies van de FG (verplicht bij een DPIA, art. 35 lid 2 AVG), de CISO en eventuele andere adviseurs. Als een advies niet is opgevolgd, is de motivering daarvan het belangrijkste onderdeel van dit formulier.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_a.afwijking",
+              "text": "Wordt van een advies afgeweken?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Nee, alle adviezen worden opgevolgd",
+                "Ja, gedeeltelijk",
+                "Ja, een advies wordt niet opgevolgd",
+                "Er zijn geen adviezen uitgebracht"
+              ],
+              "followUp": "Motiveer de afwijking en beschrijf wie daarvan op de hoogte is gesteld."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rr_b",
+      "title": "Deel B: De restrisico's",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "rrb1",
+          "title": "Overzicht",
+          "description": "Neem hier de risico's op die ná uitvoering van alle voorgenomen maatregelen overblijven. Risico's die volledig zijn weggenomen horen hier niet thuis; risico's waarvan de maatregel nog niet is uitgevoerd wél — met die kanttekening.",
+          "questions": [
+            {
+              "id": "rr_b.risicos",
+              "text": "Welke restrisico's blijven bestaan?",
+              "type": "table",
+              "importance": "mandatory",
+              "minRows": 1,
+              "columns": [
+                { "id": "risico", "label": "Restrisico" },
+                { "id": "bron", "label": "Uit welk assessment", "type": "select", "options": ["DPIA", "Pre-scan DPIA", "AIIA", "IAMA", "EU AI Act-checklist", "Quick scan BIO", "Datakwaliteit-assessment", "Data-ethiektoets", "Overig"] },
+                { "id": "wie", "label": "Wie wordt geraakt" },
+                { "id": "kans", "label": "Kans", "type": "select", "options": ["Hoog", "Middel", "Laag"] },
+                { "id": "impact", "label": "Impact", "type": "select", "options": ["Zeer hoog", "Hoog", "Middel", "Laag"] },
+                { "id": "maatregelen", "label": "Reeds getroffen maatregelen" }
+              ],
+              "notesLabel": "Toelichting op het risico-overzicht"
+            },
+            {
+              "id": "rr_b.zwaarste",
+              "text": "Beschrijf het zwaarste restrisico in detail",
+              "guidance": "Wat kan er concreet misgaan, wie merkt dat, hoe erg is dat voor die persoon of groep, en hoe waarschijnlijk is het? Dit is het risico waarop het besluit uiteindelijk rust.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_b.betrokkenen",
+              "text": "Welke restrisico's raken burgers of andere betrokkenen rechtstreeks?",
+              "guidance": "Onderscheid uitdrukkelijk risico's voor de organisatie van risico's voor mensen. Die twee lopen in risicoregisters vaak door elkaar, waardoor de zwaarste risico's voor burgers wegvallen tegen bedrijfsvoeringsrisico's.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_b.openstaand",
+              "text": "Zijn er maatregelen die wel zijn afgesproken maar nog niet uitgevoerd?",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "maatregel", "label": "Maatregel" },
+                { "id": "risico", "label": "Bijbehorend risico" },
+                { "id": "verantwoordelijke", "label": "Verantwoordelijke" },
+                { "id": "termijn", "label": "Uiterlijke termijn" },
+                { "id": "blokkerend", "label": "Blokkerend voor ingebruikname", "type": "select", "options": ["Ja", "Nee"] }
+              ],
+              "notesLabel": "Toelichting op de openstaande maatregelen"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rr_c",
+      "title": "Deel C: Weging",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "rrc1",
+          "title": "Samenhang en bereidheid",
+          "questions": [
+            {
+              "id": "rr_c.samenhang",
+              "text": "Hoe verhouden de restrisico's zich tot elkaar?",
+              "guidance": "Losse risico's kunnen elk aanvaardbaar zijn terwijl hun samenloop dat niet is: een matige datakwaliteit plus beperkte menselijke controle plus een grote doelgroep is iets anders dan drie losse observaties. Beoordeel het geheel.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_c.bereidheid",
+              "text": "Passen deze restrisico's binnen de risicobereidheid van de organisatie?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, ruim binnen de bereidheid",
+                "Ja, aan de grens van wat aanvaardbaar is",
+                "Nee, hoger dan de vastgestelde risicobereidheid",
+                "Er is geen vastgestelde risicobereidheid om aan te toetsen"
+              ],
+              "followUp": "Onderbouw het antwoord en verwijs naar het kader waaraan getoetst is."
+            },
+            {
+              "id": "rr_c.baten",
+              "text": "Wat staat tegenover deze risico's?",
+              "guidance": "De baten die de acceptatie rechtvaardigen: welk publiek belang wordt gediend en wat gaat er verloren als niet in gebruik wordt genomen? Zonder deze zijde is er geen afweging, alleen een risicolijst.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_c.alternatief",
+              "text": "Welk alternatief met een lager restrisico is overwogen?",
+              "guidance": "Bijv. een beperktere scope, een gefaseerde invoering, een pilot met een kleinere doelgroep, of langer met de bestaande werkwijze doorgaan. Beschrijf waarom dat is afgevallen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_c.aanvullend",
+              "text": "Welke aanvullende maatregelen worden bij dit besluit alsnog opgelegd?",
+              "type": "table",
+              "importance": "optional",
+              "columns": [
+                { "id": "maatregel", "label": "Aanvullende maatregel" },
+                { "id": "doel", "label": "Welk risico verlaagt dit" },
+                { "id": "verantwoordelijke", "label": "Verantwoordelijke" },
+                { "id": "termijn", "label": "Termijn" }
+              ],
+              "notesLabel": "Toelichting op de aanvullende maatregelen"
+            }
+          ]
+        },
+        {
+          "id": "rrc2",
+          "title": "Signalering",
+          "questions": [
+            {
+              "id": "rr_c.monitoring",
+              "text": "Hoe wordt bewaakt of een geaccepteerd risico zich daadwerkelijk voordoet?",
+              "guidance": "Benoem per zwaar risico het waarneembare signaal, wie erop let en met welke frequentie. Een geaccepteerd risico zonder signalering is een risico dat pas zichtbaar wordt als het al schade heeft aangericht.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_c.grens",
+              "text": "Bij welke ontwikkeling moet het besluit opnieuw worden genomen?",
+              "guidance": "Formuleer concrete grenzen: een aantal incidenten, een uitbreiding van de doelgroep, een wijziging in het model, of een handhavingssignaal. Dit is de trigger die de acceptatie ongeldig maakt.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_c.escalatie",
+              "text": "Hoe verloopt de escalatie als een risico zich voordoet?",
+              "guidance": "Wie wordt gewaarschuwd, binnen welke termijn, en wie is bevoegd het systeem of de verwerking stil te leggen?",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rr_d",
+      "title": "Deel D: Besluit",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "rrd1",
+          "title": "Acceptatiebesluit",
+          "questions": [
+            {
+              "id": "rr_d.besluit",
+              "text": "Wat is het besluit?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "De restrisico's worden geaccepteerd — ingebruikname kan doorgaan",
+                "De restrisico's worden geaccepteerd onder de hieronder genoemde voorwaarden",
+                "De restrisico's worden nog niet geaccepteerd — eerst aanvullende maatregelen uitvoeren",
+                "De restrisico's worden niet geaccepteerd — het systeem of de verwerking gaat niet in gebruik"
+              ],
+              "followUp": "Motiveer het besluit."
+            },
+            {
+              "id": "rr_d.perrisico",
+              "text": "Besluit per restrisico",
+              "guidance": "Neem hier dezelfde risico's op als in deel B en geef per risico het besluit. Een globale acceptatie zonder deze uitsplitsing is later niet te herleiden.",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "risico", "label": "Restrisico" },
+                { "id": "besluit", "label": "Besluit", "type": "select", "options": ["Accepteren", "Accepteren onder voorwaarden", "Aanvullend beheersen", "Niet accepteren"] },
+                { "id": "voorwaarde", "label": "Voorwaarde of aanvullende maatregel" },
+                { "id": "eigenaar", "label": "Risico-eigenaar" }
+              ],
+              "notesLabel": "Toelichting op de besluiten per risico"
+            },
+            {
+              "id": "rr_d.voorwaarden",
+              "text": "Onder welke voorwaarden geldt de acceptatie?",
+              "guidance": "Formuleer de voorwaarden zo dat later objectief vast te stellen is of eraan is voldaan, met een termijn en een verantwoordelijke per voorwaarde.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_d.geldigheid",
+              "text": "Tot wanneer geldt dit besluit?",
+              "guidance": "Een acceptatie zonder einddatum wordt stilzwijgend eeuwig. Noem een concrete datum of periode; herbevestiging vindt daarna opnieuw plaats.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            }
+          ]
+        },
+        {
+          "id": "rrd2",
+          "title": "Vaststelling",
+          "questions": [
+            {
+              "id": "rr_d.besluitnemer",
+              "text": "Wie neemt dit besluit?",
+              "guidance": "Naam en functie van de bevoegde functionaris — degene die het risico ook daadwerkelijk draagt en de bevoegdheid heeft het te aanvaarden.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "rr_d.datum",
+              "text": "Datum van het besluit",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "date"
+            },
+            {
+              "id": "rr_d.geinformeerd",
+              "text": "Wie zijn over dit besluit geïnformeerd?",
+              "guidance": "Bijv. de FG, de CISO, de portefeuillehouder, de ondernemingsraad of de verantwoordelijke lijnmanager. Bij een afwijking van het FG-advies is informeren van het bevoegd gezag aangewezen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "rr_d.vastlegging",
+              "text": "Waar wordt dit besluit vastgelegd en bewaard?",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "rr_d.herbeoordeling",
+              "text": "Wanneer en door wie wordt het besluit herbeoordeeld?",
+              "guidance": "Noem de datum van de eerstvolgende herbeoordeling en de verantwoordelijke daarvoor. Sluit aan bij de bewaking uit deel C.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -8,7 +8,7 @@ A web application that helps Dutch government employees fill in AI-related compl
 
 ## Features
 
-- **11 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quick scan BIO, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier) → *Ontwerpen* (PPM Projectplan, PSA) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist) → *In gebruik nemen* (AI-systeemregistratie/Model Card) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Two of these are derived from the **AI Body of Knowledge** and harmonized with MinBZK schemas — see [AI Body of Knowledge forms & MinBZK harmonization](#ai-body-of-knowledge-forms--minbzk-harmonization).
+- **18 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quick scan BIO, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier, Restrisico-acceptatie) → *Ontwerpen* (PPM Projectplan, PSA, Datakwaliteit-assessment, Dataset-registratie) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist, Data-ethiektoets) → *In gebruik nemen* (AI-systeemregistratie/Model Card, Algoritmeregister-publicatie, Verwerkingsregister, Toegankelijkheidsverklaring) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Every form records where it comes from and how faithfully — see [Form lineage](#form-lineage).
 - **Beslishulp AI-verordening (MinBZK)** — The official [ai-verordening-beslishulp](https://github.com/MinBZK/ai-verordening-beslishulp) decision tree runs inside the app as a modal, launched from a tile fused to the EU AI Act card on the dossier page. It determines whether the AI-verordening applies, which role you hold (aanbieder, gebruiksverantwoordelijke, importeur, distributeur) and which risk group the system falls in, with the upstream explanations, sources and obligations intact. The outcome is stored on the dossier and supplies the risk classification (Bijlage 1) of the AI Impact Assessment. The decision tree is vendored (`vendor/ai-verordening-beslishulp/`, EUPL-1.2) and built into a runtime asset with `npm run beslishulp:build`.
 - **Login via Keycloak (SSO)** — The backend acts as an OpenID Connect backend-for-frontend: users log in through Keycloak, and a signed session cookie gates every API call. A `--dev` flag (backend) and `VITE_AUTH_BYPASS` (frontend) bypass the login for local development.
 - **User management** — Beheerders (admins) can create, edit, reset passwords for, and delete users straight from the app via the Keycloak Admin API.
@@ -91,6 +91,44 @@ Een typische workflow zou zijn: gebruik eerst een **beslishulp** om vast te stel
 
 Die eerste stap zit inmiddels in findocs zelf: de **AI-Verordening Beslishulp** van MinBZK is geïntegreerd als modal (zie [Features](#features)). De beslisboom wordt als gepinde kopie meegeleverd onder `vendor/ai-verordening-beslishulp/` en blijft daarmee herleidbaar tot de upstream bron; inhoudelijke vragen over de beslisboom horen bij MinBZK (ai-verordening@minbzk.nl), niet bij findocs.
 
+## Form lineage
+
+Every form carries a `source` block in its JSON (typed as `FormSource` in `src/models/Assessment.ts`) recording the instrument it comes from, the publisher, the exact reference inside that source, and **how faithfully** it follows the original. Nothing at runtime depends on it — it exists so that any answer in this tool can be traced back to the instrument it belongs to, without reading git history.
+
+The `derivation` field has four values:
+
+| Value | Meaning |
+|---|---|
+| `generated` | Machine-converted from a vendored upstream definition. **Do not hand-edit the JSON** — edit the overlay and re-run `npm run forms:build`. |
+| `harmonized` | Hand-built, but field-for-field aligned with a named external instrument; imported fields carry the upstream identifier as `officialId`. |
+| `derived` | Modelled on a framework that ships no fill-in template. The concepts are the source's; the questions are ours. |
+| `original` | Written for this tool or digitised from an internal MinFin template. No external original exists. |
+
+| Form | Track | Original instrument | Publisher | Derivation |
+|---|---|---|---|---|
+| Intakeformulier | Verkennen | Intakeformulier IV-verzoek (intern sjabloon) | MinFin | `original` |
+| Quick scan BIO | Verkennen | [Baseline Informatiebeveiliging Overheid](https://bio-overheid.nl/) — baselinetoets BBN | MinBZK / CIP | `derived` |
+| Prescan DPIA | Verkennen | Pre-scan DPIA v2.0 (`urn:nl:prescan`) | MinBZK | `generated` |
+| Aanbiedingsformulier | Besluiten | PPM-aanbiedingsformulier (intern sjabloon) | MinFin | `original` |
+| Restrisico-acceptatie | Besluiten | Geen extern origineel — sluitstuk van DPIA/AIIA/IAMA/BIO, naar het gangbare patroon van formele risicoacceptatie | MinFin | `original` |
+| PPM Projectplan | Ontwerpen | PPM-projectplan (intern sjabloon) | MinFin | `original` |
+| PSA | Ontwerpen | Project Start Architectuur (intern sjabloon, NORA-lagen) | MinFin | `original` |
+| Datakwaliteit-assessment | Ontwerpen | DAMA-DMBOK2 hfdst. 13 (Data Quality); ISO/IEC 25012, DAMA-NL DDQ | DAMA International | `derived` |
+| Dataset-registratie | Ontwerpen | DAMA-DMBOK2 hfdst. 12 (Metadata Management); DCAT-AP-NL, MIM 1.2, "Datasheets for Datasets" | DAMA International | `derived` |
+| DPIA | Toetsen | Model DPIA Rijksdienst v3.0 (`urn:nl:dpia`) | MinBZK | `generated` |
+| AI Impact Assessment | Toetsen | [AI Impact Assessment v2.0](https://www.rijksoverheid.nl/documenten/rapporten/2022/11/30/ai-impact-assessment-ministerie-van-infrastructuur-en-waterstaat) | MinIenW | `harmonized` |
+| IAMA | Toetsen | Impact Assessment Mensenrechten en Algoritmes v2 (`urn:nl:iama`) | MinBZK | `generated` |
+| EU AI Act Compliance Checklist | Toetsen | AI-BOK v1.0 Template 3 + task-registry `conformity_assessment_eu_ai_act` (`urn:nl:aivt:tr:ca:1.0`) | Jan Willem van Veen / MinBZK | `harmonized` |
+| Data-ethiektoets | Toetsen | DAMA-DMBOK2 hfdst. 2 (Data Handling Ethics), §3.1 — Belmont-principes | DAMA International | `derived` |
+| AI-systeemregistratie (Model Card) | In gebruik nemen | AI-BOK v1.0 Template 2 | Jan Willem van Veen | `harmonized` |
+| Algoritmeregister-publicatie | In gebruik nemen | [Algoritmeregister](https://algoritmes.overheid.nl/) — standaard voor de publicatie van algoritmes | MinBZK | `harmonized` |
+| Verwerkingsregister | In gebruik nemen | [AVG](https://eur-lex.europa.eu/legal-content/NL/TXT/?uri=CELEX%3A32016R0679) art. 30 lid 1 (beveiliging: art. 32 lid 1) | Europese Unie | `derived` |
+| Toegankelijkheidsverklaring | In gebruik nemen | Tijdelijk besluit digitale toegankelijkheid overheid; modelverklaring [DigiToegankelijk](https://www.digitoegankelijk.nl/) (Uitvoeringsbesluit (EU) 2018/1523), EN 301 549 / WCAG 2.1 AA | Rijksoverheid / Logius | `harmonized` |
+
+Two caveats the `source` blocks also record. The **Algoritmeregister** and **Toegankelijkheidsverklaring** forms *prepare* a publication — the official filing happens in the upstream register, and both upstream schemas evolve, so verify the current fields before publishing. And the three DAMA-derived forms take concepts, not text: DAMA-DMBOK2 is copyrighted and ships no fill-in template. The AI-BOK templates may be freely used and adapted with attribution (p. 204).
+
+The forms parked as **organisation-level** (AI Governance Charter, AI Maturity Quick Scan, Shadow AI Inventory, Data Governance Charter, Data-management volwassenheidsscan) are deliberately absent: a dossier describes one project or system. See [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) §3; the three that were built remain in git history.
+
 ## AI Body of Knowledge forms & MinBZK harmonization
 
 Two of the forms are derived from the **AI Body of Knowledge (AI-BOK v1.0)** by Jan Willem van Veen — a reference framework for AI governance, lifecycle management and organizational design, aligned with ISO 42001, the NIST AI RMF and the EU AI Act. Its appendix ships ready-to-use templates that map cleanly onto findocs' JSON form schema. Where an AI-BOK template overlaps with an authoritative Dutch government instrument, the form is **harmonized** with the corresponding MinBZK schema, and each imported field carries the upstream identifier (`officialId`) for traceability — the same approach already used for the DPIA, Pre-scan DPIA and IAMA.
@@ -108,7 +146,9 @@ There are **two harmonization tracks** with MinBZK, each targeting a different u
 - **[par-dpia-form](https://github.com/MinBZK/par-dpia-form)** — *form definitions (YAML)*. The DPIA, Pre-scan DPIA and IAMA are generated from vendored upstream YAML via a build-time converter (`npm run forms:build`), so their content tracks the official Model DPIA Rijksdienst and IAMA. See [`docs/SCHEMA_HARMONIZATION.md`](docs/SCHEMA_HARMONIZATION.md).
 - **[task-registry](https://github.com/MinBZK/task-registry)** — *instrument/task registry (URN-keyed)*. The EU AI Act checklist's conformity-declaration section reuses the `conformity_assessment_eu_ai_act` instrument (`urn:nl:aivt:tr:ca:1.0`). The registry also holds AIIA, IAMA and technical-documentation instruments, and the explicit AIIA↔IAMA links are a candidate for future cross-form mappings.
 
-The new forms plug into the existing **cross-form synthesis**: the EU AI Act checklist and the Model Card are pre-filled from AIIA, DPIA and PSA answers (`public/forms/crossFormMappings.json`), so shared information is entered once and reused. The full inventory of candidate AI-BOK forms and the rationale behind these choices lives in [`docs/AI-BOK-form-opportunities.md`](docs/AI-BOK-form-opportunities.md).
+All forms plug into the existing **cross-form synthesis** — 152 mappings in `public/forms/crossFormMappings.json`, so shared information is entered once and reused. The EU AI Act checklist and the Model Card are pre-filled from AIIA, DPIA and PSA answers; the Verwerkingsregister fills almost entirely from the DPIA (the article 30 elements are already there), and the Algoritmeregister publication from the AIIA and the Model Card. See [`docs/cross-form-connecties.md`](docs/cross-form-connecties.md).
+
+The inventories of candidate forms and the rationale behind which ones were built live in [`docs/AI-BOK-form-opportunities.md`](docs/AI-BOK-form-opportunities.md) (AI governance) and [`docs/DAMA-DMBOK-form-opportunities.md`](docs/DAMA-DMBOK-form-opportunities.md) (the data layer); the prioritised roadmap of what is still missing is in [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) §4.
 
 ## Architecture
 
@@ -269,6 +309,12 @@ All endpoints live under `/api` and require an authenticated session (except the
 | Model DPIA Rijksdienst (v3.0) | [kcbr.nl](https://www.kcbr.nl/sites/default/files/2023-09/Model%20DPIA%20Rijksdienst%20v3.0.pdf) |
 | AI Body of Knowledge (AI-BOK v1.0) | Jan Willem van Veen, 2026 — `AI-Body-of-Knowledge-EN-v4.pdf` |
 | EU-conformiteitsverklaring instrument (`urn:nl:aivt:tr:ca:1.0`) | [MinBZK/task-registry](https://github.com/MinBZK/task-registry/blob/main/instruments/conformity_assessment_eu_ai_act.yaml) |
+| DAMA-DMBOK2 — Data Management Body of Knowledge (2nd Ed., 2017) | DAMA International — `DAMA-DMBOK (2nd Edition) Data Management Body of Knowledge (DAMA International).pdf` |
+| Algemene verordening gegevensbescherming (AVG), art. 30 | [eur-lex.europa.eu](https://eur-lex.europa.eu/legal-content/NL/TXT/?uri=CELEX%3A32016R0679) |
+| Model toegankelijkheidsverklaring; EN 301 549 / WCAG 2.1 AA | [digitoegankelijk.nl](https://www.digitoegankelijk.nl/) |
+| Standaard voor de publicatie van algoritmes | [algoritmes.overheid.nl](https://algoritmes.overheid.nl/) |
+
+Per-form provenance — which instrument each form comes from and how faithfully — is recorded in the `source` block of every form JSON and summarised in [Form lineage](#form-lineage).
 
 ## Real-time collaboration internals
 

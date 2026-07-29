@@ -9,16 +9,23 @@
 > `public/forms/index.json` — met een bestaand `track` (levensfase) en `domains: ["data"]`.
 > Geen codewijzigingen nodig. Zie het zusterdocument
 > [`AI-BOK-form-opportunities.md`](AI-BOK-form-opportunities.md).
+>
+> **Update (juli 2026):** de drie projectgebonden voorstellen zijn **gebouwd** — §4A
+> Datakwaliteit-assessment (`datakwaliteit`), §4C Dataset-registratie (`datasetregistratie`) en
+> §4E Data-ethiektoets (`dataethiek`). §4B (volwassenheidsscan) en §4D (Data Governance Charter)
+> blijven **geparkeerd**: organisatieniveau, past niet in een projectdossier. De gebouwde
+> formulieren zijn `derived` — de concepten komen uit DAMA-DMBOK, de vragen zijn van ons; er is
+> geen tekst overgenomen. Zie de lineage-tabel in de README.
 
 ## 1. Wat we nu al hebben
 
 | Spoor (`track`) | Formulier | Dekt |
 |---|---|---|
 | verkennen | intake, quickscan (BIO/BBN), prescandpia | afbakening, beveiligingsniveau, DPIA-triage |
-| besluiten | aanbiedingsformulier | business case & portfolioafweging |
-| ontwerpen | ppm, psa | projectplan & architectuur |
-| toetsen | dpia, aiia, iama, euaiact | privacy, AI-impact, grondrechten, EU AI Act |
-| ingebruikname | modelcard | AI-systeemregistratie |
+| besluiten | aanbiedingsformulier, restrisico | business case, portfolioafweging & restrisico-acceptatie |
+| ontwerpen | ppm, psa, datakwaliteit, datasetregistratie | projectplan, architectuur & de datalaag |
+| toetsen | dpia, aiia, iama, euaiact, dataethiek | privacy, AI-impact, grondrechten, EU AI Act, data-ethiek |
+| ingebruikname | modelcard, algoritmeregister, verwerkingsregister, toegankelijkheid | registratie & publicatieverplichtingen |
 | beheer | *(leeg)* | — |
 
 **Het gat dat DAMA-DMBOK aanwijst:** onze forms draaien om *AI, privacy en beveiliging*, maar de
@@ -72,7 +79,7 @@ goed verankerd.
   (validity), juistheid (accuracy), consistentie (consistency)* — plus optioneel bruikbaarheid,
   flexibiliteit, vertrouwen en waarde. Aangevuld met DQ-regels, meetmethode, geconstateerde issues
   en een DQ-SLA/verbeteractie.
-- **Spoor:** `ontwerpen` · **domains:** `["data"]`.
+- **Spoor:** `ontwerpen` · **domains:** `["data"]` · **gebouwd** als `datakwaliteit` (juli 2026).
 - **Waarom sterk:** vult het grootste inhoudelijke gat; direct koppelbaar (cross-form) aan AIIA
   5.1.x (trainingsdata/datakwaliteit) en de Model Card (`mc_b.inputdata`, `mc_c.trainingsdata_bron`).
   Past op onze table- en radio/score-patronen.
@@ -94,7 +101,7 @@ goed verankerd.
 - **Wat:** registratie per dataset: naam, eigenaar/steward, bron & herkomst (lineage), inhoud,
   classificatie, bewaartermijn, kwaliteit, gebruiksvoorwaarden, licentie. In feite een *"Datasheet
   for Datasets"* (Gebru et al.) op overheidsniveau.
-- **Spoor:** `ontwerpen` · **domains:** `["data"]`.
+- **Spoor:** `ontwerpen` · **domains:** `["data", "privacy"]` · **gebouwd** als `datasetregistratie` (juli 2026).
 - **Waarom sterk:** logisch sluitstuk naast de **AI Model Card** (systeem) — dit is de *data*-kant.
   Sterke cross-form mapping vanuit PSA (`psa_d.gegevensmodel`) en naar AIIA/Model Card.
 - **Harmoniseren met:** **DCAT-AP-NL** (Geonovum) en **MIM 1.2** (Geonovum/VNG) voor dataset-
@@ -115,7 +122,7 @@ goed verankerd.
   (do no harm / baten-schade)** en **rechtvaardigheid (gelijke behandeling)**, met concrete
   reflectievragen (geïnformeerde toestemming, transparantie, minst-ingrijpende alternatief,
   ongelijke behandeling van groepen).
-- **Spoor:** `toetsen` · **domains:** `["data"]`.
+- **Spoor:** `toetsen` · **domains:** `["data", "privacy"]` · **gebouwd** als `dataethiek` (juli 2026).
 - **Waarom interessant:** complementair aan IAMA (grondrechten) en AIIA (proportionaliteit); legt de
   *data*-ethiek vast die daar impliciet blijft. Vooral tekst/radio — geschikt voor AI-modus.
 

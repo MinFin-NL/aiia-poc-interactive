@@ -6,7 +6,9 @@
       "title": "Intakeformulier",
       "track": "verkennen",
       "order": 1,
-      "domains": ["project"],
+      "domains": [
+        "project"
+      ],
       "shortDescription": "Registreer een nieuw IV-verzoek: doelstelling, doelgroep, urgentie en benodigde resources."
     },
     {
@@ -15,7 +17,9 @@
       "title": "Quick scan BIO",
       "track": "verkennen",
       "order": 2,
-      "domains": ["beveiliging"],
+      "domains": [
+        "beveiliging"
+      ],
       "shortDescription": "Bepaal snel het BIO-beveiligingsniveau (BBN) en of een DPIA of aanvullende maatregelen nodig zijn."
     },
     {
@@ -24,7 +28,9 @@
       "title": "Prescan DPIA",
       "track": "verkennen",
       "order": 3,
-      "domains": ["privacy"],
+      "domains": [
+        "privacy"
+      ],
       "shortDescription": "Scan op basis van AP/EDPB-criteria of een volledige DPIA verplicht is."
     },
     {
@@ -33,8 +39,23 @@
       "title": "Aanbiedingsformulier",
       "track": "besluiten",
       "order": 1,
-      "domains": ["project"],
+      "domains": [
+        "project"
+      ],
       "shortDescription": "Bouw de business case op: nut, noodzaak, baten, risico's en kostenraming voor portfolioafweging."
+    },
+    {
+      "id": "restrisico",
+      "file": "restrisico.json",
+      "title": "Restrisico-acceptatie",
+      "track": "besluiten",
+      "order": 2,
+      "domains": [
+        "project",
+        "privacy",
+        "beveiliging"
+      ],
+      "shortDescription": "Bundel de restrisico's uit DPIA, AIIA, IAMA en BIO-quickscan en leg per risico een expliciet acceptatiebesluit vast."
     },
     {
       "id": "ppm",
@@ -42,7 +63,9 @@
       "title": "PPM Projectplan",
       "track": "ontwerpen",
       "order": 1,
-      "domains": ["project"],
+      "domains": [
+        "project"
+      ],
       "shortDescription": "Stel het projectplan op: scope, aanpak, organisatie, afhankelijkheden en fasering."
     },
     {
@@ -51,8 +74,35 @@
       "title": "PSA",
       "track": "ontwerpen",
       "order": 2,
-      "domains": ["project", "beveiliging", "data"],
+      "domains": [
+        "project",
+        "beveiliging",
+        "data"
+      ],
       "shortDescription": "Beschrijf de architectuurkaders, gegevensstromen en niet-functionele eisen voor het project."
+    },
+    {
+      "id": "datakwaliteit",
+      "file": "datakwaliteit.json",
+      "title": "Datakwaliteit-assessment",
+      "track": "ontwerpen",
+      "order": 3,
+      "domains": [
+        "data"
+      ],
+      "shortDescription": "Beoordeel een dataset op volledigheid, uniciteit, tijdigheid, validiteit, juistheid en consistentie, met regels, meting en verbeteracties."
+    },
+    {
+      "id": "datasetregistratie",
+      "file": "datasetregistratie.json",
+      "title": "Dataset-registratie (datasheet)",
+      "track": "ontwerpen",
+      "order": 4,
+      "domains": [
+        "data",
+        "privacy"
+      ],
+      "shortDescription": "Registreer een dataset: herkomst, inhoud, grondslag, classificatie, bewaartermijn en gebruiksvoorwaarden — de datakant van de Model Card."
     },
     {
       "id": "dpia",
@@ -60,7 +110,9 @@
       "title": "DPIA",
       "track": "toetsen",
       "order": 1,
-      "domains": ["privacy"],
+      "domains": [
+        "privacy"
+      ],
       "shortDescription": "Voer een volledige Data Protection Impact Assessment uit conform het Model DPIA Rijksdienst."
     },
     {
@@ -69,7 +121,10 @@
       "title": "AI Impact Assessment",
       "track": "toetsen",
       "order": 2,
-      "domains": ["ai", "privacy"],
+      "domains": [
+        "ai",
+        "privacy"
+      ],
       "shortDescription": "Beoordeel de impact van een AI-systeem op grondrechten, proportionaliteit en beveiliging."
     },
     {
@@ -78,7 +133,9 @@
       "title": "IAMA",
       "track": "toetsen",
       "order": 3,
-      "domains": ["ai"],
+      "domains": [
+        "ai"
+      ],
       "shortDescription": "Doorloop het officiële Impact Assessment Mensenrechten en Algoritmes (MinBZK) voor de grondrechtentoets van een algoritme of AI-systeem."
     },
     {
@@ -87,8 +144,22 @@
       "title": "EU AI Act Compliance Checklist",
       "track": "toetsen",
       "order": 4,
-      "domains": ["ai"],
+      "domains": [
+        "ai"
+      ],
       "shortDescription": "Classificeer een AI-systeem onder de AI-verordening en loop cumulatief de verplichtingen na, inclusief de EU-conformiteitsverklaring (bijlage V)."
+    },
+    {
+      "id": "dataethiek",
+      "file": "dataethiek.json",
+      "title": "Data-ethiektoets",
+      "track": "toetsen",
+      "order": 5,
+      "domains": [
+        "data",
+        "privacy"
+      ],
+      "shortDescription": "Toets een gegevensverwerking op respect voor personen, baten versus schade en rechtvaardigheid (Belmont-principes)."
     },
     {
       "id": "modelcard",
@@ -96,8 +167,45 @@
       "title": "AI-systeemregistratie (Model Card)",
       "track": "ingebruikname",
       "order": 1,
-      "domains": ["ai", "data"],
+      "domains": [
+        "ai",
+        "data"
+      ],
       "shortDescription": "Registreer een AI-systeem centraal: doel, data, model, beperkingen, bias en compliance-status voor governance en audit."
+    },
+    {
+      "id": "algoritmeregister",
+      "file": "algoritmeregister.json",
+      "title": "Algoritmeregister-publicatie",
+      "track": "ingebruikname",
+      "order": 2,
+      "domains": [
+        "ai"
+      ],
+      "shortDescription": "Bereid de publicatie in het Algoritmeregister voor: doel, grondslag, werking, data, menselijk toezicht en meldroute, in begrijpelijke taal."
+    },
+    {
+      "id": "verwerkingsregister",
+      "file": "verwerkingsregister.json",
+      "title": "Verwerkingsregister (AVG art. 30)",
+      "track": "ingebruikname",
+      "order": 3,
+      "domains": [
+        "privacy",
+        "data"
+      ],
+      "shortDescription": "Leg de verplichte registratie-elementen van artikel 30 AVG vast: doeleinden, categorieën, ontvangers, doorgifte, bewaartermijnen en beveiliging."
+    },
+    {
+      "id": "toegankelijkheid",
+      "file": "toegankelijkheid.json",
+      "title": "Toegankelijkheidsverklaring",
+      "track": "ingebruikname",
+      "order": 4,
+      "domains": [
+        "project"
+      ],
+      "shortDescription": "Bereid de wettelijk verplichte toegankelijkheidsverklaring voor: onderzoek, nalevingsstatus, knelpunten, alternatieven en verbetermaatregelen."
     }
   ]
 }

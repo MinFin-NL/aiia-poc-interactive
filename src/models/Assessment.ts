@@ -191,10 +191,31 @@ export interface RiskLevelInfoEntry {
   color: string
 }
 
+// Provenance of a form: which external instrument it comes from, and how
+// faithfully. Purely informational — nothing at runtime depends on it — but it
+// keeps every form traceable back to its original, mirroring the lineage table
+// in the README. `derivation`:
+//   'generated'  — machine-converted from a vendored upstream definition
+//   'harmonized' — hand-built, but field-for-field aligned with the upstream
+//   'derived'    — modelled on a framework that ships no fill-in template
+//   'original'   — written for this tool, no external original
+export interface FormSource {
+  instrument: string
+  publisher: string
+  version?: string
+  url?: string
+  // Where inside the source: chapter, template number, article, page range.
+  reference?: string
+  derivation: 'generated' | 'harmonized' | 'derived' | 'original'
+  note?: string
+}
+
 export interface FormConfig {
   id: string
   version: string
   title: string
+  // Where this form comes from — see FormSource and the README lineage table.
+  source?: FormSource
   // One or two sentences describing the form's purpose, audience and tone,
   // prepended to the AI extraction prompt so answers are framed correctly.
   aiContext?: string

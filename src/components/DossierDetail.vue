@@ -191,7 +191,10 @@
         </p>
 
         <div v-else class="card-row">
+          <!-- Connector + card travel as one unit, so a wrapping row never
+               strands a lone glyph at the end of the line above. -->
           <template v-for="(form, idx) in group.forms" :key="form.id">
+            <div class="card-chain-item">
             <div v-if="idx > 0" class="card-connector" aria-hidden="true">
               {{ connectorGlyph(group, idx) }}
             </div>
@@ -263,6 +266,7 @@
                 />
               </div>
             </article>
+            </div>
             </div>
           </template>
         </div>
@@ -1035,8 +1039,16 @@ const trackGroups = computed(() => {
 .card-row {
   display: flex;
   align-items: stretch;
-  gap: 0;
+  column-gap: 0;
+  row-gap: var(--rvo-space-md);
   flex-wrap: wrap;
+}
+
+/* Connector + card as one unwrappable unit; each line stretches its own cards
+   to equal height. */
+.card-chain-item {
+  display: flex;
+  align-items: stretch;
 }
 
 .card-connector {
@@ -1115,9 +1127,13 @@ const trackGroups = computed(() => {
   margin-block-end: var(--rvo-space-md);
 }
 
+/* Dutch compound nouns ("Toegankelijkheidsverklaring") are wider than the
+   210px card, so hyphenate and hard-break rather than overflow the border. */
 .form-card__title {
   color: var(--rvo-color-lintblauw);
   margin: 0 0 var(--rvo-space-xs);
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 /* Subject-domain facet: which domains this form touches, independent of the
@@ -1144,6 +1160,8 @@ const trackGroups = computed(() => {
 .form-card__desc {
   color: var(--invulhulp-color-text-subtle);
   line-height: var(--rvo-line-height-md);
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .form-card__actions {

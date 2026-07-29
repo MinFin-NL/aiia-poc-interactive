@@ -1,0 +1,505 @@
+{
+  "id": "datasetregistratie",
+  "version": "1.0",
+  "title": "Dataset-registratie (datasheet)",
+  "aiContext": "Dit is een dataset-registratie ofwel datasheet voor het Ministerie van Financiën, afgeleid van DAMA-DMBOK2 hoofdstuk 12 (Metadata Management) en het patroon 'Datasheets for Datasets' (Gebru et al.), uitgelijnd met DCAT-AP-NL en MIM 1.2. Het legt per dataset de identificatie, herkomst, inhoud, juridische grondslag, kwaliteit en gebruiksvoorwaarden vast. Dit is de datakant van de AI Model Card. Schrijf feitelijk en beschrijvend in metadata-termen; vermijd waardeoordelen en houd velden kort en eenduidig zodat ze als metadata herbruikbaar zijn.",
+  "source": {
+    "instrument": "DAMA-DMBOK2 — Data Management Body of Knowledge, 2nd Edition",
+    "publisher": "DAMA International",
+    "version": "2nd Edition (2017)",
+    "reference": "hoofdstuk 12 (Metadata Management) met hoofdstuk 10 (Reference & Master Data); veldstructuur uitgelijnd met DCAT-AP-NL (Geonovum) en MIM 1.2, patroon ontleend aan 'Datasheets for Datasets' (Gebru et al., 2018)",
+    "derivation": "derived",
+    "note": "DAMA-DMBOK is een referentiekader zonder invul-template; dit formulier is afgeleid van de daarin beschreven metadata-deliverables. Geen tekst overgenomen. Ontwerpspec: docs/DAMA-DMBOK-form-opportunities.md §4C."
+  },
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Dataset-registratie",
+    "docTitle": "Dataset-registratie (datasheet)",
+    "footerLabel": "Dataset-registratie – MinFin",
+    "filename": "Dataset-registratie.pdf",
+    "systemNamePlaceholder": "Bijv. Aangiftegegevens omzetbelasting 2020-2024",
+    "homeContent": {
+      "notice": "Registreer één datasheet per dataset, niet per systeem: de AI Model Card beschrijft het systeem, deze registratie beschrijft de data eronder. Let op — een dossier biedt op dit moment ruimte aan één exemplaar van dit formulier. Gebruikt het project meerdere datasets, registreer dan hier de belangrijkste en neem de overige op als losse bijlage of in een apart dossier.",
+      "description": "Deze registratie legt vast wat een dataset is, waar hij vandaan komt, wat erin zit, onder welke grondslag hij verwerkt wordt en onder welke voorwaarden hij gebruikt mag worden. Het is het overheidsequivalent van een 'datasheet for datasets': de documentatie die nodig is om later, door iemand anders, verantwoord met deze data te kunnen werken. De velden zijn uitgelijnd met DCAT-AP-NL zodat de registratie herbruikbaar is als dataset-metadata.",
+      "steps": [
+        "Deel A – Identificatie: naam, eigenaar, doel en vindplaats van de dataset",
+        "Deel B – Herkomst en samenstelling: bron, verzamelwijze, inhoud en structuur",
+        "Deel C – Juridisch en classificatie: grondslag, persoonsgegevens, rubricering en bewaartermijn",
+        "Deel D – Kwaliteit, gebruik en beheer: kwaliteit, gebruiksvoorwaarden, licentie en onderhoud"
+      ],
+      "buttonLabel": "Starten met de dataset-registratie"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "ds_a" },
+    { "type": "subsections", "sectionId": "ds_b" },
+    { "type": "subsections", "sectionId": "ds_c" },
+    { "type": "subsections", "sectionId": "ds_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "ds_a",
+      "title": "Deel A: Identificatie",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "dsa1",
+          "title": "Basisgegevens",
+          "questions": [
+            {
+              "id": "ds_a.naam",
+              "text": "Naam van de dataset",
+              "guidance": "Gebruik een naam die zelfstandig te begrijpen is, inclusief de periode of versie waar dat onderscheidend is.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ds_a.identifier",
+              "text": "Unieke identificatie",
+              "guidance": "De sleutel waaronder deze dataset in de organisatie of in een catalogus bekend staat (URI, registratienummer of catalogus-id). Vul 'nog niet toegekend' in als die er nog niet is.",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            },
+            {
+              "id": "ds_a.omschrijving",
+              "text": "Korte omschrijving van de dataset",
+              "guidance": "Twee tot vier zinnen: wat zit erin, over welke objecten of personen gaat het, en welke periode beslaat het? Dit is het veld dat in een datacatalogus wordt getoond.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_a.doel",
+              "text": "Waarvoor is deze dataset oorspronkelijk verzameld?",
+              "guidance": "Het oorspronkelijke doel, niet het huidige gebruik. Het verschil tussen die twee is precies waar doelbinding onder druk komt te staan.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_a.huidiggebruik",
+              "text": "Waarvoor wordt de dataset nu gebruikt?",
+              "guidance": "Noem alle bekende afnemers en toepassingen, inclusief hergebruik voor analyse of AI. Wijkt dit af van het oorspronkelijke doel, beschrijf dan hoe dat is verantwoord.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_a.thema",
+              "text": "Onder welk thema valt de dataset?",
+              "guidance": "Themacategorie zoals gebruikt in dataregisters (DCAT-AP-NL).",
+              "type": "checkbox",
+              "importance": "optional",
+              "options": [
+                "Economie en financiën",
+                "Bestuur en publieke sector",
+                "Bevolking en maatschappij",
+                "Justitie, rechtsstelsel en openbare veiligheid",
+                "Onderwijs, cultuur en sport",
+                "Milieu",
+                "Verkeer en vervoer",
+                "Gezondheid",
+                "Wetenschap en technologie",
+                "Internationale kwesties",
+                "Landbouw, visserij, bosbouw en voeding",
+                "Energie",
+                "Regio's en steden"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dsa2",
+          "title": "Verantwoordelijkheid",
+          "questions": [
+            {
+              "id": "ds_a.eigenaar",
+              "text": "Wie is de data-eigenaar?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ds_a.steward",
+              "text": "Wie is de datasteward of beheerder?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ds_a.contact",
+              "text": "Contactadres voor vragen over deze dataset",
+              "type": "text",
+              "importance": "optional",
+              "format": "email"
+            },
+            {
+              "id": "ds_a.organisatie",
+              "text": "Welke organisatie of organisatieonderdeel is de bronhouder?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds_b",
+      "title": "Deel B: Herkomst en samenstelling",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "dsb1",
+          "title": "Herkomst",
+          "questions": [
+            {
+              "id": "ds_b.herkomst",
+              "text": "Waar komt de data vandaan (lineage)?",
+              "guidance": "Beschrijf de keten van primaire bron tot deze dataset, inclusief tussenliggende systemen en bewerkingen. Wie levert aan, en op welke manier?",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            },
+            {
+              "id": "ds_b.verzamelwijze",
+              "text": "Hoe is de data verzameld?",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "Opgave door burgers of bedrijven (bijv. aangifte, aanvraag, formulier)",
+                "Registratie door medewerkers tijdens het proces",
+                "Automatisch vastgelegd door een systeem (log, sensor, transactie)",
+                "Overgenomen uit een basisregistratie",
+                "Aangeleverd door een andere overheidsorganisatie",
+                "Ingekocht bij een externe partij",
+                "Afgeleid of berekend uit andere datasets",
+                "Gegenereerd of gesynthetiseerd",
+                "Onbekend"
+              ]
+            },
+            {
+              "id": "ds_b.periode",
+              "text": "Welke periode beslaat de dataset en hoe vaak wordt hij bijgewerkt?",
+              "guidance": "Noem de begin- en einddatum van de inhoud en de actualisatiefrequentie (realtime, dagelijks, maandelijks, eenmalig).",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_b.voorbewerking",
+              "text": "Welke bewerkingen zijn op de ruwe data uitgevoerd?",
+              "guidance": "Bijv. opschonen, ontdubbelen, koppelen, anonimiseren, pseudonimiseren, filteren, aggregeren of hercoderen. Vermeld ook wat er is weggelaten en waarom — dat bepaalt mede wat de dataset nog representeert.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_b.ruwebewaard",
+              "text": "Is de ruwe, onbewerkte data nog beschikbaar?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Ja, volledig beschikbaar",
+                "Ja, gedeeltelijk",
+                "Nee",
+                "Onbekend"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dsb2",
+          "title": "Inhoud en structuur",
+          "questions": [
+            {
+              "id": "ds_b.omvang",
+              "text": "Wat is de omvang van de dataset?",
+              "guidance": "Aantal records, aantal attributen en de datavolume-orde. Bij groei: het huidige volume en de groei per periode.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "ds_b.eenheid",
+              "text": "Wat beschrijft één record?",
+              "guidance": "De eenheid van analyse: één persoon, één aanvraag, één transactie, één meting per tijdstip. Zonder dit veld is geen enkele telling in de dataset interpreteerbaar.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_b.attributen",
+              "text": "Welke kernattributen bevat de dataset?",
+              "guidance": "Beschrijf de belangrijkste velden, niet noodzakelijk alle. Verwijs voor de volledige structuur naar het datamodel of gegevenswoordenboek.",
+              "type": "table",
+              "importance": "mandatory",
+              "columns": [
+                { "id": "attribuut", "label": "Attribuut" },
+                { "id": "betekenis", "label": "Betekenis" },
+                { "id": "type", "label": "Datatype", "type": "suggest", "options": ["Tekst", "Getal", "Datum", "Boolean", "Code uit codelijst", "Identificerend nummer", "Geometrie", "Overig"] },
+                { "id": "bijzonder", "label": "Bijzonder?", "type": "select", "options": ["Nee", "Persoonsgegeven", "Bijzonder persoonsgegeven", "Bedrijfsvertrouwelijk"] }
+              ],
+              "notesLabel": "Verwijzing naar het volledige gegevenswoordenboek of datamodel"
+            },
+            {
+              "id": "ds_b.formaat",
+              "text": "In welk formaat en waar is de dataset opgeslagen?",
+              "guidance": "Bijv. relationele database, parquet-bestanden op objectopslag, CSV-export. Noem systeem en locatie.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_b.begrippen",
+              "text": "Is de betekenis van de gegevens vastgelegd in een begrippenkader of informatiemodel?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Ja, in een informatiemodel volgens MIM",
+                "Ja, in een eigen gegevenswoordenboek of begrippenlijst",
+                "Ja, in een sectorale of landelijke standaard",
+                "Nee, alleen impliciet in de systeemdocumentatie",
+                "Nee, niet vastgelegd"
+              ],
+              "followUp": "Verwijs naar de vindplaats van het model of de begrippenlijst."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds_c",
+      "title": "Deel C: Juridisch kader en classificatie",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "dsc1",
+          "title": "Persoonsgegevens en grondslag",
+          "questions": [
+            {
+              "id": "ds_c.persoonsgegevens",
+              "text": "Bevat de dataset persoonsgegevens?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, waaronder bijzondere categorieën (art. 9 AVG) of strafrechtelijke gegevens (art. 10 AVG)",
+                "Ja, gewone persoonsgegevens",
+                "Ja, gepseudonimiseerde gegevens (nog steeds persoonsgegevens)",
+                "Nee, geanonimiseerd of geaggregeerd tot niet-herleidbaar niveau",
+                "Nee, geen gegevens over personen"
+              ],
+              "followUp": "Beschrijf welke categorieën betrokkenen en welke categorieën gegevens het betreft."
+            },
+            {
+              "id": "ds_c.grondslag",
+              "text": "Op welke grondslag worden deze gegevens verwerkt?",
+              "guidance": "Alleen invullen bij persoonsgegevens. Noem de grondslag uit artikel 6 AVG en, bij bijzondere gegevens, de uitzondering uit artikel 9 of 10, met de wettelijke bepaling erbij.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_c.dpia",
+              "text": "Is voor de verwerking van deze dataset een DPIA uitgevoerd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, DPIA uitgevoerd",
+                "Nee, uit de pre-scan bleek dat het niet verplicht is",
+                "Nee, nog niet uitgevoerd maar wel nodig",
+                "Niet van toepassing — geen persoonsgegevens"
+              ],
+              "followUp": "Verwijs naar het betreffende DPIA-document of de pre-scan."
+            },
+            {
+              "id": "ds_c.derden",
+              "text": "Wordt de dataset gedeeld met andere partijen?",
+              "type": "table",
+              "importance": "optional",
+              "columns": [
+                { "id": "partij", "label": "Ontvanger" },
+                { "id": "doel", "label": "Doel van het delen" },
+                { "id": "grondslag", "label": "Grondslag of afspraak" },
+                { "id": "vorm", "label": "Vorm", "type": "select", "options": ["Volledige dataset", "Selectie", "Geaggregeerd", "Via bevraging (API)"] }
+              ],
+              "notesLabel": "Toelichting op het delen met derden"
+            },
+            {
+              "id": "ds_c.doorgifte",
+              "text": "Vindt er doorgifte buiten de EER plaats, inclusief opslag of ondersteuning door partijen van buiten de EER?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee",
+                "Onbekend"
+              ],
+              "followUp": "Beschrijf naar welk land, op welke grondslag en welke waarborgen zijn getroffen."
+            }
+          ]
+        },
+        {
+          "id": "dsc2",
+          "title": "Classificatie en bewaring",
+          "questions": [
+            {
+              "id": "ds_c.rubricering",
+              "text": "Hoe is de dataset gerubriceerd?",
+              "guidance": "Volg de rubriceringssystematiek van de organisatie; sluit aan bij de BBN-bepaling uit de Quick scan BIO.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Openbaar",
+                "Intern gebruik",
+                "Vertrouwelijk",
+                "Departementaal vertrouwelijk of hoger",
+                "Nog niet geclassificeerd"
+              ]
+            },
+            {
+              "id": "ds_c.bbn",
+              "text": "Welk beveiligingsniveau (BBN) geldt voor deze dataset?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "BBN1",
+                "BBN2",
+                "BBN3",
+                "Nog niet bepaald"
+              ]
+            },
+            {
+              "id": "ds_c.toegang",
+              "text": "Wie heeft toegang tot de dataset en hoe is die toegang geregeld?",
+              "guidance": "Beschrijf de rollen, het autorisatiemodel en hoe toegang wordt verleend, herzien en ingetrokken.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_c.bewaartermijn",
+              "text": "Wat is de bewaartermijn en wat gebeurt er daarna?",
+              "guidance": "Noem de termijn en de grondslag ervoor (selectielijst Archiefwet, wettelijke bewaarplicht, of de eigen afweging op grond van AVG art. 5 lid 1 sub e), en of er vernietigd of overgebracht wordt.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_c.vernietiging",
+              "text": "Is de vernietiging of overbrenging feitelijk ingericht?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Ja, geautomatiseerd",
+                "Ja, via een periodieke handmatige procedure",
+                "Nee, nog niet ingericht",
+                "Niet van toepassing"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds_d",
+      "title": "Deel D: Kwaliteit, gebruik en beheer",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "dsd1",
+          "title": "Kwaliteit en beperkingen",
+          "questions": [
+            {
+              "id": "ds_d.kwaliteit",
+              "text": "Wat is er bekend over de kwaliteit van deze dataset?",
+              "guidance": "Vat samen wat uit het datakwaliteit-assessment volgt, of geef aan dat dat nog niet is uitgevoerd.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_d.beperkingen",
+              "text": "Welke bekende beperkingen of vertekeningen kent de dataset?",
+              "guidance": "Denk aan ontbrekende periodes, groepen die stelselmatig onder- of oververtegenwoordigd zijn, wijzigingen in registratiewijze die tijdreeksen breken, en meetfouten. Dit is het veld dat toekomstige gebruikers voor de grootste fouten behoedt.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_d.ongeschikt",
+              "text": "Voor welk gebruik is deze dataset uitdrukkelijk niet geschikt?",
+              "guidance": "Even belangrijk als het beoogde gebruik. Bijv. niet geschikt voor uitspraken op individueel niveau, niet geschikt als tijdreeks vóór een bepaald jaar, niet geschikt voor besluiten met rechtsgevolg.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "dsd2",
+          "title": "Gebruiksvoorwaarden en beheer",
+          "questions": [
+            {
+              "id": "ds_d.voorwaarden",
+              "text": "Onder welke voorwaarden mag de dataset gebruikt worden?",
+              "guidance": "Beschrijf de gebruiksbeperkingen die volgen uit grondslag, contract of afspraak met de bronhouder — bijv. alleen voor het oorspronkelijke doel, niet voor profilering, niet voor training van modellen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_d.licentie",
+              "text": "Welke licentie of rechtenregeling geldt?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Publiek domein / CC0",
+                "CC BY 4.0",
+                "Andere open licentie",
+                "Alleen intern gebruik, geen externe licentie",
+                "Gebruiksrecht op basis van contract met een leverancier",
+                "Nog niet bepaald"
+              ],
+              "followUp": "Licht toe welke rechten en beperkingen er precies gelden."
+            },
+            {
+              "id": "ds_d.openbaar",
+              "text": "Is de dataset (of een afgeleide ervan) openbaar beschikbaar?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Ja, als open data gepubliceerd",
+                "Ja, op verzoek beschikbaar",
+                "Nee, en dat kan ook niet",
+                "Nee, maar publicatie wordt onderzocht"
+              ],
+              "followUp": "Noem de vindplaats of de reden waarom publicatie niet kan."
+            },
+            {
+              "id": "ds_d.catalogus",
+              "text": "Is de dataset opgenomen in een datacatalogus of dataregister?",
+              "type": "radio",
+              "importance": "optional",
+              "options": [
+                "Ja, in de interne datacatalogus",
+                "Ja, op data.overheid.nl",
+                "Ja, in beide",
+                "Nee, nog niet opgenomen"
+              ],
+              "followUp": "Noem de vindplaats of het registratienummer."
+            },
+            {
+              "id": "ds_d.onderhoud",
+              "text": "Hoe wordt deze registratie onderhouden?",
+              "guidance": "Wie actualiseert de datasheet, bij welke gebeurtenissen (schemawijziging, nieuwe afnemer, gewijzigde grondslag) en met welke periodieke controle?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "ds_d.versie",
+              "text": "Datum en versie van deze registratie",
+              "type": "text",
+              "importance": "optional",
+              "format": "shorttext"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

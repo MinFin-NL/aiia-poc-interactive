@@ -2,6 +2,15 @@
   "id": "aiia",
   "version": "2.0",
   "title": "AI Impact Assessment",
+  "source": {
+    "instrument": "AI Impact Assessment (AIIA)",
+    "publisher": "Ministerie van Infrastructuur en Waterstaat",
+    "version": "2.0",
+    "url": "https://www.rijksoverheid.nl/documenten/rapporten/2022/11/30/ai-impact-assessment-ministerie-van-infrastructuur-en-waterstaat",
+    "reference": "AIIA IenW v2.0, aangevuld met de risicoclassificatie onder de AI-verordening (Verordening (EU) 2024/1689)",
+    "derivation": "harmonized",
+    "note": "Handmatig opgebouwd naar het IenW-model; niet gegenereerd uit par-dpia-form en losstaand van de vendored IAMA."
+  },
   "aiContext": "Dit is een AI Impact Assessment (AIIA) voor het Ministerie van Financiën: het beoordeelt de verantwoorde inzet van een AI-systeem, inclusief risicoclassificatie onder de AI-verordening, impact op grondrechten, en waarborgen rond bias, nauwkeurigheid, transparantie en beveiliging. Schrijf in AI-governance- en compliance-termen.",
   "meta": {
     "homeComponent": "HomePage",

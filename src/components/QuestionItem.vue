@@ -392,6 +392,13 @@ function onCheckboxToggle(option: string) {
   line-height: var(--rvo-line-height-md);
 }
 
+/* RVO ships rvo-form-field__label as a column flexbox, which would push the
+   asterisk / (aanvullend) marker onto its own line below the question. Use
+   normal inline flow so the marker always trails the text, like the legend. */
+.invulhulp-question .rvo-form-field__label {
+  display: block;
+}
+
 .invulhulp-question__label-text {
   /* The wrapper inherits the size/weight from its parent (label or legend),
      so the text + asterisk render identically in both question types. */
