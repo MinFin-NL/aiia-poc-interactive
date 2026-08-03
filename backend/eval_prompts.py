@@ -427,6 +427,83 @@ SMOOTH_CASES = [
         ],
         expect_tight={"q2": ["85%", "5%", "maandelijkse"]},
     ),
+    # The failure this pass exists for: a whole paragraph from an earlier
+    # section restated at the tail of two later answers. The duplicated
+    # paragraph must disappear entirely, not be shortened or summarized.
+    # The context answer opens with 500+ chars of unrelated text on purpose —
+    # the repeated paragraph only becomes visible with _SMOOTH_CONTEXT_CHARS
+    # large enough to carry whole paragraphs, which is half of the fix.
+    dict(
+        id="smooth-alinea-dup",
+        section_title="Uitvoering en beheer",
+        context_answers=[
+            dict(
+                question_id="c1",
+                question_text="Omschrijving van het IV-verzoek",
+                answer=(
+                    "Het project Slimme Documentstromen wijst met het model DocFlow-ML "
+                    "circa 40.000 burgerbrieven per maand automatisch toe aan "
+                    "behandelteams. De brieven komen binnen via het centrale "
+                    "scanstraatproces en worden na classificatie in de bestaande "
+                    "zaaksystemen geplaatst, waar behandelaars ze op de gebruikelijke "
+                    "manier afhandelen. Het verzoek betreft uitsluitend de "
+                    "classificatiestap; de opslag, de archivering en de "
+                    "antwoordbrieven blijven ongewijzigd. De verwachte oplevering is "
+                    "het vierde kwartaal, aansluitend op de vervanging van de "
+                    "scanstraat.\n\n"
+                    "De besluitvorming over het project ligt bij de stuurgroep "
+                    "Informatievoorziening, die maandelijks bijeenkomt onder "
+                    "voorzitterschap van de directeur Bedrijfsvoering. De stuurgroep "
+                    "beslist over scope, budget en oplevermomenten en rapporteert per "
+                    "kwartaal aan de Bestuursraad. Wijzigingen in de scope worden pas "
+                    "doorgevoerd nadat de stuurgroep daarover een formeel besluit heeft "
+                    "genomen."
+                ),
+            ),
+        ],
+        answers=[
+            dict(
+                question_id="q1",
+                question_text="Hoe is het project georganiseerd?",
+                answer=(
+                    "Het projectteam bestaat uit een productowner, twee data-engineers "
+                    "en een informatieanalist, en werkt in sprints van twee weken vanuit "
+                    "de afdeling Dienstverlening.\n\n"
+                    "De besluitvorming over het project ligt bij de stuurgroep "
+                    "Informatievoorziening, die maandelijks bijeenkomt onder "
+                    "voorzitterschap van de directeur Bedrijfsvoering. De stuurgroep "
+                    "beslist over scope, budget en oplevermomenten en rapporteert per "
+                    "kwartaal aan de Bestuursraad. Wijzigingen in de scope worden pas "
+                    "doorgevoerd nadat de stuurgroep daarover een formeel besluit heeft "
+                    "genomen."
+                ),
+            ),
+            dict(
+                question_id="q2",
+                question_text="Hoe wordt het beheer na oplevering belegd?",
+                answer=(
+                    "Na oplevering gaat het model in beheer bij het team Applicatiebeheer, "
+                    "dat de modelprestaties bewaakt en jaarlijks een hertraining uitvoert.\n\n"
+                    "De besluitvorming over het project ligt bij de stuurgroep "
+                    "Informatievoorziening, die maandelijks bijeenkomt onder "
+                    "voorzitterschap van de directeur Bedrijfsvoering. De stuurgroep "
+                    "beslist over scope, budget en oplevermomenten en rapporteert per "
+                    "kwartaal aan de Bestuursraad."
+                ),
+            ),
+        ],
+        # The stuurgroep paragraph already stands in the context answer, so it
+        # may not survive anywhere in this section; the unique facts of both
+        # answers must remain.
+        checks_joined=[
+            check_contains_all("productowner", "twee weken", "Applicatiebeheer", "hertraining"),
+            check_not_contains(
+                "voorzitterschap", "Bestuursraad", "formeel besluit", "zie boven",
+            ),
+            check_max_occurrences("stuurgroep", 1),
+            check_max_words(90),
+        ],
+    ),
 ]
 
 ONTOLOGY_CASES = [

@@ -536,9 +536,10 @@ interface SmoothStreamResult {
   answers: Record<string, string>
 }
 
-// Context answers only need enough of each fact for dedup awareness; keep the
-// rolling prompt bounded on large forms (mirrored server-side).
-const SMOOTH_CONTEXT_CHARS = 400
+// Context answers must carry whole paragraphs — the duplication this pass
+// targets is often a full paragraph restated later in an earlier answer, which
+// a short cut hid. Still bounded for large forms (mirrored server-side).
+const SMOOTH_CONTEXT_CHARS = 1000
 
 async function smoothAnswersStream(
   section: SmoothSection,
