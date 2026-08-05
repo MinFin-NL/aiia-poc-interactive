@@ -273,7 +273,8 @@ All endpoints live under `/api` and require an authenticated session (except the
 |---|---|---|
 | `/api/improve` · `/api/improve/stream` | `POST` | Suggest an improved version of a text fragment |
 | `/api/synthesize` · `/api/synthesize/stream` | `POST` | Synthesize a DPIA answer from AIIA answers |
-| `/api/smooth/stream` | `POST` | Smooth/finalise a drafted answer |
+| `/api/smooth/form/stream` | `POST` | Deduplicate a whole form's longtext answers (batched server-side) |
+| `/api/smooth/stream` | `POST` | Smooth one batch of answers (single-call primitive) |
 | `/api/extract` · `/api/extract/stream` | `POST` | Extract an answer for a question |
 | `/api/extract/rag/stream` | `POST` | Extract an answer grounded in retrieved document chunks (RAG) |
 

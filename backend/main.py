@@ -20,6 +20,7 @@ import sys
 import unicodedata
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
@@ -42,6 +43,7 @@ import dossiers
 import imagestore
 import llm
 import rag
+import textdedup
 import users
 
 load_dotenv()
@@ -415,6 +417,18 @@ class SmoothRequest(BaseModel):
     context_answers: list[SmoothAnswer] = []  # earlier sections — read-only
 
 
+class SmoothSectionInput(BaseModel):
+    title: str = ""
+    answers: list[SmoothAnswer]
+
+
+class SmoothFormRequest(BaseModel):
+    """Whole-form smoothing: the server splits this into batches that fit the
+    model, so no section can be too large to smooth."""
+
+    sections: list[SmoothSectionInput]
+
+
 class ExtractDocument(BaseModel):
     name: str
     content: str
@@ -501,10 +515,11 @@ def _synthesize_user_message(req: SynthesizeRequest) -> str:
     )
 
 
-# Context answers must carry whole paragraphs, not just their opening lines:
-# the duplication this pass targets is often a full paragraph restated near the
-# end of an earlier answer, and a short cut hid it from the model entirely.
-# Still truncated to keep the rolling prompt bounded on large forms.
+# Per context answer, the most any single one may occupy. Big enough to carry
+# whole paragraphs: the duplication this pass targets is often a full paragraph
+# restated near the end of an earlier answer, and a shorter cut hid it from the
+# model entirely. Oversize answers are reduced to their most relevant
+# paragraphs, never head-truncated (see textdedup.extract_paragraphs).
 _SMOOTH_CONTEXT_CHARS = 1000
 
 
@@ -551,6 +566,126 @@ def _parse_smooth(raw: str, originals: dict[str, str]) -> dict[str, str]:
             continue
         result[qid] = text
     return result
+
+
+# Whole-form smoothing budgets. One call rewrites at most _SMOOTH_BATCH_CHARS
+# of answers alongside _SMOOTH_CONTEXT_BUDGET_CHARS of earlier context; with the
+# ~2.5k system prompt that lands near 13k chars (~3.5k tokens), which every
+# backend handles comfortably. One call per form section did not: AIIA Deel B
+# has 56 longtext questions, so the request was rejected outright and the
+# section silently kept its duplication.
+_SMOOTH_BATCH_CHARS = 6000
+_SMOOTH_MAX_BATCH_ANSWERS = 8
+_SMOOTH_CONTEXT_BUDGET_CHARS = 4000
+_SMOOTH_REQUEST_MAX_CHARS = 300_000
+
+
+@dataclass
+class SmoothBatch:
+    section_title: str
+    answers: list[SmoothAnswer]
+
+
+def _smooth_batches(sections: list[SmoothSectionInput]) -> list[SmoothBatch]:
+    """Split a form into batches that fit a single LLM call. A batch never
+    crosses a section boundary (the section title is part of its context). An
+    answer too large to ever fit is left out of every batch and keeps its
+    original text — degrade, never reject the run."""
+    batches: list[SmoothBatch] = []
+    for section in sections:
+        current: list[SmoothAnswer] = []
+        size = 0
+        for a in section.answers:
+            n = len(a.answer)
+            if n > 2 * _SMOOTH_BATCH_CHARS:
+                continue
+            full = size + n > _SMOOTH_BATCH_CHARS or len(current) >= _SMOOTH_MAX_BATCH_ANSWERS
+            if current and full:
+                batches.append(SmoothBatch(section.title, current))
+                current, size = [], 0
+            current.append(a)
+            size += n
+        if current:
+            batches.append(SmoothBatch(section.title, current))
+    return batches
+
+
+def _smooth_context(batch: SmoothBatch, earlier: list[SmoothAnswer]) -> list[SmoothAnswer]:
+    """Read-only context for one batch: the already-smoothed answers this batch
+    is most likely to be repeating. Sending every earlier answer truncated to a
+    fixed head both blows the budget on a large form and cuts away the tail
+    paragraphs that tend to be the duplicated ones, so overlap decides who gets
+    the space (textdedup.select_context)."""
+    texts = {a.question_id: a.question_text for a in earlier}
+    selected = textdedup.select_context(
+        batch_texts=[a.answer for a in batch.answers],
+        candidates=[(a.question_id, a.answer) for a in earlier],
+        budget_chars=_SMOOTH_CONTEXT_BUDGET_CHARS,
+        per_answer_chars=_SMOOTH_CONTEXT_CHARS,
+    )
+    return [
+        SmoothAnswer(question_id=qid, question_text=texts.get(qid, ""), answer=text)
+        for qid, text in selected
+    ]
+
+
+async def _run_smooth_batch(
+    batch: SmoothBatch, context: list[SmoothAnswer]
+) -> tuple[dict[str, str], bool]:
+    """One batch through the model. Returns (id → final text, failed). A failing
+    batch yields its originals: worst case a no-op, never data loss."""
+    originals = {a.question_id: a.answer.strip() for a in batch.answers}
+    req = SmoothRequest(
+        section_title=batch.section_title, answers=batch.answers, context_answers=context
+    )
+    try:
+        raw = await backend.chat(SMOOTH_SYSTEM_PROMPT, _smooth_user_message(req))
+    except Exception:
+        return originals, True
+    return _parse_smooth(raw, originals), False
+
+
+async def _smooth_form_events(
+    req: SmoothFormRequest,
+) -> AsyncGenerator[tuple[str, dict], None]:
+    """Smooth a whole form batch by batch, yielding ('batch', …) per completed
+    batch and a final ('done', …) carrying every answer — rewritten or not."""
+    ordered = [a for s in req.sections for a in s.answers]
+    final = {a.question_id: a.answer.strip() for a in ordered}
+    batches = _smooth_batches(req.sections)
+    smoothed: set[str] = set()
+
+    for i, batch in enumerate(batches):
+        earlier = [
+            SmoothAnswer(
+                question_id=a.question_id,
+                question_text=a.question_text,
+                answer=final[a.question_id],
+            )
+            for a in ordered
+            if a.question_id in smoothed
+        ]
+        answers, failed = await _run_smooth_batch(batch, _smooth_context(batch, earlier))
+        changed = {qid: text for qid, text in answers.items() if text != final[qid]}
+        final.update(answers)
+        smoothed.update(answers.keys())
+        yield "batch", {
+            "index": i + 1,
+            "total": len(batches),
+            "answers": changed,
+            "failed": failed,
+        }
+
+    yield "done", {"answers": final, "batches": len(batches)}
+
+
+async def _smooth_form(req: SmoothFormRequest) -> dict[str, str]:
+    """Non-streaming core, for the eval harness: question id → final text."""
+    final: dict[str, str] = {}
+    async for event, payload in _smooth_form_events(req):
+        if event == "done":
+            final = payload["answers"]
+    return final
 
 
 def _xml_tag(raw: str, tag: str) -> str:
@@ -915,6 +1050,31 @@ async def smooth_answers_stream(req: SmoothRequest) -> StreamingResponse:
         raise HTTPException(status_code=400, detail="Sectie is te groot (max 30000 tekens).")
     return StreamingResponse(
         _smooth_sse_stream(req),
+        media_type="text/event-stream",
+        headers=_SSE_HEADERS,
+    )
+
+
+async def _smooth_form_sse_stream(req: SmoothFormRequest) -> AsyncGenerator[str, None]:
+    try:
+        async for event, payload in _smooth_form_events(req):
+            yield f"event: {event}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+    except Exception as e:
+        yield f"event: error\ndata: {json.dumps({'detail': str(e)}, ensure_ascii=False)}\n\n"
+
+
+@app.post("/api/smooth/form/stream")
+async def smooth_form_stream(req: SmoothFormRequest) -> StreamingResponse:
+    """Whole-form smoothing. Batching happens here, so a section is never too
+    large to smooth — unlike /api/smooth/stream, which rewrites exactly what it
+    is given and rejects anything over its cap."""
+    if not any(s.answers for s in req.sections):
+        raise HTTPException(status_code=400, detail="Geen antwoorden opgegeven.")
+    total_chars = sum(len(a.answer) for s in req.sections for a in s.answers)
+    if total_chars > _SMOOTH_REQUEST_MAX_CHARS:
+        raise HTTPException(status_code=400, detail="Formulier is te groot om gelijk te strijken.")
+    return StreamingResponse(
+        _smooth_form_sse_stream(req),
         media_type="text/event-stream",
         headers=_SSE_HEADERS,
     )

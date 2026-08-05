@@ -112,7 +112,7 @@ const props = defineProps<{
   doneFilledCount: number
   doneTotalCount: number
   progress: { filled: number; total: number } | null
-  /** Set during the final smoothing phase (sections done / sections total). */
+  /** Set during the final smoothing phase (batches done / batches total). */
   phase?: { current: number; total: number } | null
   /** Show the "undo smoothing" affordance in the done state. */
   canUndoSmoothing?: boolean

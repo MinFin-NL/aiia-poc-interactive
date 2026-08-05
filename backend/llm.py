@@ -153,6 +153,12 @@ class AzureBackend:
         return [d.embedding for d in response.data]
 
 
+# num_ctx is not Ollama's default (2048–4096 depending on the model): a longer
+# prompt is silently truncated by the runtime, which cost us whole answers on
+# the smoothing pass. Keep it well above the largest prompt we build.
+_OLLAMA_OPTIONS = {"temperature": 0.1, "num_ctx": 8192}
+
+
 class OllamaBackend:
     def __init__(self, *, host: str, model: str, embedding_model: str) -> None:
         self._client = ollama.AsyncClient(host=host)
@@ -167,7 +173,7 @@ class OllamaBackend:
                 {"role": "user", "content": user},
             ],
             keep_alive=-1,
-            options={"temperature": 0.1},
+            options=_OLLAMA_OPTIONS,
         )
         return response.message.content or ""
 
@@ -180,7 +186,7 @@ class OllamaBackend:
             ],
             stream=True,
             keep_alive=-1,
-            options={"temperature": 0.1},
+            options=_OLLAMA_OPTIONS,
         )
         async for chunk in stream:
             if chunk.message.content:

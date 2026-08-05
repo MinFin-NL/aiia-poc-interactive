@@ -14,7 +14,7 @@
           <div class="ai-banner__body">
             <template v-if="aiPhase">
               <span class="ai-banner__title">Antwoorden gladstrijken…</span>
-              <span class="ai-banner__count">sectie {{ Math.min(aiPhase.current + 1, aiPhase.total) }} van {{ aiPhase.total }}</span>
+              <span class="ai-banner__count">stap {{ Math.min(aiPhase.current + 1, aiPhase.total) }} van {{ aiPhase.total }}</span>
             </template>
             <template v-else>
               <span class="ai-banner__title">AI Modus vult dit formulier in…</span>

@@ -33,11 +33,12 @@ export interface ExtractRequest {
   columns?: TableColumn[]
 }
 
-function postJson(url: string, body: unknown): Promise<Response> {
+function postJson(url: string, body: unknown, signal?: AbortSignal): Promise<Response> {
   return fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+    signal,
   })
 }
 
@@ -52,6 +53,13 @@ async function postJsonOrThrow<T>(url: string, body: unknown): Promise<T> {
   return response.json() as Promise<T>
 }
 
+/** Extra event handlers that only some streams emit, kept out of the positional
+ *  callback list. `signal` aborts the request (used to cancel AI Modus). */
+interface SseOptions {
+  onBatch?: (data: SmoothBatchEvent) => void
+  signal?: AbortSignal
+}
+
 async function parseSseStream<T = RagExtractResult>(
   response: Response,
   onChunk: (text: string) => void,
@@ -59,6 +67,7 @@ async function parseSseStream<T = RagExtractResult>(
   onError: (message: string) => void,
   onClarification?: (question: string) => void,
   onDiagram?: (mermaid: string) => void,
+  opts: SseOptions = {},
 ): Promise<void> {
   const reader = response.body!.getReader()
   const decoder = new TextDecoder()
@@ -83,6 +92,7 @@ async function parseSseStream<T = RagExtractResult>(
       try {
         const parsed = JSON.parse(data)
         if (eventType === 'chunk') onChunk(parsed.text ?? '')
+        else if (eventType === 'batch') opts.onBatch?.(parsed as SmoothBatchEvent)
         else if (eventType === 'done') onDone(parsed as T)
         else if (eventType === 'clarification') onClarification?.(parsed.question ?? '')
         else if (eventType === 'diagram') onDiagram?.(parsed.mermaid ?? '')
@@ -105,10 +115,11 @@ async function postSse<T>(
   onError: (message: string) => void,
   onClarification?: (question: string) => void,
   onDiagram?: (mermaid: string) => void,
+  opts: SseOptions = {},
 ): Promise<void> {
   let response: Response
   try {
-    response = await postJson(url, body)
+    response = await postJson(url, body, opts.signal)
   } catch {
     onError('Verbindingsfout')
     return
@@ -117,7 +128,7 @@ async function postSse<T>(
     onError(await readErrorDetail(response))
     return
   }
-  await parseSseStream<T>(response, onChunk, onDone, onError, onClarification, onDiagram)
+  await parseSseStream<T>(response, onChunk, onDone, onError, onClarification, onDiagram, opts)
 }
 
 export interface ImproveStreamOptions {
@@ -532,90 +543,105 @@ export interface SmoothSection {
   answers: SmoothAnswerInput[]
 }
 
-interface SmoothStreamResult {
+export interface SmoothBatchEvent {
+  index: number
+  total: number
   answers: Record<string, string>
+  failed: boolean
 }
 
-// Context answers must carry whole paragraphs — the duplication this pass
-// targets is often a full paragraph restated later in an earlier answer, which
-// a short cut hid. Still bounded for large forms (mirrored server-side).
-const SMOOTH_CONTEXT_CHARS = 1000
-
-async function smoothAnswersStream(
-  section: SmoothSection,
-  contextAnswers: SmoothAnswerInput[],
-  onDone: (answers: Record<string, string>) => void,
-  onError: (message: string) => void,
-): Promise<void> {
-  const toSnake = (a: SmoothAnswerInput) => ({
-    question_id: a.questionId,
-    question_text: a.questionText,
-    answer: a.answer,
-  })
-  await postSse<SmoothStreamResult>(
-    '/api/smooth/stream',
-    {
-      section_title: section.title,
-      answers: section.answers.map(toSnake),
-      context_answers: contextAnswers.map(toSnake),
-    },
-    () => {},
-    (result) => onDone(result.answers ?? {}),
-    onError,
-  )
+interface SmoothFormResult {
+  answers: Record<string, string>
+  batches: number
 }
 
 export interface SmoothFormParams {
   sections: SmoothSection[]
   onRewrite: (qId: string, html: string) => void
+  /** Progress in batches, not sections — the server decides how many. */
   onSectionProgress: (current: number, total: number) => void
   isCancelled: () => boolean
 }
 
-/** Post-AI-Modus smoothing pass: rewrite each section's longtext answers to
- *  remove duplication, feeding earlier sections' (smoothed) answers along as
- *  read-only context. A failing section is skipped — originals stay in place.
- *  Returns the number of answers that were rewritten. */
+/** Post-AI-Modus smoothing pass: rewrite the form's longtext answers to remove
+ *  duplication across them. The server splits the form into batches that fit
+ *  the model and streams each one back as it lands; the final `done` map is
+ *  authoritative and reconciled last, so a batch that failed silently keeps its
+ *  original text. Returns the number of answers that were rewritten. */
 export async function smoothFormAnswers(params: SmoothFormParams): Promise<number> {
   const { sections, onRewrite, onSectionProgress, isCancelled } = params
-  const contextAnswers: SmoothAnswerInput[] = []
-  let rewritten = 0
 
-  for (let i = 0; i < sections.length; i++) {
-    if (isCancelled()) break
-    onSectionProgress(i, sections.length)
-    const section = sections[i]
-    const finalTexts = new Map(section.answers.map((a) => [a.questionId, a.answer]))
+  const originals = new Map<string, string>()
+  for (const section of sections) {
+    for (const a of section.answers) originals.set(a.questionId, a.answer)
+  }
+  // Plaintext currently written to the store, per question.
+  const applied = new Map<string, string>(originals)
 
-    await smoothAnswersStream(
-      section,
-      contextAnswers,
-      (answers) => {
-        if (isCancelled()) return
-        for (const a of section.answers) {
-          const text = answers[a.questionId]?.trim()
-          if (text && text !== a.answer) {
-            finalTexts.set(a.questionId, text)
-            onRewrite(a.questionId, plainTextToHtml(text))
-            rewritten++
-          }
-        }
-      },
-      (err) => {
-        console.warn(`[AI mode] gladstrijken van sectie "${section.title}" overgeslagen:`, err)
-      },
-    ).catch((err) => {
-      console.warn(`[AI mode] stream fout bij gladstrijken van sectie "${section.title}":`, err)
-    })
-
-    // Later sections dedup against what the document now actually says.
-    for (const a of section.answers) {
-      const text = finalTexts.get(a.questionId) ?? a.answer
-      contextAnswers.push({ ...a, answer: text.slice(0, SMOOTH_CONTEXT_CHARS) })
-    }
+  function apply(qId: string, text: string) {
+    const trimmed = text.trim()
+    if (!trimmed || trimmed === applied.get(qId)) return
+    applied.set(qId, trimmed)
+    onRewrite(qId, plainTextToHtml(trimmed))
   }
 
-  onSectionProgress(sections.length, sections.length)
+  // The whole form streams over one connection, so cancelling means aborting it.
+  const controller = new AbortController()
+  const cancelPoll = setInterval(() => {
+    if (isCancelled()) controller.abort()
+  }, 500)
+
+  const body = {
+    sections: sections.map((s) => ({
+      title: s.title,
+      answers: s.answers.map((a) => ({
+        question_id: a.questionId,
+        question_text: a.questionText,
+        answer: a.answer,
+      })),
+    })),
+  }
+
+  try {
+    await postSse<SmoothFormResult>(
+      '/api/smooth/form/stream',
+      body,
+      () => {},
+      (result) => {
+        if (isCancelled()) return
+        for (const [qId, text] of Object.entries(result.answers ?? {})) {
+          if (originals.has(qId)) apply(qId, text)
+        }
+        onSectionProgress(result.batches, result.batches)
+      },
+      (err) => {
+        console.warn('[AI mode] gladstrijken overgeslagen:', err)
+      },
+      undefined,
+      undefined,
+      {
+        signal: controller.signal,
+        onBatch: (batch) => {
+          if (isCancelled()) return
+          for (const [qId, text] of Object.entries(batch.answers ?? {})) {
+            if (originals.has(qId)) apply(qId, text)
+          }
+          // `current` stays 0-based (the batch just finished), matching what
+          // the banners render as current + 1.
+          onSectionProgress(batch.index - 1, batch.total)
+        },
+      },
+    ).catch((err) => {
+      console.warn('[AI mode] stream fout bij gladstrijken:', err)
+    })
+  } finally {
+    clearInterval(cancelPoll)
+  }
+
+  let rewritten = 0
+  for (const [qId, original] of originals) {
+    if (applied.get(qId) !== original) rewritten++
+  }
   return rewritten
 }
 

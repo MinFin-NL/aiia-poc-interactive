@@ -691,6 +691,16 @@ export const useAssessmentStore = defineStore('assessment', {
       this._docFor(id)?.setAnswerSources(formId, questionId, meta)
     },
 
+    /** Smoothing rewrote this answer: keep the citations, but record that they
+     *  describe the pre-smoothing text. No-op when there are none. */
+    markAnswerSmoothed(formId: string, questionId: string, dossierId?: DossierId) {
+      const id = dossierId ?? this.activeDossierId
+      if (!id || !this.dossiers[id]) return
+      const meta = this.dossiers[id].forms[formId]?.answerSources?.[questionId]
+      if (!meta) return
+      this._docFor(id)?.setAnswerSources(formId, questionId, { ...meta, smoothedAt: Date.now() })
+    },
+
     setAnswerSources(questionId: string, meta: AnswerSourceMeta) {
       const id = this.activeDossier.activeFormId
       if (id) this.setAnswerSourcesForForm(id, questionId, meta)

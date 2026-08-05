@@ -28,6 +28,7 @@ import time
 
 import main
 import rag
+import textdedup
 from llm import create_backend
 
 backend = create_backend()
@@ -506,6 +507,117 @@ SMOOTH_CASES = [
     ),
 ]
 
+# The paragraph the smoothing pass has to notice, and two answers that talk
+# about the same project without repeating it.
+_STUURGROEP = (
+    "De besluitvorming over het project ligt bij de stuurgroep Informatievoorziening, "
+    "die maandelijks bijeenkomt onder voorzitterschap van de directeur Bedrijfsvoering. "
+    "De stuurgroep beslist over scope, budget en oplevermomenten en rapporteert per "
+    "kwartaal aan de Bestuursraad."
+)
+_DECOY_A = (
+    "Voor de verwerking is een verwerkersovereenkomst gesloten met de leverancier van "
+    "de scanstraat. De bewaartermijn van gescande brieven bedraagt zeven jaar."
+)
+_DECOY_B = (
+    "De gebruikers zijn behandelaars bij vier regiokantoren. Zij krijgen een training "
+    "van een dagdeel voordat het systeem in gebruik wordt genomen."
+)
+
+
+def _check_selection():
+    batch = ["Het projectteam werkt in sprints van twee weken.\n\n" + _STUURGROEP]
+    candidates = [("d1", _DECOY_A), ("c1", "Inleiding op het verzoek.\n\n" + _STUURGROEP), ("d2", _DECOY_B)]
+    picked = [qid for qid, _ in textdedup.select_context(batch, candidates, 4000, 1000)]
+    return picked == ["c1"], f"context-selectie koos {picked} (verwacht ['c1'])"
+
+
+def _check_extract_keeps_repeat():
+    text = _DECOY_A + "\n\n" + _STUURGROEP
+    targets = [textdedup.shingles(textdedup.normalize_words(_STUURGROEP))]
+    kept = textdedup.extract_paragraphs(text, targets, budget=len(_STUURGROEP) + 20)
+    ok = "Bestuursraad" in kept and "bewaartermijn" not in kept
+    return ok, "paragraaf-extract houdt de herhaalde alinea, niet de kop van de tekst"
+
+
+def _check_scores():
+    near = textdedup.relevance(
+        "De besluitvorming ligt bij de stuurgroep Informatievoorziening, die maandelijks "
+        "bijeenkomt onder voorzitterschap van de directeur Bedrijfsvoering.",
+        [textdedup.shingles(textdedup.normalize_words(_STUURGROEP))],
+    )
+    far = textdedup.relevance(_DECOY_B, [textdedup.shingles(textdedup.normalize_words(_STUURGROEP))])
+    return near > 0.4 and far < 0.1, f"bijna-woordelijk {near:.2f} vs. ongerelateerd {far:.2f}"
+
+
+def _check_budget():
+    candidates = [(f"q{i}", _STUURGROEP + " " + _DECOY_A) for i in range(20)]
+    picked = textdedup.select_context([_STUURGROEP], candidates, 2000, 1000)
+    total = sum(len(t) for _, t in picked)
+    return total <= 2000, f"{total} tekens context (max 2000)"
+
+
+DEDUP_CASES = [
+    dict(id="dedup-selectie", checks=[_check_selection]),
+    dict(id="dedup-extract", checks=[_check_extract_keeps_repeat]),
+    dict(id="dedup-scores", checks=[_check_scores]),
+    dict(id="dedup-budget", checks=[_check_budget]),
+]
+
+
+def _big_section_answers(n: int) -> list[dict]:
+    """A section far larger than one LLM call can take: n answers of ~800 chars,
+    each repeating the same governance paragraph the first answer introduces."""
+    repeated = (
+        "De besluitvorming over het project ligt bij de stuurgroep Informatievoorziening, "
+        "die maandelijks bijeenkomt onder voorzitterschap van de directeur Bedrijfsvoering "
+        "en per kwartaal rapporteert aan de Bestuursraad. "
+    )
+    unique = (
+        "Onderdeel {i} van de uitvoering betreft {topic}. Hiervoor is een werkinstructie "
+        "opgesteld die door het team wordt gevolgd en jaarlijks wordt herzien. De "
+        "verantwoordelijkheid ligt bij de afdeling Dienstverlening, die hierover in het "
+        "kwartaalverslag rapporteert. "
+    )
+    topics = [
+        "de inrichting van de scanstraat", "het beheer van de trainingsdata",
+        "de logging van classificatiebesluiten", "de terugkoppeling aan behandelaars",
+        "het bijhouden van de foutmarge", "de archivering van brieven",
+    ]
+    return [
+        dict(
+            question_id=f"g{i}",
+            question_text=f"Beschrijf onderdeel {i} van de uitvoering.",
+            answer=(unique.format(i=i, topic=topics[i % len(topics)]) * 2 + repeated).strip(),
+        )
+        for i in range(n)
+    ]
+
+
+SMOOTH_FORM_CASES = [
+    # The regression this suite exists for: one call per section made this form
+    # exceed the request cap, so the backend rejected it and the client silently
+    # left every answer untouched.
+    dict(
+        id="smooth-groot",
+        sections=[
+            dict(title="Doel en aanpak", answers=[
+                dict(
+                    question_id="c1",
+                    question_text="Omschrijving van het IV-verzoek",
+                    answer=(
+                        "Het project Slimme Documentstromen wijst met het model DocFlow-ML "
+                        "circa 40.000 burgerbrieven per maand automatisch toe aan behandelteams."
+                    ),
+                ),
+            ]),
+            dict(title="Uitvoering en beheer", answers=_big_section_answers(30)),
+        ],
+        min_batches=4,
+    ),
+]
+
+
 ONTOLOGY_CASES = [
     dict(
         id="ontology-notulen",
@@ -611,6 +723,83 @@ async def run_smooth(case: dict) -> dict:
     }
 
 
+async def run_dedup(case: dict) -> dict:
+    """LLM-free: pins the deterministic context selection in textdedup. Runs in
+    milliseconds, so every threshold constant has a regression net."""
+    notes, passed = [], []
+
+    def add(ok: bool, note: str):
+        passed.append(ok)
+        notes.append(("PASS " if ok else "FAIL ") + note)
+
+    t0 = time.monotonic()
+    for check in case["checks"]:
+        ok, note = check()
+        add(ok, note)
+    return {
+        "id": case["id"], "ok": all(passed), "time": time.monotonic() - t0,
+        "notes": notes, "raw": "", "suggestion": "", "final": "",
+    }
+
+
+async def run_smooth_form(case: dict) -> dict:
+    """Whole-form smoothing: batching is asserted directly, then the real run
+    must return every question id it was given."""
+    req = main.SmoothFormRequest(
+        sections=[
+            main.SmoothSectionInput(
+                title=s["title"], answers=[main.SmoothAnswer(**a) for a in s["answers"]]
+            )
+            for s in case["sections"]
+        ]
+    )
+    originals = {a.question_id: a.answer.strip() for s in req.sections for a in s.answers}
+    notes, passed = [], []
+
+    def add(ok: bool, note: str):
+        passed.append(ok)
+        notes.append(("PASS " if ok else "FAIL ") + note)
+
+    batches = main._smooth_batches(req.sections)
+    add(len(batches) >= case["min_batches"],
+        f"{len(batches)} batches (min {case['min_batches']})")
+    oversize = [
+        b for b in batches
+        if len(b.answers) > 1 and sum(len(a.answer) for a in b.answers) > main._SMOOTH_BATCH_CHARS
+    ]
+    add(not oversize, f"{len(oversize)} batches boven het tekenbudget")
+    add(all(len(b.answers) <= main._SMOOTH_MAX_BATCH_ANSWERS for b in batches),
+        "geen batch met te veel antwoorden")
+    batched_ids = {a.question_id for b in batches for a in b.answers}
+    add(batched_ids == set(originals), "elk antwoord zit in een batch")
+
+    t0 = time.monotonic()
+    final = await main._smooth_form(req)
+    dt = time.monotonic() - t0
+
+    add(set(final) == set(originals), "elk vraag-ID staat in het eindresultaat")
+    add(all(final.get(qid, "").strip() for qid in originals), "geen leeg antwoord")
+    add(all(len(final[qid]) <= 1.5 * len(originals[qid]) for qid in originals),
+        "geen antwoord gegroeid")
+    changed = sum(1 for qid in originals if final[qid] != originals[qid])
+    add(changed > 0, f"{changed}/{len(originals)} antwoorden herschreven")
+    # The governance paragraph starts in all 30 answers. Batching removes most
+    # of it (~9 survive), but not down to one: answers in different batches only
+    # see the earliest answers as context, so each batch tends to keep its own
+    # copy. Squeezing that last factor out is the deterministic duplicate map's
+    # job, not batching's — this bar guards the win we actually have.
+    before = sum(a["answer"].lower().count("bestuursraad")
+                 for s in case["sections"] for a in s["answers"])
+    joined = "\n\n".join(final[qid] for qid in originals)
+    after = joined.lower().count("bestuursraad")
+    add(after <= before // 2, f"'Bestuursraad': {before}x → {after}x (max {before // 2})")
+
+    return {
+        "id": case["id"], "ok": all(passed), "time": dt, "notes": notes,
+        "raw": "", "suggestion": joined[:600], "final": joined[:600],
+    }
+
+
 async def run_ontology(case: dict) -> dict:
     t0 = time.monotonic()
     onto = await rag.extract_ontology(case["doc_name"], case["content"], backend.chat)
@@ -660,6 +849,8 @@ SUITES = {
     "improve": (IMPROVE_CASES, run_improve),
     "synthesize": (SYNTH_CASES, run_synth),
     "smooth": (SMOOTH_CASES, run_smooth),
+    "smoothform": (SMOOTH_FORM_CASES, run_smooth_form),
+    "dedup": (DEDUP_CASES, run_dedup),
     "ontology": (ONTOLOGY_CASES, run_ontology),
 }
 

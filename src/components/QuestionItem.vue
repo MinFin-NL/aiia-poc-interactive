@@ -121,12 +121,28 @@
       AI vond hier geen antwoord — vul deze vraag zelf in.
     </p>
 
+    <!-- Smoothing rewrote this answer to remove repetition; offer the original back -->
+    <p v-if="showAiSmoothed" class="invulhulp-question__ai-smoothed" role="note">
+      <span class="invulhulp-question__ai-smoothed-text">
+        Gladgestreken door AI Modus — herhaling uit andere antwoorden is geschrapt.
+      </span>
+      <button
+        v-if="store.canEdit"
+        type="button"
+        class="rvo-button rvo-button--tertiary rvo-button--size-sm"
+        @click="restoreBeforeSmoothing"
+      >
+        Herstel origineel
+      </button>
+    </p>
+
     <!-- Persisted citations for AI-extracted answers (AI Mode / accepted suggestions) -->
     <SourcePanel
       v-if="sourceMeta"
       :sources="sourceMeta.sources"
       :answer-text="persistedAnswerText"
       :grounded="sourceMeta.grounded"
+      :smoothed="sourceMeta.smoothedAt !== undefined"
       @show-document="showSourceDocument"
       @dismiss-warning="store.dismissSourceWarning(question.id)"
     />
@@ -189,7 +205,7 @@ const mappings = useCrossFormMappings()
 // Collaborative binding for the main rich-text answer (text questions only).
 const collabQuestionId = computed(() => (props.question.type === 'text' ? props.question.id : ''))
 const { fragment: collabFragment, provider: collabProvider, user: collabUser } = useCollab(collabQuestionId)
-const { isAiUnanswered, clearAiUnanswered } = useAiMode()
+const { isAiUnanswered, clearAiUnanswered, isAiSmoothed, clearAiSmoothed, undoSmoothingFor } = useAiMode()
 
 // True while AI Mode flagged this question as unanswerable and the user hasn't
 // filled it in yet.
@@ -202,6 +218,25 @@ const showAiUnanswered = computed(() => {
 function clearUnanswered() {
   const formId = store.activeFormId
   if (formId) clearAiUnanswered(formId, props.question.id)
+}
+
+// True while the smoothing pass's rewrite of this answer still stands.
+const showAiSmoothed = computed(() => {
+  const formId = store.activeFormId
+  return !!formId && isAiSmoothed(formId, props.question.id)
+})
+
+function restoreBeforeSmoothing() {
+  const formId = store.activeFormId
+  if (formId) undoSmoothingFor(formId, props.question.id)
+}
+
+/** The user edited a smoothed answer: the snapshot no longer describes it.
+ *  A no-op while the value still equals what smoothing wrote — the editor
+ *  echoes that back through v-model when the store write lands. */
+function clearSmoothed(value: string) {
+  const formId = store.activeFormId
+  if (formId) clearAiSmoothed(formId, props.question.id, value)
 }
 
 // Table questions can't be filled by the synthesize flow (it produces free
@@ -239,6 +274,7 @@ const textModel = computed({
     emit('update:modelValue', val)
     store.dismissSourceWarning(props.question.id)
     clearUnanswered()
+    clearSmoothed(val)
   },
 })
 
@@ -290,6 +326,7 @@ function onApplySuggestion(value: string, meta?: AnswerSourceMeta) {
   emit('update:modelValue', value)
   if (meta) store.setAnswerSources(props.question.id, meta)
   clearUnanswered()
+  clearSmoothed(value)
 }
 
 const checkboxValues = computed(() =>
@@ -447,5 +484,24 @@ function onCheckboxToggle(option: string) {
   align-items: center;
   color: #b8860b;
   flex-shrink: 0;
+}
+
+/* Informational, not a warning: quieter than the ai-empty notice above. */
+.invulhulp-question__ai-smoothed {
+  display: flex;
+  align-items: center;
+  gap: var(--rvo-space-xs);
+  flex-wrap: wrap;
+  margin: var(--rvo-space-xs) 0 0;
+  padding: var(--rvo-space-2xs) var(--rvo-space-xs);
+  background: var(--rvo-color-grijs-100, #f3f5f6);
+  border-inline-start: 3px solid var(--rvo-color-grijs-500, #a1a7ad);
+  border-radius: var(--rvo-border-radius-sm, 4px);
+  font-size: var(--rvo-font-size-sm);
+  color: var(--rvo-color-grijs-700, #4f5457);
+}
+
+.invulhulp-question__ai-smoothed-text {
+  flex: 1 1 auto;
 }
 </style>

@@ -29,6 +29,11 @@
         <span class="source-panel__chevron" aria-hidden="true">{{ open ? '▾' : '▸' }}</span>
       </button>
 
+      <p v-if="open && smoothed" class="source-panel__stale" role="note">
+        Dit antwoord is na het ophalen gladgestreken; de gemarkeerde passages
+        horen bij de oorspronkelijke tekst.
+      </p>
+
       <div v-if="open" class="source-panel__cards">
         <div v-for="entry in matchedSources" :key="`${entry.source.docId}-${entry.source.chunkIndex}`" class="source-panel__card">
           <div class="source-panel__card-header">
@@ -65,9 +70,13 @@ const props = withDefaults(defineProps<{
   answerText: string
   grounded?: boolean
   defaultOpen?: boolean
+  /** The answer was rewritten by the smoothing pass after these sources were
+   *  recorded, so the highlights describe text the field no longer shows. */
+  smoothed?: boolean
 }>(), {
   grounded: true,
   defaultOpen: false,
+  smoothed: false,
 })
 
 const emit = defineEmits<{
@@ -92,6 +101,12 @@ const matchedSources = computed(
 <style scoped>
 .source-panel {
   margin-block-start: var(--rvo-space-xs);
+}
+
+.source-panel__stale {
+  margin: var(--rvo-space-2xs) 0;
+  font-size: var(--rvo-font-size-sm);
+  color: var(--rvo-color-grijs-700, #4f5457);
 }
 
 .source-panel__warning {

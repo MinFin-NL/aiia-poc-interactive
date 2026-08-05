@@ -19,12 +19,22 @@ const aiModeTotal = ref<Record<string, number>>({})
 const aiModeUnanswered = ref<Record<string, Set<string>>>({})
 const aiModeError = ref<Record<string, string>>({})
 const aiModeCancelled: Record<string, boolean> = {}
-// Final AI Modus phase: deduplicating/tightening the filled longtext answers,
-// one section per LLM call. Drives the "Antwoorden gladstrijken…" banner text.
+// Final AI Modus phase: deduplicating/tightening the filled longtext answers.
+// The server batches them to fit the model, so this counts batches, not
+// sections. Drives the "Antwoorden gladstrijken…" banner text.
 const aiModePhase = ref<Record<string, { current: number; total: number } | null>>({})
-// Pre-smoothing originals per form, session-only — powers the one-click undo.
-// The dossier id pins the undo to the dossier the run happened in.
+// Pre-smoothing originals per form, session-only — powers both the one-click
+// undo of the whole pass and the per-answer "herstel origineel". The dossier id
+// pins the undo to the dossier the run happened in. Outlives the done banner:
+// per-answer undo lives on the questions themselves, and an entry is dropped
+// once the user edits that answer.
 const aiModePreSmooth = ref<Record<string, { dossierId: string; originals: Record<string, string> }>>({})
+// Answers the smoothing pass rewrote, per form: question id → the HTML it wrote.
+// Drives the per-question "gladgestreken" marker. Transient, like
+// aiModeUnanswered. The text is kept because the editor echoes our own store
+// write back through v-model, which would otherwise read as a user edit and
+// clear the marker the moment it appears.
+const aiModeSmoothed = ref<Record<string, Record<string, string>>>({})
 
 // Answers with markup beyond plain paragraphs (lists, bold, …) are usually
 // user-authored; smoothing works on plaintext and would flatten them.
@@ -113,9 +123,9 @@ export function useAiMode() {
     delete aiModeCancelled[formId]
   }
 
-  /** Final AI Modus phase: rewrite the form's longtext answers section by
-   *  section to remove duplication across answers. Applies rewrites directly
-   *  to the store; originals are snapshotted for a one-click undo. */
+  /** Final AI Modus phase: rewrite the form's longtext answers to remove
+   *  duplication across them. Applies rewrites directly to the store;
+   *  originals are snapshotted for a one-click undo. */
   async function smoothForm(formId: string, formConfig: FormConfig, dossierId: string) {
     const answers = store.dossiers[dossierId]?.forms[formId]?.answers ?? {}
     const originals: Record<string, string> = {}
@@ -140,12 +150,19 @@ export function useAiMode() {
     if (Object.keys(originals).length < 2) return
 
     aiModePreSmooth.value = { ...aiModePreSmooth.value, [formId]: { dossierId, originals } }
+    aiModeSmoothed.value = { ...aiModeSmoothed.value, [formId]: {} }
     aiModePhase.value = { ...aiModePhase.value, [formId]: { current: 0, total: sections.length } }
     let rewritten = 0
     try {
       rewritten = await smoothFormAnswers({
         sections,
-        onRewrite: (qId, html) => store.setAnswerForForm(formId, qId, html, dossierId),
+        onRewrite: (qId, html) => {
+          store.setAnswerForForm(formId, qId, html, dossierId)
+          markSmoothed(formId, qId, html)
+          // The citations were matched against the pre-smoothing text, so flag
+          // that the answer has changed since it was extracted.
+          store.markAnswerSmoothed(formId, qId, dossierId)
+        },
         onSectionProgress: (current, total) => {
           aiModePhase.value = { ...aiModePhase.value, [formId]: { current, total } }
         },
@@ -161,6 +178,53 @@ export function useAiMode() {
 
   function hasSmoothingUndo(formId: string): boolean {
     return !!aiModePreSmooth.value[formId]
+  }
+
+  function markSmoothed(formId: string, questionId: string, html: string) {
+    const entries = { ...(aiModeSmoothed.value[formId] ?? {}), [questionId]: html }
+    aiModeSmoothed.value = { ...aiModeSmoothed.value, [formId]: entries }
+  }
+
+  /** Whether smoothing rewrote this answer and the user hasn't touched it since.
+   *  Scoped to the dossier the run happened in — the same form in another
+   *  dossier holds different answers. */
+  function isAiSmoothed(formId: string, questionId: string): boolean {
+    if (aiModePreSmooth.value[formId]?.dossierId !== store.activeDossierId) return false
+    return aiModeSmoothed.value[formId]?.[questionId] !== undefined
+  }
+
+  /** Drop the marker and the per-answer undo — called when the user edits the
+   *  answer themselves, at which point the snapshot no longer describes it.
+   *  Passing the current value makes this a no-op while the value is still the
+   *  text smoothing wrote, so the editor echoing it back doesn't count as an
+   *  edit. */
+  function clearAiSmoothed(formId: string, questionId: string, currentValue?: string) {
+    const entries = aiModeSmoothed.value[formId]
+    if (entries?.[questionId] !== undefined) {
+      if (currentValue !== undefined && currentValue === entries[questionId]) return
+      const next = { ...entries }
+      delete next[questionId]
+      aiModeSmoothed.value = { ...aiModeSmoothed.value, [formId]: next }
+    }
+    const snapshot = aiModePreSmooth.value[formId]
+    if (snapshot?.originals[questionId] !== undefined) {
+      const originals = { ...snapshot.originals }
+      delete originals[questionId]
+      if (Object.keys(originals).length > 0) {
+        aiModePreSmooth.value = { ...aiModePreSmooth.value, [formId]: { ...snapshot, originals } }
+      } else {
+        clearSmoothingUndo(formId)
+      }
+    }
+  }
+
+  /** Restore one answer to its pre-smoothing text. */
+  function undoSmoothingFor(formId: string, questionId: string) {
+    const snapshot = aiModePreSmooth.value[formId]
+    const original = snapshot?.originals[questionId]
+    if (!snapshot || original === undefined) return
+    store.setAnswerForForm(formId, questionId, original, snapshot.dossierId)
+    clearAiSmoothed(formId, questionId)
   }
 
   /** Restore the pre-smoothing answers of the last AI Modus run. Atomic: all
@@ -181,6 +245,9 @@ export function useAiMode() {
     const next = { ...aiModePreSmooth.value }
     delete next[formId]
     aiModePreSmooth.value = next
+    const markers = { ...aiModeSmoothed.value }
+    delete markers[formId]
+    aiModeSmoothed.value = markers
   }
 
   /** Whether the AI looked at this question but couldn't answer it. */
@@ -214,9 +281,8 @@ export function useAiMode() {
     delete totals[formId]
     aiModeTotal.value = totals
     // Per-question markers persist until the user fills each question, so they
-    // survive dismissing the banner. The undo affordance lives in the banner,
-    // so its snapshot goes with it.
-    clearSmoothingUndo(formId)
+    // survive dismissing the banner. The smoothing snapshot stays too: the
+    // per-answer "herstel origineel" lives on the questions, not the banner.
   }
 
   function dismissAiModeError(formId: string) {
@@ -242,5 +308,8 @@ export function useAiMode() {
     clearAiUnanswered,
     hasSmoothingUndo,
     undoSmoothing,
+    isAiSmoothed,
+    clearAiSmoothed,
+    undoSmoothingFor,
   }
 }
