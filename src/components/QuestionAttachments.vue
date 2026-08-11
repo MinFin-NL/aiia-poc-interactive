@@ -3,14 +3,22 @@
     <div class="question-attachments__list" v-if="attachments.length > 0">
       <figure v-for="att in attachments" :key="att.id" class="question-attachments__item">
         <div class="question-attachments__thumb-wrap">
-          <img
+          <button
             v-if="!broken.has(att.id)"
-            class="question-attachments__thumb"
-            :src="imageUrl(att.id, store.sessionId)"
-            :alt="att.caption || att.filename"
-            loading="lazy"
-            @error="broken.add(att.id)"
-          />
+            type="button"
+            class="question-attachments__zoom"
+            :aria-label="`Bekijk ${att.caption || att.filename} op groot formaat`"
+            title="Klik om te vergroten"
+            @click="lightbox?.open(att)"
+          >
+            <img
+              class="question-attachments__thumb"
+              :src="imageUrl(att.id, store.sessionId)"
+              :alt="att.caption || att.filename"
+              loading="lazy"
+              @error="broken.add(att.id)"
+            />
+          </button>
           <span v-else class="question-attachments__thumb question-attachments__thumb--missing">
             (afbeelding niet beschikbaar)
           </span>
@@ -28,14 +36,19 @@
           </button>
         </div>
         <figcaption>
-          <input
-            type="text"
-            class="utrecht-textbox utrecht-textbox--sm question-attachments__caption"
+          <!-- A borderless auto-sizing textarea, not a textbox: captions lifted
+               from a PDF run to a full sentence, but a row of thumbnails should
+               read as images with labels, not as a column of form fields. The
+               frame only appears on hover/focus. -->
+          <textarea
+            v-autogrow
+            class="question-attachments__caption"
+            rows="1"
             placeholder="Bijschrift (optioneel)"
             :value="att.caption"
-            :disabled="store.readOnly"
-            @input="store.updateAttachmentCaption(questionId, att.id, ($event.target as HTMLInputElement).value)"
-          />
+            :readonly="store.readOnly"
+            @input="onCaptionInput(att.id, $event)"
+          ></textarea>
         </figcaption>
       </figure>
     </div>
@@ -63,6 +76,8 @@
       <span class="rvo-text rvo-text--sm question-attachments__hint">of plak een afbeelding (Ctrl+V)</span>
     </div>
     <p v-if="error" class="rvo-text rvo-text--sm question-attachments__error" role="alert">{{ error }}</p>
+
+    <ImageLightbox ref="lightbox" />
   </div>
 </template>
 
@@ -70,6 +85,7 @@
 import { computed, ref } from 'vue'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { imageUrl, uploadImage } from '../services/llmService'
+import ImageLightbox from './ImageLightbox.vue'
 
 const props = defineProps<{
   questionId: string
@@ -77,6 +93,7 @@ const props = defineProps<{
 
 const store = useAssessmentStore()
 const fileInput = ref<HTMLInputElement | null>(null)
+const lightbox = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const uploading = ref(false)
 const error = ref('')
 // Attachment ids whose bytes are gone on the server (e.g. JSON imported on
@@ -84,6 +101,26 @@ const error = ref('')
 const broken = ref(new Set<string>())
 
 const attachments = computed(() => store.attachmentsFor(props.questionId))
+
+/** Size a caption field to its content, so it reads as a block of text rather
+ *  than a scrollable box. Skipped while the element is hidden (collapsed
+ *  section), where scrollHeight is 0 and would collapse it to nothing. */
+function fitToContent(el: HTMLTextAreaElement) {
+  el.style.height = 'auto'
+  if (el.scrollHeight > 0) el.style.height = `${el.scrollHeight}px`
+}
+
+const vAutogrow = {
+  mounted: fitToContent,
+  // Also on update: an AI Modus run can fill the caption after mount.
+  updated: fitToContent,
+}
+
+function onCaptionInput(imageId: string, event: Event) {
+  const el = event.target as HTMLTextAreaElement
+  fitToContent(el)
+  store.updateAttachmentCaption(props.questionId, imageId, el.value)
+}
 
 const MAX_BYTES = 5 * 1024 * 1024
 const ACCEPTED = new Set(['image/png', 'image/jpeg'])
@@ -173,6 +210,21 @@ function onPaste(event: ClipboardEvent) {
   display: inline-flex;
 }
 
+/* Wraps the thumbnail so it can be activated by keyboard as well as click;
+   it stays a plain frame so the image itself keeps the visual weight. */
+.question-attachments__zoom {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  border-radius: var(--rvo-border-radius-sm, 4px);
+}
+
+.question-attachments__zoom:hover .question-attachments__thumb {
+  border-color: var(--rvo-color-lintblauw);
+}
+
 .question-attachments__thumb {
   max-inline-size: 240px;
   max-block-size: 160px;
@@ -214,9 +266,31 @@ function onPaste(event: ClipboardEvent) {
   color: var(--rvo-color-rood);
 }
 
+/* Reads as a caption, edits as a field: no chrome until you hover or focus it.
+   Height is driven by v-autogrow, hence no resize grip and no scrollbar. */
 .question-attachments__caption {
   inline-size: 100%;
+  font-family: inherit;
   font-size: var(--rvo-font-size-sm);
+  line-height: var(--rvo-line-height-md);
+  color: var(--invulhulp-color-text-subtle);
+  padding: var(--rvo-space-3xs);
+  border: 1px solid transparent;
+  border-radius: var(--rvo-border-radius-sm, 4px);
+  background: transparent;
+  resize: none;
+  overflow: hidden;
+}
+
+.question-attachments__caption:hover:not(:read-only),
+.question-attachments__caption:focus {
+  border-color: var(--invulhulp-color-border);
+  background: var(--rvo-color-wit);
+  color: inherit;
+}
+
+.question-attachments__caption:read-only {
+  cursor: default;
 }
 
 .question-attachments__actions {

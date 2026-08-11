@@ -32,7 +32,11 @@ load_dotenv()
 
 LANCEDB_PATH = os.environ.get("LANCEDB_PATH", "./data/lancedb")
 
-CHUNKS_TABLE = "chunks"
+# v2 adds the block_type/page/asset_id columns. A LanceDB table's schema is
+# frozen at creation, so the name is bumped rather than migrated: an existing
+# "chunks" table is simply ignored and documents are re-uploaded — the same
+# remedy already documented for changing the embedding dimension.
+CHUNKS_TABLE = "chunks_v2"
 
 # Chunking targets (in characters — rough proxy for tokens, ~4 chars per token)
 CHUNK_TARGET_CHARS = 1600   # ~400 tokens
@@ -60,35 +64,143 @@ def _escape(s: str) -> str:
     return s.replace("'", "''")
 
 
-def chunk_document(text: str) -> list[str]:
-    """Split text into semantic chunks by paragraph, merging to target size."""
-    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
-    chunks: list[str] = []
-    buf = ""
+def _merge_paragraphs(paragraphs: list[tuple[str, int]]) -> list[tuple[str, int]]:
+    """Greedily merge (text, page) paragraphs up to CHUNK_TARGET_CHARS.
 
-    for p in paragraphs:
-        if len(p) > CHUNK_MAX_CHARS:
+    The page of a merged chunk is that of its first paragraph. An oversized
+    paragraph is hard-sliced; a too-small trailing chunk joins the previous one.
+    """
+    chunks: list[tuple[str, int]] = []
+    buf = ""
+    buf_page = 0
+
+    for text, page in paragraphs:
+        if len(text) > CHUNK_MAX_CHARS:
             if buf:
-                chunks.append(buf)
+                chunks.append((buf, buf_page))
                 buf = ""
-            for i in range(0, len(p), CHUNK_TARGET_CHARS):
-                chunks.append(p[i : i + CHUNK_TARGET_CHARS])
+            for i in range(0, len(text), CHUNK_TARGET_CHARS):
+                chunks.append((text[i : i + CHUNK_TARGET_CHARS], page))
             continue
 
         if not buf:
-            buf = p
-        elif len(buf) + len(p) + 2 <= CHUNK_TARGET_CHARS:
-            buf = f"{buf}\n\n{p}"
+            buf, buf_page = text, page
+        elif len(buf) + len(text) + 2 <= CHUNK_TARGET_CHARS:
+            buf = f"{buf}\n\n{text}"
         else:
-            chunks.append(buf)
-            buf = p
+            chunks.append((buf, buf_page))
+            buf, buf_page = text, page
 
     if buf:
         if chunks and len(buf) < CHUNK_MIN_CHARS:
-            chunks[-1] = f"{chunks[-1]}\n\n{buf}"
+            chunks[-1] = (f"{chunks[-1][0]}\n\n{buf}", chunks[-1][1])
         else:
-            chunks.append(buf)
+            chunks.append((buf, buf_page))
 
+    return chunks
+
+
+def chunk_document(text: str) -> list[dict]:
+    """Split plain text into semantic chunks by paragraph (non-PDF uploads)."""
+    paragraphs = [(p.strip(), 0) for p in re.split(r"\n\s*\n", text) if p.strip()]
+    return [
+        {"text": t, "block_type": "text", "page": 0} for t, _ in _merge_paragraphs(paragraphs)
+    ]
+
+
+def _split_table(text: str, header_lines: int) -> list[str]:
+    """Split an oversized table into row groups, repeating its header lines.
+
+    header_lines covers the rendered caption plus the column-header row, so
+    every part remains a self-describing table rather than loose rows.
+    """
+    rows = text.split("\n")
+    if len(rows) <= header_lines + 1:
+        return [text]
+    header, body = rows[:header_lines], rows[header_lines:]
+    header_len = sum(len(r) + 1 for r in header)
+    parts: list[str] = []
+    buf: list[str] = []
+    for row in body:
+        # +1 per newline; the header is re-added to every part.
+        if buf and header_len + sum(len(r) + 1 for r in buf) + len(row) + 1 > CHUNK_TARGET_CHARS:
+            parts.append("\n".join([*header, *buf]))
+            buf = []
+        buf.append(row)
+    if buf:
+        parts.append("\n".join([*header, *buf]))
+    return parts
+
+
+# How much of the preceding prose is prepended to a table/figure before
+# embedding. Enough to carry the section's topic, short enough not to drown out
+# the cells themselves.
+EMBED_CONTEXT_CHARS = 400
+
+
+def _embed_context(lead_in: str, text: str) -> str:
+    """The string to embed for a table/figure: preceding prose + the block.
+
+    Takes the *tail* of the preceding prose: the block immediately above a
+    table is often a bare caption ("Voorbeeld voor rapportagemodel"), so one
+    block back is not enough to carry the section's topic.
+    """
+    lead_in = lead_in[-EMBED_CONTEXT_CHARS:].strip()
+    if not lead_in:
+        return text
+    return f"{lead_in}\n\n{text}"
+
+
+def chunk_blocks(blocks: list[dict]) -> list[dict]:
+    """Chunk rendered PDF blocks, keeping tables and figures intact.
+
+    A table is never merged with prose and never split mid-row, so a retrieved
+    fragment is always a readable table. A figure's caption stays its own chunk
+    so the page association survives. Runs of prose merge as usual.
+
+    Tables and figures also get an `embed_text` that prepends the prose leading
+    up to them. A bare grid of pipe-separated cells has almost no semantic
+    surface, so without this a perfectly extracted table never survives
+    retrieval against a question phrased in prose — see _embed_context.
+    """
+    chunks: list[dict] = []
+    prose: list[tuple[str, int]] = []
+    lead_in = ""
+
+    def flush_prose() -> None:
+        for text, page in _merge_paragraphs(prose):
+            chunks.append({"text": text, "block_type": "text", "page": page})
+        prose.clear()
+
+    for block in blocks:
+        text = block["text"].strip()
+        if not text:
+            continue
+        if block["type"] == "text":
+            prose.append((text, block["page"]))
+            # Rolling window of what came before, trimmed so it cannot grow
+            # unbounded over a long document.
+            lead_in = f"{lead_in}\n\n{text}"[-(EMBED_CONTEXT_CHARS * 2) :]
+            continue
+        flush_prose()
+        # A rendered table opens with its "Tabel — pagina N" caption followed
+        # by the column-header row; both are repeated in every split part.
+        parts = (
+            _split_table(text, 2)
+            if block["type"] == "table" and len(text) > CHUNK_MAX_CHARS
+            else [text]
+        )
+        for part in parts:
+            chunks.append(
+                {
+                    "text": part,
+                    "embed_text": _embed_context(lead_in, part),
+                    "block_type": block["type"],
+                    "page": block["page"],
+                    "asset_id": block.get("asset_id", ""),
+                }
+            )
+    flush_prose()
     return chunks
 
 
@@ -104,6 +216,11 @@ def _table_for_dim(dim: int) -> Any:
             pa.field("doc_name", pa.string()),
             pa.field("chunk_index", pa.int32()),
             pa.field("text", pa.string()),
+            # "text" | "table" | "figure" — lets the prompt tell the model what
+            # kind of fragment it is looking at (pipe rows vs prose).
+            pa.field("block_type", pa.string()),
+            pa.field("page", pa.int32()),  # 0 for non-paginated sources
+            pa.field("asset_id", pa.string()),  # imagestore id for figures, "" otherwise
             pa.field("vector", pa.list_(pa.float32(), dim)),
         ]
     )
@@ -124,15 +241,22 @@ async def index_document(
     session_id: str,
     doc_id: str,
     doc_name: str,
-    content: str,
+    chunks: list[dict],
     embed_fn: EmbedFn,
 ) -> dict[str, Any]:
-    """Chunk, embed, and store a document. Returns {chunk_count, chunks}."""
-    chunks = chunk_document(content)
+    """Embed and store pre-built chunks. Returns {chunk_count, chunks}.
+
+    Chunks come from chunk_document() for plain-text uploads or chunk_blocks()
+    for PDFs; each is {text, block_type, page, asset_id?, embed_text?}.
+
+    `text` is what gets stored, cited and shown; `embed_text` (when present) is
+    what gets vectorised. They differ for tables and figures, whose own content
+    is too sparse to retrieve on.
+    """
     if not chunks:
         return {"chunk_count": 0, "chunks": []}
 
-    vectors = await embed_fn(chunks)
+    vectors = await embed_fn([c.get("embed_text") or c["text"] for c in chunks])
     if not vectors:
         return {"chunk_count": 0, "chunks": []}
 
@@ -143,7 +267,10 @@ async def index_document(
             "doc_id": doc_id,
             "doc_name": doc_name,
             "chunk_index": i,
-            "text": chunk,
+            "text": chunk["text"],
+            "block_type": chunk.get("block_type", "text"),
+            "page": int(chunk.get("page", 0)),
+            "asset_id": chunk.get("asset_id", "") or "",
             "vector": vec,
         }
         for i, (chunk, vec) in enumerate(zip(chunks, vectors, strict=True))
@@ -152,7 +279,7 @@ async def index_document(
 
     return {
         "chunk_count": len(chunks),
-        "chunks": [{"index": i, "text": c} for i, c in enumerate(chunks)],
+        "chunks": [{"index": i, "text": c["text"]} for i, c in enumerate(chunks)],
     }
 
 
@@ -210,7 +337,18 @@ def _search_sync(query_vec: list[float], where: str, top_k: int) -> list[dict]:
         .where(where, prefilter=True)
         # Skip the vector column; "_distance" must be requested explicitly
         # in newer LanceDB versions.
-        .select(["doc_id", "doc_name", "chunk_index", "text", "_distance"])
+        .select(
+            [
+                "doc_id",
+                "doc_name",
+                "chunk_index",
+                "text",
+                "block_type",
+                "page",
+                "asset_id",
+                "_distance",
+            ]
+        )
         .limit(top_k)
         .to_list()
     )
@@ -238,6 +376,11 @@ async def retrieve(
             "doc_name": r["doc_name"],
             "chunk_index": r["chunk_index"],
             "text": r["text"],
+            "block_type": r.get("block_type") or "text",
+            "page": int(r.get("page") or 0),
+            # imagestore id of the figure this chunk describes; "" for prose,
+            # tables, and figures whose bytes could not be extracted.
+            "asset_id": r.get("asset_id") or "",
             "score": float(r.get("_distance", 0.0)),
         }
         for r in results

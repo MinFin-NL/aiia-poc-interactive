@@ -38,7 +38,7 @@
         <div v-for="entry in matchedSources" :key="`${entry.source.docId}-${entry.source.chunkIndex}`" class="source-panel__card">
           <div class="source-panel__card-header">
             <span class="source-panel__doc-name">{{ entry.source.docName }}</span>
-            <span class="source-panel__fragment">fragment {{ entry.source.chunkIndex + 1 }}</span>
+            <span class="source-panel__fragment">{{ fragmentLabel(entry.source) }}</span>
           </div>
           <div class="source-panel__snippet">
             <span
@@ -96,6 +96,15 @@ const matchedSources = computed(
       })
       .sort((a, b) => b.score - a.score),
 )
+
+// PDFs indexed server-side carry a page number and a block type; older text
+// uploads only have the chunk position.
+function fragmentLabel(source: AnswerSource): string {
+  const where = source.page ? `pagina ${source.page}` : `fragment ${source.chunkIndex + 1}`
+  if (source.blockType === 'table') return `${where} · tabel`
+  if (source.blockType === 'figure') return `${where} · afbeelding`
+  return where
+}
 </script>
 
 <style scoped>

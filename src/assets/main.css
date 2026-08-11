@@ -30,6 +30,20 @@
   --rvo-icon-delta-omhoog: url('@nl-rvo/assets/icons/functioneel/delta-omhoog.svg');
 }
 
+/* Starting value for the first paint only. AppHeader measures the real header
+   and overwrites this as an inline style on :root, which outranks this rule.
+   Declared on :root and NOT on .rvo-theme on purpose — a .rvo-theme
+   declaration would shadow the inherited measured value. */
+:root {
+  --invulhulp-header-height: 173px;
+  /* Non-zero only while the AI Modus banner is on screen. */
+  --invulhulp-banner-height: 0px;
+  /* What everything below the header has to stick under. */
+  --invulhulp-sticky-offset: calc(
+    var(--invulhulp-header-height) + var(--invulhulp-banner-height)
+  );
+}
+
 body {
   margin: 0;
   background-color: #f1f5f9; /* fallback before .rvo-theme mounts */

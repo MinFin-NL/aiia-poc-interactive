@@ -1,5 +1,5 @@
 <template>
-  <header data-rvo-on-dark class="invulhulp-header">
+  <header ref="headerEl" data-rvo-on-dark class="invulhulp-header">
     <div class="rvo-max-width-layout rvo-max-width-layout--lg rvo-max-width-layout-inline-padding--sm">
       <!-- Top bar: logo + reset button -->
       <div class="rvo-layout-row rvo-layout-gap--md invulhulp-header__topbar">
@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import emblemUrl from '@nl-rvo/assets/images/emblem.svg'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { useAuthStore } from '../stores/authStore'
@@ -105,9 +105,36 @@ const store = useAssessmentStore()
 const auth = useAuthStore()
 const availableForms = ref<FormIndexEntry[]>([])
 const resetDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
+const headerEl = ref<HTMLElement | null>(null)
 
 onMounted(async () => {
   availableForms.value = await loadAvailableForms()
+})
+
+// The header is not a fixed height: the breadcrumb row wraps, the phase crumb
+// drops out below 640px, and the presence bar appears only in a shared dossier.
+// The form sidebar sticks right under it, so publish the measured height as a
+// custom property instead of letting every consumer hardcode a guess.
+let headerObserver: ResizeObserver | null = null
+
+onMounted(() => {
+  if (!headerEl.value) return
+  headerObserver = new ResizeObserver(([entry]) => {
+    // Border-box, not contentRect: the header may grow padding or a border
+    // later and the sidebar has to clear all of it.
+    const height = entry.target.getBoundingClientRect().height
+    document.documentElement.style.setProperty(
+      '--invulhulp-header-height',
+      `${Math.round(height)}px`,
+    )
+  })
+  headerObserver.observe(headerEl.value)
+})
+
+onBeforeUnmount(() => {
+  headerObserver?.disconnect()
+  headerObserver = null
+  document.documentElement.style.removeProperty('--invulhulp-header-height')
 })
 
 // Reset applies to a single form, so only offer it while a form is actually
@@ -159,6 +186,13 @@ function openResetDialog() {
   background-color: var(--rvo-color-lintblauw);
   color: var(--rvo-color-wit);
   padding: 0;
+  /* Stays put: the form sidebar sticks to the header's underside via
+     --invulhulp-header-height, which only lines up if the header itself never
+     leaves. Above the AI banner (z-index 20); native <dialog> modals render in
+     the top layer and are unaffected by this. */
+  position: sticky;
+  top: 0;
+  z-index: 30;
 }
 
 /* Push the "who's here" avatars to the trailing edge of the breadcrumb row. */

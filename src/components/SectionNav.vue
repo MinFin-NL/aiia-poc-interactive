@@ -196,15 +196,32 @@ function navigate(id: string) {
   flex-shrink: 0;
   background: var(--rvo-color-wit);
   border-inline-end: 1px solid var(--invulhulp-color-border);
-  padding: var(--rvo-space-xl) var(--rvo-space-md);
+  padding: 0 var(--rvo-space-md) var(--rvo-space-xl);
   overflow-y: auto;
-  block-size: calc(100vh - 100px);
+  /* Fill exactly the space under whatever is pinned above (the header, plus the
+     AI Modus banner while it runs) and stick flush to its underside. Both
+     heights are measured at runtime — a hardcoded value here left a dead gap
+     once the fase-rail breadcrumb made the header taller than the 100px this
+     used to assume. */
+  block-size: calc(100vh - var(--invulhulp-sticky-offset));
   position: sticky;
-  top: 100px;
+  top: var(--invulhulp-sticky-offset);
+  /* The banner animates with a transform, so its layout height lands in one
+     step; match its 0.3s so the sidebar slides with it instead of snapping. */
+  transition: top 0.3s ease, block-size 0.3s ease;
 }
 
+/* The sidebar scrolls on its own (its content is taller than the viewport once
+   the AI Modus block is in play). Pin the voortgang readout to the top of that
+   scrollport, otherwise it scrolls out of the sidebar and reads as missing. */
 .invulhulp-nav__progress {
-  margin-block-end: var(--rvo-space-md);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--rvo-color-wit);
+  padding-block: var(--rvo-space-md);
+  margin-block-end: var(--rvo-space-xs);
+  border-block-end: 1px solid var(--invulhulp-color-border);
 }
 .invulhulp-nav__progress-label {
   color: var(--invulhulp-color-text-subtle);

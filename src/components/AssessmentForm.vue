@@ -4,7 +4,7 @@
 
     <!-- AI Mode banner: prominent, sticky indicator while AI fills this form -->
     <Transition name="ai-banner">
-      <div v-if="isAiActive" class="ai-banner" role="status" aria-live="polite">
+      <div v-if="isAiActive" ref="bannerEl" class="ai-banner" role="status" aria-live="polite">
         <div class="rvo-max-width-layout rvo-max-width-layout--lg rvo-max-width-layout-inline-padding--sm ai-banner__inner">
           <span class="ai-banner__spinner" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 2 22.5 22" width="22" height="22" aria-hidden="true">
@@ -136,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { loadForm } from '../services/formLoader'
 import { computeNavOrder } from '../utils/formProgress'
 import { useAssessmentStore } from '../stores/assessmentStore'
@@ -178,6 +178,39 @@ const aiProgressPct = computed(() => {
   const p = aiProgress.value
   if (!p || p.total === 0) return 0
   return Math.round((p.filled / p.total) * 100)
+})
+
+// The AI banner parks under the header, so while it is on screen everything
+// that sticks below it — the form sidebar — has to clear both. Its height is
+// not a constant: the label swaps between "invullen" and "gladstrijken" and the
+// body wraps on narrow viewports, so publish the measured height and let
+// --invulhulp-sticky-offset (main.css) add it to the header height.
+const bannerEl = ref<HTMLElement | null>(null)
+let bannerObserver: ResizeObserver | null = null
+
+function setBannerHeight(px: number) {
+  document.documentElement.style.setProperty('--invulhulp-banner-height', `${Math.round(px)}px`)
+}
+
+// v-if inside <Transition> swaps the element, so re-observe on every change.
+// During the enter/leave animation the observer keeps firing, which is what
+// makes the sidebar slide along with the banner instead of jumping.
+watch(bannerEl, (el, prev) => {
+  if (prev) bannerObserver?.unobserve(prev)
+  if (!el) {
+    setBannerHeight(0)
+    return
+  }
+  bannerObserver ??= new ResizeObserver(([entry]) => {
+    setBannerHeight(entry.target.getBoundingClientRect().height)
+  })
+  bannerObserver.observe(el)
+})
+
+onBeforeUnmount(() => {
+  bannerObserver?.disconnect()
+  bannerObserver = null
+  document.documentElement.style.removeProperty('--invulhulp-banner-height')
 })
 
 async function loadActiveForm() {
@@ -354,7 +387,8 @@ function onDecisionNext(go: boolean) {
 
 .ai-banner {
   position: sticky;
-  top: 0;
+  /* Parks under the sticky header rather than sliding beneath it. */
+  top: var(--invulhulp-header-height);
   z-index: 20;
   background: linear-gradient(135deg, #0f2d5c, #5b21b6, #0ea5e9, #5b21b6, #0f2d5c);
   background-size: 200% 100%;

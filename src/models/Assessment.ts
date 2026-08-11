@@ -99,6 +99,15 @@ export interface AnswerSource {
   chunkIndex: number
   text: string
   score: number
+  // Set for documents extracted server-side (PDFs); 0/absent otherwise.
+  page?: number
+  // 'text' | 'table' | 'figure' — what kind of block the chunk came from.
+  blockType?: string
+  // Figure chunks only: the imagestore id of the extracted image, so AI Modus
+  // can attach the figure itself instead of just citing its caption.
+  assetId?: string
+  // The figure's caption without the "[Afbeelding op pagina N]" prefix.
+  figureCaption?: string
 }
 
 export interface AnswerSourceMeta {

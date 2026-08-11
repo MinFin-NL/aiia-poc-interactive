@@ -210,6 +210,66 @@ export async function indexDocument(req: IndexDocumentRequest): Promise<IndexDoc
   return { docId: data.doc_id, chunkCount: data.chunk_count, ontology: data.ontology }
 }
 
+export interface UploadedPdfDocument {
+  docId: string
+  name: string
+  content: string
+  chunkCount: number
+  ontology: Record<string, unknown>
+  pageCount: number
+  tableCount: number
+  figureCount: number
+}
+
+/** Thrown when a PDF has no text layer (scanned). Callers show the Dutch
+ *  "gescande PDF" message instead of a generic upload failure. */
+export class PdfNoTextError extends Error {
+  constructor() {
+    super('PDF_NO_TEXT')
+    this.name = 'PdfNoTextError'
+  }
+}
+
+/** Upload a PDF for server-side extraction + indexing. Unlike indexDocument
+ *  this sends the raw file, so the backend can keep tables and figures intact
+ *  (see backend/pdfextract.py). Returns the extracted text and its ontology. */
+export async function uploadPdfDocument(
+  file: File,
+  sessionId: string,
+  docId: string,
+  uploadedAt: number,
+): Promise<UploadedPdfDocument> {
+  const body = new FormData()
+  body.append('file', file)
+  body.append('session_id', sessionId)
+  body.append('doc_id', docId)
+  body.append('uploaded_at', String(uploadedAt))
+  // No Content-Type header — the browser sets the multipart boundary itself.
+  const res = await fetch('/api/documents/upload', { method: 'POST', body })
+  if (res.status === 422) throw new PdfNoTextError()
+  if (!res.ok) throw new Error(await readErrorDetail(res))
+  const data = (await res.json()) as {
+    doc_id: string
+    name: string
+    content: string
+    chunk_count: number
+    ontology: Record<string, unknown>
+    page_count: number
+    table_count: number
+    figure_count: number
+  }
+  return {
+    docId: data.doc_id,
+    name: data.name,
+    content: data.content,
+    chunkCount: data.chunk_count,
+    ontology: data.ontology,
+    pageCount: data.page_count,
+    tableCount: data.table_count,
+    figureCount: data.figure_count,
+  }
+}
+
 export interface ServerDocument {
   doc_id: string
   session_id: string
@@ -267,6 +327,25 @@ export async function fetchImageArrayBuffer(imageId: string, sessionId: string):
   const res = await fetch(imageUrl(imageId, sessionId))
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.arrayBuffer()
+}
+
+/** Natural pixel size of a stored image, for attachments whose bytes the
+ *  browser never held (figures extracted server-side). Empty on failure —
+ *  exports then fall back to decoding the bytes themselves. */
+export async function fetchImageDimensions(
+  imageId: string,
+  sessionId: string,
+): Promise<{ width?: number; height?: number }> {
+  try {
+    const res = await fetch(imageUrl(imageId, sessionId))
+    if (!res.ok) return {}
+    const bmp = await createImageBitmap(await res.blob())
+    const dims = { width: bmp.width, height: bmp.height }
+    bmp.close()
+    return dims
+  } catch {
+    return {}
+  }
 }
 
 export async function fetchImageDataUrl(imageId: string, sessionId: string): Promise<string> {
@@ -439,6 +518,11 @@ export interface BulkExtractParams {
   formContext?: string
   onAnswer: (qId: string, value: string | string[]) => void
   onSources?: (qId: string, meta: AnswerSourceMeta) => void
+  /** All retrieved chunks for an answered question, before the grounding filter
+   *  in buildAnswerSourceMeta drops the ones that don't support the text.
+   *  Figure chunks are almost never text-supporting, so figure attachments have
+   *  to be picked here rather than from the citations. */
+  onRetrieved?: (qId: string, sources: AnswerSource[]) => void
   /** Called when the model responded but produced no usable answer for a question. */
   onEmpty?: (qId: string) => void
   onProgress: (filled: number, total: number) => void
@@ -477,7 +561,7 @@ export function buildAnswerSourceMeta(
 }
 
 export async function bulkExtractFromDocument(params: BulkExtractParams): Promise<number> {
-  const { sessionId, docIds, questions, formContext, onAnswer, onSources, onEmpty, onProgress, isCancelled, shouldAnswer } = params
+  const { sessionId, docIds, questions, formContext, onAnswer, onSources, onRetrieved, onEmpty, onProgress, isCancelled, shouldAnswer } = params
   let filled = 0
   let skipped = 0
 
@@ -512,6 +596,7 @@ export async function bulkExtractFromDocument(params: BulkExtractParams): Promis
             onAnswer(question.id, value)
             const meta = buildAnswerSourceMeta(result.sources, value, question.type)
             if (meta) onSources?.(question.id, meta)
+            if (result.sources?.length) onRetrieved?.(question.id, result.sources)
             filled++
           } else {
             // Model answered but found nothing usable in the documents.

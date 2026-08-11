@@ -42,6 +42,7 @@ import docstore
 import dossiers
 import imagestore
 import llm
+import pdfextract
 import rag
 import textdedup
 import users
@@ -1109,22 +1110,29 @@ async def extract_from_documents_stream(req: ExtractRequest) -> StreamingRespons
 # ---------------------------------------------------------------------------
 
 
-@app.post("/api/documents/index", response_model=IndexDocumentResponse)
-async def index_document(req: IndexDocumentRequest, request: Request) -> IndexDocumentResponse:
-    if not req.content.strip():
-        raise HTTPException(status_code=400, detail="Document is leeg.")
-    # Resolve the storage owner up front: editors' uploads must land in the
-    # dossier owner's directory or they'd be invisible to everyone else.
-    user_sub = await dossiers.resolve_session_access(request, req.session_id, "editor")
+async def _index_and_store(
+    user_sub: str,
+    session_id: str,
+    doc_id: str,
+    name: str,
+    content: str,
+    chunks: list[dict],
+    uploaded_at: int | None,
+) -> tuple[int, dict]:
+    """Embed + store chunks, extract the ontology, persist the source text.
+
+    Shared by both upload paths (pre-extracted text and server-side PDF) so
+    they cannot drift. Returns (chunk_count, ontology).
+    """
     try:
         index_task = rag.index_document(
-            session_id=req.session_id,
-            doc_id=req.doc_id,
-            doc_name=req.name,
-            content=req.content,
+            session_id=session_id,
+            doc_id=doc_id,
+            doc_name=name,
+            chunks=chunks,
             embed_fn=backend.embed,
         )
-        ontology_task = rag.extract_ontology(req.name, req.content, backend.chat)
+        ontology_task = rag.extract_ontology(name, content, backend.chat)
         index_result, ontology = await asyncio.gather(index_task, ontology_task)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Indexering mislukt: [{type(e).__name__}] {e}") from e
@@ -1134,21 +1142,133 @@ async def index_document(req: IndexDocumentRequest, request: Request) -> IndexDo
         await asyncio.to_thread(
             docstore.save_document,
             user_sub=user_sub,
-            session_id=req.session_id,
-            doc_id=req.doc_id,
-            name=req.name,
-            content=req.content,
+            session_id=session_id,
+            doc_id=doc_id,
+            name=name,
+            content=content,
             ontology=ontology,
             chunk_count=index_result["chunk_count"],
-            uploaded_at=req.uploaded_at,
+            uploaded_at=uploaded_at,
         )
     except Exception as e:
-        print(f"[docstore] opslaan van {req.doc_id} mislukt: {e}")  # index succeeded — don't fail the upload
-    return IndexDocumentResponse(
+        print(f"[docstore] opslaan van {doc_id} mislukt: {e}")  # index succeeded — don't fail the upload
+    return index_result["chunk_count"], ontology
+
+
+@app.post("/api/documents/index", response_model=IndexDocumentResponse)
+async def index_document(req: IndexDocumentRequest, request: Request) -> IndexDocumentResponse:
+    if not req.content.strip():
+        raise HTTPException(status_code=400, detail="Document is leeg.")
+    # Resolve the storage owner up front: editors' uploads must land in the
+    # dossier owner's directory or they'd be invisible to everyone else.
+    user_sub = await dossiers.resolve_session_access(request, req.session_id, "editor")
+    chunk_count, ontology = await _index_and_store(
+        user_sub=user_sub,
+        session_id=req.session_id,
         doc_id=req.doc_id,
-        chunk_count=index_result["chunk_count"],
-        ontology=ontology,
+        name=req.name,
+        content=req.content,
+        chunks=rag.chunk_document(req.content),
+        uploaded_at=req.uploaded_at,
     )
+    return IndexDocumentResponse(doc_id=req.doc_id, chunk_count=chunk_count, ontology=ontology)
+
+
+PDF_MAX_BYTES = 25 * 1024 * 1024
+
+
+async def _store_figures(
+    user_sub: str,
+    session_id: str,
+    doc_id: str,
+    blocks: list[dict],
+) -> int:
+    """Persist each rendered figure and tag its block with the imagestore id.
+
+    The id travels with the block into the chunk row's `asset_id` column, which
+    is what lets retrieval hand AI Modus the actual image instead of only the
+    caption. Figures that could not be rendered (or that came out too big to
+    attach) simply keep an empty asset_id and stay caption-only chunks —
+    never a reason to fail the upload.
+    """
+    stored = 0
+    for index, block in enumerate(b for b in blocks if b["type"] == "figure"):
+        image = block.pop("image", None)
+        if not image or len(image["png"]) > IMAGE_MAX_BYTES:
+            continue
+        meta = await asyncio.to_thread(
+            imagestore.save_image,
+            user_sub,
+            session_id,
+            f"figuur-p{block['page']}-{index + 1}.png",
+            "image/png",
+            image["png"],
+            doc_id,
+        )
+        block["asset_id"] = meta["image_id"]
+        stored += 1
+    return stored
+
+
+@app.post("/api/documents/upload")
+async def upload_document(
+    request: Request,
+    file: UploadFile = File(...),
+    session_id: str = Form(...),
+    doc_id: str = Form(...),
+    uploaded_at: int | None = Form(None),
+) -> dict:
+    """Upload a PDF for server-side structured extraction, then index it.
+
+    Unlike /api/documents/index (which takes text the browser already
+    extracted), this keeps the PDF's tables and figures intact — see
+    pdfextract.py for why that matters for retrieval.
+    """
+    data = await file.read(PDF_MAX_BYTES + 1)
+    if len(data) > PDF_MAX_BYTES:
+        raise HTTPException(status_code=413, detail="PDF is te groot (maximaal 25 MB).")
+    # Don't trust the declared content-type — check the file signature.
+    if not data.startswith(b"%PDF-"):
+        raise HTTPException(status_code=400, detail="Bestand is geen geldige PDF.")
+    user_sub = await dossiers.resolve_session_access(request, session_id, "editor")
+
+    try:
+        extracted = await asyncio.to_thread(pdfextract.extract_pdf, data)
+    except pdfextract.PdfNoTextError:
+        # The client turns this code into the "gescande PDF" message.
+        raise HTTPException(status_code=422, detail="PDF_NO_TEXT") from None
+    except pdfextract.PdfUnreadableError as e:
+        raise HTTPException(status_code=400, detail=f"PDF kon niet worden gelezen: {e}") from e
+
+    blocks = pdfextract.render_blocks(extracted["blocks"])
+    content = pdfextract.render_content(blocks)
+    if not content.strip():
+        raise HTTPException(status_code=422, detail="PDF_NO_TEXT")
+
+    name = file.filename or "document.pdf"
+    stored_figures = await _store_figures(user_sub, session_id, doc_id, blocks)
+    chunk_count, ontology = await _index_and_store(
+        user_sub=user_sub,
+        session_id=session_id,
+        doc_id=doc_id,
+        name=name,
+        content=content,
+        chunks=rag.chunk_blocks(blocks),
+        uploaded_at=uploaded_at,
+    )
+    return {
+        "doc_id": doc_id,
+        "name": name,
+        "content": content,
+        "chunk_count": chunk_count,
+        "ontology": ontology,
+        "page_count": extracted["page_count"],
+        "table_count": sum(1 for b in blocks if b["type"] == "table"),
+        "figure_count": sum(1 for b in blocks if b["type"] == "figure"),
+        # Figures whose bytes were stored — only these can become an
+        # attachment in AI Modus; the rest stay caption-only chunks.
+        "stored_figure_count": stored_figures,
+    }
 
 
 @app.get("/api/documents")
@@ -1256,6 +1376,55 @@ async def remove_image(image_id: str, session_id: str, request: Request) -> dict
     return {"deleted": image_id}
 
 
+def _fragment_label(chunk: dict) -> str:
+    """Locator shown in a fragment header: page number when we have one."""
+    page = chunk.get("page") or 0
+    where = f"pagina {page}" if page else f"deel {chunk['chunk_index']}"
+    kind = {"table": "tabel", "figure": "afbeelding"}.get(chunk.get("block_type", "text"))
+    return f"{where}, {kind}" if kind else where
+
+
+def _fragment_hint(chunk: dict) -> str:
+    """Tell the model how to read a non-prose fragment. '' for plain text."""
+    if chunk.get("block_type") == "table":
+        return "\n[Dit fragment is een tabel; de cellen per rij zijn gescheiden door |.]"
+    if chunk.get("block_type") == "figure":
+        # The model still only sees the caption, but when the image itself was
+        # extracted it is attached to the answer, so referring to it is honest.
+        if chunk.get("asset_id"):
+            return (
+                "\n[Dit fragment is het bijschrift van een afbeelding. De afbeelding zelf "
+                "wordt als bijlage bij dit antwoord geplaatst; je mag ernaar verwijzen, "
+                "maar beschrijf niet wat erop staat.]"
+            )
+        return "\n[Dit fragment is het bijschrift van een afbeelding, niet de afbeelding zelf.]"
+    return ""
+
+
+def _source_payload(chunk: dict) -> dict:
+    """One retrieved chunk as the frontend's AnswerSource.
+
+    assetId/figureCaption are only present for figures whose image was
+    extracted — they are what AI Modus turns into a question attachment, and
+    sources are persisted per answer, so nothing empty is carried along.
+    """
+    payload = {
+        "docId": chunk["doc_id"],
+        "docName": chunk["doc_name"],
+        "chunkIndex": chunk["chunk_index"],
+        "text": chunk["text"],
+        "score": chunk["score"],
+        "page": chunk.get("page", 0),
+        "blockType": chunk.get("block_type", "text"),
+    }
+    if chunk.get("block_type") == "figure" and chunk.get("asset_id"):
+        payload["assetId"] = chunk["asset_id"]
+        caption = pdfextract.figure_caption(chunk["text"])
+        if caption:
+            payload["figureCaption"] = caption
+    return payload
+
+
 def _rag_user_message(
     target_question: str,
     guidance: str,
@@ -1278,7 +1447,8 @@ def _rag_user_message(
         excerpts_block = "(Geen relevante passages gevonden in de geïndexeerde documenten.)"
     else:
         excerpts_block = "\n\n".join(
-            f"=== Fragment {i + 1} — {c['doc_name']} (deel {c['chunk_index']}) ===\n{c['text'].strip()}"
+            f"=== Fragment {i + 1} — {c['doc_name']} ({_fragment_label(c)}) ==={_fragment_hint(c)}\n"
+            f"{c['text'].strip()}"
             for i, c in enumerate(chunks)
         )
 
@@ -1311,16 +1481,7 @@ async def extract_rag_stream(req: RagExtractRequest, request: Request) -> Stream
     )
     source_text = "\n".join(c["text"] for c in chunks)
     parse_fn = _extract_parser_for(req, source_text)
-    sources = [
-        {
-            "docId": c["doc_id"],
-            "docName": c["doc_name"],
-            "chunkIndex": c["chunk_index"],
-            "text": c["text"],
-            "score": c["score"],
-        }
-        for c in chunks
-    ]
+    sources = [_source_payload(c) for c in chunks]
     return StreamingResponse(
         _sse_stream(system_prompt, user_msg, parse_fn, sources=sources),
         media_type="text/event-stream",

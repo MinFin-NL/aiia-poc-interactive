@@ -387,6 +387,7 @@ import BeslishulpModal from './BeslishulpModal.vue'
 import BeslishulpTile from './BeslishulpTile.vue'
 import { BESLISHULP_HOST_FORM_ID, isOutOfScope, riskLevelFor, verdictLevelLabel } from '../utils/beslishulp'
 import { fetchDossier, saveDossier } from '../services/dossierService'
+import { PdfNoTextError } from '../services/llmService'
 
 defineEmits<{ open: [id: string] }>()
 
@@ -551,43 +552,6 @@ async function extractPptxText(file: File): Promise<string> {
   return parts.join('\n\n')
 }
 
-/**
- * Extracts the embedded text layer from a PDF. Works for "born-digital" PDFs
- * (exported from Word, etc.). Scanned/image-only PDFs have no text layer, so
- * this throws PDF_NO_TEXT — we deliberately do not OCR.
- */
-async function extractPdfText(file: File): Promise<string> {
-  const pdfjs = await import('pdfjs-dist')
-  const worker = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default
-  // The worker's content never changes between builds, so Vite keeps giving it
-  // the same hashed filename — and browsers that cached it while nginx still
-  // served .mjs as application/octet-stream keep replaying that wrong MIME
-  // type, which blocks the module worker no matter what the server now sends.
-  // A version query yields a URL those caches have never seen. Bump it if a
-  // cached worker response ever needs invalidating again.
-  pdfjs.GlobalWorkerOptions.workerSrc = `${worker}?v=2`
-
-  const doc = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise
-  const parts: string[] = []
-  try {
-    for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
-      const page = await doc.getPage(pageNum)
-      const content = await page.getTextContent()
-      const pageText = content.items
-        .map((item) => ('str' in item ? item.str : ''))
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-      if (pageText) parts.push(pageText)
-    }
-  } finally {
-    await doc.destroy()
-  }
-  const text = parts.join('\n\n')
-  if (!text.trim()) throw new Error('PDF_NO_TEXT')
-  return text
-}
-
 async function onFilesSelected(e: Event) {
   const target = e.target as HTMLInputElement
   const files = target.files ? Array.from(target.files) : []
@@ -614,6 +578,13 @@ async function onFilesSelected(e: Event) {
       continue
     }
     try {
+      // PDFs go to the backend whole: server-side extraction keeps tables and
+      // figures intact, which the browser text layer cannot do.
+      if (ext === 'pdf') {
+        await store.addPdfDocument(file)
+        addedNames.push(file.name)
+        continue
+      }
       let text: string
       if (ext === 'docx') {
         const mammoth = await import('mammoth/mammoth.browser')
@@ -633,8 +604,6 @@ async function onFilesSelected(e: Event) {
         text = parts.join('\n\n')
       } else if (ext === 'pptx') {
         text = await extractPptxText(file)
-      } else if (ext === 'pdf') {
-        text = await extractPdfText(file)
       } else {
         text = await file.text()
       }
@@ -642,11 +611,12 @@ async function onFilesSelected(e: Event) {
         errors.push(`${file.name}: geen tekst gevonden.`)
         continue
       }
-      const baseName = file.name.replace(/\.(docx|xlsx|pptx|pdf)$/i, '.txt')
+      // PDFs keep their own name — the backend extracts them as-is.
+      const baseName = file.name.replace(/\.(docx|xlsx|pptx)$/i, '.txt')
       await store.addDocument(baseName, text)
       addedNames.push(file.name)
     } catch (err) {
-      if (err instanceof Error && err.message === 'PDF_NO_TEXT') {
+      if (err instanceof PdfNoTextError) {
         errors.push(
           `${file.name}: dit is een gescande PDF (alleen afbeeldingen) — er kon geen tekst uit worden gehaald. Upload een tekst-PDF of het originele Word-bestand.`,
         )
@@ -1222,7 +1192,8 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
 
 .track-phase {
   position: relative;
-  scroll-margin-block-start: var(--rvo-space-lg);
+  /* Clear the sticky header, or the fase rail scrolls a phase to right under it. */
+  scroll-margin-block-start: calc(var(--invulhulp-header-height) + var(--rvo-space-lg));
   padding-inline-start: var(--track-gutter);
   padding-block-end: var(--rvo-space-3xl);
 }

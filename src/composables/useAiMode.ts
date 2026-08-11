@@ -1,11 +1,16 @@
 import { ref, computed } from 'vue'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { loadForm, flattenFormQuestions } from '../services/formLoader'
-import { bulkExtractFromDocument, smoothFormAnswers, verifyDocuments } from '../services/llmService'
+import {
+  bulkExtractFromDocument,
+  fetchImageDimensions,
+  smoothFormAnswers,
+  verifyDocuments,
+} from '../services/llmService'
 import type { SmoothSection } from '../services/llmService'
 import { stripHtml } from '../utils/sourceMatching'
 import { isQuestionVisible } from '../utils/answerRefs'
-import type { FormConfig } from '../models/Assessment'
+import type { AnswerSource, FormConfig } from '../models/Assessment'
 
 // Module-level singleton — shared across all component instances
 const aiModeActive = ref<Set<string>>(new Set())
@@ -39,6 +44,13 @@ const aiModeSmoothed = ref<Record<string, Record<string, string>>>({})
 // Answers with markup beyond plain paragraphs (lists, bold, …) are usually
 // user-authored; smoothing works on plaintext and would flatten them.
 const RICH_HTML_RE = /<(?!\/?(p|br)\b)[a-z]/i
+
+// Figure attachments (see attachFigures). A figure travels with the prose
+// around it, so it surfaces for plenty of loosely-related questions; these two
+// caps are what keep "the AI adds the diagram where it belongs" from becoming
+// "the same diagram is stapled to twenty answers".
+const FIGURE_MAX_RANK = 3 // must be among the top-N retrieved chunks
+const FIGURE_MAX_PER_QUESTION = 2
 
 export function useAiMode() {
   const store = useAssessmentStore()
@@ -75,6 +87,14 @@ export function useAiMode() {
       return
     }
 
+    // Figures already placed in this run, so one diagram lands at its
+    // best-matching question instead of on every question that retrieved it.
+    const usedFigures = new Set<string>()
+    // Only questions flagged for attachments render them (QuestionItem), and
+    // that flag marks exactly the diagram-worthy questions — so it doubles as
+    // the shortlist of places an extracted figure belongs.
+    const figureTargets = new Set(questions.filter((q) => q.allowAttachments).map((q) => q.id))
+
     delete aiModeError.value[formId]
     aiModeCancelled[formId] = false
     aiModeActive.value = new Set([...aiModeActive.value, formId])
@@ -90,6 +110,12 @@ export function useAiMode() {
       formContext: formConfig.aiContext,
       onAnswer: (qId, value) => store.setAnswerForForm(formId, qId, value, dossierId),
       onSources: (qId, meta) => store.setAnswerSourcesForForm(formId, qId, meta, dossierId),
+      onRetrieved: (qId, sources) => {
+        if (!figureTargets.has(qId)) return
+        // Not awaited: fetching the image only sizes the attachment, and the
+        // next question shouldn't wait on it.
+        void attachFigures(formId, dossierId, qId, sources, usedFigures)
+      },
       onEmpty: (qId) => {
         const set = new Set(aiModeUnanswered.value[formId] ?? [])
         set.add(qId)
@@ -121,6 +147,53 @@ export function useAiMode() {
       }
     }
     delete aiModeCancelled[formId]
+  }
+
+  /** Attach the figures behind an answer's retrieved chunks to that question.
+   *  Callers gate on `allowAttachments` — a figure on any other question would
+   *  be invisible in the form yet still surface in the exports.
+   *
+   *  Picks from the raw retrieval hits rather than the stored citations: a
+   *  figure chunk is only its caption, so the grounding filter in
+   *  buildAnswerSourceMeta drops it from the citations almost every time.
+   *  Only figures whose bytes were extracted (assetId set) can be attached —
+   *  see backend/pdfextract.py, which finds embedded raster images but not
+   *  vector diagrams. */
+  async function attachFigures(
+    formId: string,
+    dossierId: string,
+    questionId: string,
+    sources: AnswerSource[],
+    usedFigures: Set<string>,
+  ) {
+    const figures = sources
+      .slice(0, FIGURE_MAX_RANK)
+      .filter((s) => s.blockType === 'figure' && s.assetId && !usedFigures.has(s.assetId))
+      .slice(0, FIGURE_MAX_PER_QUESTION)
+    // Claim them all before the first await: the callbacks of two questions
+    // can otherwise interleave and both take the same figure.
+    for (const source of figures) usedFigures.add(source.assetId!)
+
+    for (const source of figures) {
+      const assetId = source.assetId!
+      const dims = await fetchImageDimensions(assetId, store.sessionId)
+      if (aiModeCancelled[formId]) return
+      const page = source.page ? `, pagina ${source.page}` : ''
+      store.addAttachmentForForm(
+        formId,
+        questionId,
+        {
+          id: assetId,
+          filename: `figuur-pagina-${source.page ?? 0}.png`,
+          caption: source.figureCaption || `Afbeelding uit ${source.docName}${page}`,
+          mimeType: 'image/png',
+          ...dims,
+          uploadedAt: Date.now(),
+          sourceDocId: source.docId,
+        },
+        dossierId,
+      )
+    }
   }
 
   /** Final AI Modus phase: rewrite the form's longtext answers to remove

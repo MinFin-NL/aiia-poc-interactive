@@ -8,8 +8,8 @@ IMAGES_PATH lives on the same Azure Files volume as the docstore, so
 attachments survive container restarts and redeploys.
 
 The sidecar's session_id ties an image to a dossier (enables per-dossier
-cleanup); source_doc_id is reserved for images extracted from uploaded
-source documents.
+cleanup); source_doc_id names the uploaded document a figure was extracted
+from (None for images the user uploaded by hand).
 
 All functions are synchronous file I/O; callers wrap them in
 asyncio.to_thread().
@@ -49,6 +49,7 @@ def save_image(
     filename: str,
     mime: str,
     data: bytes,
+    source_doc_id: str | None = None,
 ) -> dict[str, Any]:
     os.makedirs(_user_dir(user_sub), exist_ok=True)
     image_id = uuid.uuid4().hex
@@ -58,7 +59,7 @@ def save_image(
         "filename": filename,
         "mime": mime,
         "size": len(data),
-        "source_doc_id": None,
+        "source_doc_id": source_doc_id,
     }
     bin_path, meta_path = _paths(user_sub, image_id)
     tmp = f"{bin_path}.tmp"

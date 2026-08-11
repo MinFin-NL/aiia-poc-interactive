@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import type { Answers, AnswerSourceMeta, QuestionAttachment, RiskLevelValue } from '../models/Assessment'
-import { indexDocument, deleteDocument, deleteImage, listDocuments } from '../services/llmService'
+import {
+  indexDocument,
+  uploadPdfDocument,
+  deleteDocument,
+  deleteImage,
+  listDocuments,
+} from '../services/llmService'
 import {
   deleteDossierOnServer,
   fetchDossiers,
@@ -674,8 +680,45 @@ export const useAssessmentStore = defineStore('assessment', {
       return doc
     },
 
-    // The optional dossierId lets long-running writers (AI Modus) keep writing
-    // to the dossier they started in, even if the user switched dossiers.
+    /**
+     * Upload a PDF and let the backend extract it. The server does the text
+     * extraction here (so tables and figures survive), which means the
+     * document only gets its content once the upload returns — unlike
+     * addDocument, where the browser already has the text up front.
+     * Throws PdfNoTextError for scanned PDFs so the caller can explain why.
+     */
+    async addPdfDocument(file: File): Promise<SourceDocument> {
+      this.ensureDossier()
+      const dossier = this.dossiers[this.activeDossierId!]
+      const doc: SourceDocument = {
+        id: generateId('doc'),
+        name: file.name,
+        content: '',
+        uploadedAt: Date.now(),
+        indexing: true,
+      }
+      dossier.documents.push(doc)
+      this.touch(dossier.id)
+
+      try {
+        const res = await uploadPdfDocument(file, dossier.sessionId, doc.id, doc.uploadedAt)
+        const stored = dossier.documents.find((d) => d.id === doc.id)
+        if (stored) {
+          stored.indexing = false
+          stored.content = res.content
+          stored.chunkCount = res.chunkCount
+          stored.ontology = res.ontology
+        }
+      } catch (e) {
+        // A failed upload leaves nothing usable behind — drop the placeholder
+        // rather than stranding an empty document in the dossier.
+        dossier.documents = dossier.documents.filter((d) => d.id !== doc.id)
+        this.touch(dossier.id)
+        throw e
+      }
+      return doc
+    },
+
     // The optional dossierId lets long-running writers (AI Modus) keep writing
     // to the dossier they started in, even if the user switched dossiers.
     setAnswerForForm(formId: string, questionId: string, value: string | string[], dossierId?: DossierId) {
@@ -715,10 +758,25 @@ export const useAssessmentStore = defineStore('assessment', {
     },
 
     addAttachment(questionId: string, att: QuestionAttachment) {
-      const id = this.activeDossierId
       const formId = this.activeDossier.activeFormId
-      if (!id || !formId) return
-      const current = this.currentFormMutable()?.attachments?.[questionId] ?? []
+      if (!formId) return
+      this.addAttachmentForForm(formId, questionId, att)
+    },
+
+    /** Like addAttachment, but pinned to a form and dossier — AI Modus keeps
+     *  writing to the dossier its run started in even if the user navigates
+     *  away. Re-attaching the same image id is a no-op, so an extracted figure
+     *  can't pile up on a question across runs. */
+    addAttachmentForForm(
+      formId: string,
+      questionId: string,
+      att: QuestionAttachment,
+      dossierId?: DossierId,
+    ) {
+      const id = dossierId ?? this.activeDossierId
+      if (!id || !this.dossiers[id]) return
+      const current = this.dossiers[id].forms[formId]?.attachments?.[questionId] ?? []
+      if (current.some((a) => a.id === att.id)) return
       this._docFor(id)?.setAttachments(formId, questionId, [...current, att])
     },
 
@@ -728,9 +786,15 @@ export const useAssessmentStore = defineStore('assessment', {
       if (!id || !formId) return
       const current = this.currentFormMutable()?.attachments?.[questionId]
       if (!current) return
+      const removed = current.find((a) => a.id === imageId)
       const next = current.filter((a) => a.id !== imageId)
-      if (next.length === current.length) return
+      if (!removed) return
       this._docFor(id)?.setAttachments(formId, questionId, next)
+      // A figure extracted from a source document is owned by that document,
+      // not by this answer: the same image may be attached to another question
+      // or re-attached by the next AI Modus run, so only the bytes the user
+      // uploaded here are deleted. Document figures go with the dossier.
+      if (removed.sourceDocId) return
       // best-effort server cleanup; UI removal already happened
       deleteImage(imageId, this.activeDossier.sessionId).catch(() => {})
     },
