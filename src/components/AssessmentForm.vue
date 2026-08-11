@@ -136,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { loadForm } from '../services/formLoader'
 import { computeNavOrder } from '../utils/formProgress'
 import { useAssessmentStore } from '../stores/assessmentStore'
@@ -237,6 +237,19 @@ async function loadActiveForm() {
 
 onMounted(loadActiveForm)
 watch(() => store.activeFormId, loadActiveForm)
+
+// Elke stap begint bovenaan. Zonder dit blijft de scrollpositie van de vorige
+// pagina staan, zodat je halverwege (of onderaan) de volgende stap binnenkomt.
+watch(
+  () => store.currentView,
+  async () => {
+    await nextTick()
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    // .assessment-shell__main is zelf ook een scrollcontainer (overflow-y: auto);
+    // die scrollt alleen mee als de hoogte begrensd is, maar dan blijft hij anders staan.
+    document.querySelector('.assessment-shell__main')?.scrollTo({ top: 0, left: 0 })
+  },
+)
 
 // Build ordered navigation list from form config
 const navOrder = computed((): string[] => {
