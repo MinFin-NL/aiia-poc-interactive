@@ -14,6 +14,7 @@ import {
   type DossierRole,
   type ServerDossier,
 } from '../services/dossierService'
+import { getCachedForm, flattenFormQuestions } from '../services/formLoader'
 import { DossierDoc, SEED_ORIGIN } from '../collab/dossierDoc'
 import { connectDossier, disconnectAll, getProvider } from '../collab/dossierTransport'
 import type { DossierPayload } from '../collab/ydocCodec'
@@ -132,6 +133,24 @@ const PUSH_DEBOUNCE_MS = 1500
 // are never touched by the mirror. Module scope so docs never get persisted.
 // Phase 2 attaches WebSocket transport to these same docs.
 const dossierDocs = new Map<DossierId, DossierDoc>()
+
+// Question types whose answer is an option label, not prose: stored verbatim in
+// the CRDT so it survives byte-equal (see DossierDoc.setAnswer's `opaque`).
+// Types per loaded form, so a radio answer doesn't re-walk the form on every
+// keystroke. Falls back to "prose" when the form isn't loaded yet — the caller
+// that fills answers for another form loads it first, so this only misses for a
+// form nothing has opened, where no radio can have been clicked either.
+const choiceTypes = new Map<string, Set<string>>()
+function isChoiceQuestion(formId: string, questionId: string): boolean {
+  let ids = choiceTypes.get(formId)
+  if (!ids) {
+    const form = getCachedForm(formId)
+    if (!form) return false
+    ids = new Set(flattenFormQuestions(form).filter((q) => q.type === 'radio').map((q) => q.id))
+    choiceTypes.set(formId, ids)
+  }
+  return ids.has(questionId)
+}
 
 /** The collab-synced envelope for one dossier (drops documents/sharing). */
 function payloadOf(d: Dossier): DossierPayload {
@@ -725,7 +744,7 @@ export const useAssessmentStore = defineStore('assessment', {
       const id = dossierId ?? this.activeDossierId
       if (!id || !this.dossiers[id]) return
       // Through the doc: ensureForm creates the form, the mirror lands it in Pinia.
-      this._docFor(id)?.setAnswer(formId, questionId, value)
+      this._docFor(id)?.setAnswer(formId, questionId, value, isChoiceQuestion(formId, questionId))
     },
 
     setAnswerSourcesForForm(formId: string, questionId: string, meta: AnswerSourceMeta, dossierId?: DossierId) {

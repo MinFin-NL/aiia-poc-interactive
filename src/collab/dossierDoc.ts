@@ -24,7 +24,7 @@ import {
   dossierToYDoc,
   getTextFragment,
   isDocSeeded,
-  isOpaqueString,
+  isVerbatimString,
   newFormMap,
   seedDoc,
   writeTextFragment,
@@ -109,8 +109,14 @@ export class DossierDoc {
   }
 
   /** Set a whole answer, dispatching to the right CRDT bucket by value shape —
-   *  mirrors assessmentStore.setAnswerForForm. Creates the form if needed. */
-  setAnswer(formId: string, questionId: string, value: string | string[]): void {
+   *  mirrors assessmentStore.setAnswerForForm. Creates the form if needed.
+   *
+   *  `opaque` forces the verbatim bucket for a string the shape check cannot
+   *  recognise: a radio answer ("Ja", or "Ja\n---\ntoelichting") is not JSON and
+   *  not HTML, so without it the rich-text path would parse it as prose and hand
+   *  back "<p>Ja</p>" — breaking every `visibleIf` that compares to the option
+   *  label, and flattening the follow-up separator to " --- ". */
+  setAnswer(formId: string, questionId: string, value: string | string[], opaque = false): void {
     const f = this.ensureForm(formId)
     const text = f.get(FORM_TEXT) as Y.Map<number>
     const list = f.get(FORM_LIST) as Y.Map<Y.Array<string>>
@@ -128,8 +134,8 @@ export class DossierDoc {
         }
         arr.delete(0, arr.length)
         arr.push([...value])
-      } else if (isOpaqueString(value)) {
-        // Table / opaque JSON string — stored whole (v1 last-write-wins).
+      } else if (opaque || isVerbatimString(value)) {
+        // Table / radio / opaque JSON string — stored whole (v1 last-write-wins).
         text.delete(questionId)
         list.delete(questionId)
         raw.set(questionId, value)

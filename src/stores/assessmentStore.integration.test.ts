@@ -22,7 +22,29 @@ vi.mock('../services/llmService', () => ({
   listDocuments: vi.fn().mockResolvedValue([]),
 }))
 
+// The open form's question types decide which answers are stored verbatim, so
+// the store reads them from the form cache — here a one-radio 'aiia'.
+vi.mock('../services/formLoader', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../services/formLoader')>()),
+  getCachedForm: (id: string) =>
+    id === 'aiia'
+      ? {
+          id,
+          sections: [
+            {
+              id: 's', title: 's', part: 'A',
+              subsections: [{
+                id: 'ss', title: 'ss',
+                questions: [{ id: 'q_radio', text: 'r', type: 'radio', importance: 'optional', options: ['Ja', 'Nee'] }],
+              }],
+            },
+          ],
+        }
+      : undefined,
+}))
+
 import { useAssessmentStore } from './assessmentStore'
+import { isQuestionVisible } from '../utils/answerRefs'
 
 function freshStoreWithOpenForm() {
   const s = useAssessmentStore()
@@ -47,6 +69,16 @@ describe('assessmentStore ↔ DossierDoc integration', () => {
     s.setAnswer('q_table', JSON.stringify([{ x: 1 }]))
     expect(s.answers.q_choice).toEqual(['a', 'b'])
     expect(s.answers.q_table).toBe(JSON.stringify([{ x: 1 }]))
+  })
+
+  it('keeps a radio answer verbatim so visibleIf follow-ups appear', () => {
+    // Regression: "Ja" came back "<p>Ja</p>", so every question gated on the
+    // option label stayed hidden after clicking it.
+    const { s } = freshStoreWithOpenForm()
+    s.setAnswer('q_radio', 'Ja')
+    expect(s.answers.q_radio).toBe('Ja')
+    const gated = { visibleIf: { questionId: 'q_radio', equals: 'Ja' } }
+    expect(isQuestionVisible(gated, s.getAnswer)).toBe(true)
   })
 
   it('two different answers both persist (no clobber through the store)', () => {

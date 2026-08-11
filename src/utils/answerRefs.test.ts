@@ -40,6 +40,14 @@ describe('isQuestionVisible', () => {
     const q = { visibleIf: { questionId: 'd2.1.1', equals: 'Ja' } }
     expect(isQuestionVisible(q, answerMap({ 'd2.1.1': 'Ja\n---\nsome follow up' }))).toBe(true)
   })
+  // Radio answers written before they were routed around the rich-text CRDT
+  // bucket come back as Tiptap HTML, with the follow-up separator flattened.
+  it('matches a legacy HTML-wrapped radio answer', () => {
+    const q = { visibleIf: { questionId: 'd2.1.1', equals: 'Ja' } }
+    expect(isQuestionVisible(q, answerMap({ 'd2.1.1': '<p>Ja</p>' }))).toBe(true)
+    expect(isQuestionVisible(q, answerMap({ 'd2.1.1': '<p>Nee</p>' }))).toBe(false)
+    expect(isQuestionVisible(q, answerMap({ 'd2.1.1': '<p>Ja --- toelichting</p>' }))).toBe(true)
+  })
   it('matches against a checkbox (array) answer via includes', () => {
     const q = { visibleIf: { questionId: 'd2.1.1', equals: 'Ja' } }
     expect(isQuestionVisible(q, answerMap({ 'd2.1.1': ['Nee', 'Ja'] }))).toBe(true)

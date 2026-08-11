@@ -12,11 +12,30 @@ function findQuestion(form: FormConfig | undefined, id: string): Question | unde
   return undefined
 }
 
+// DOM-free (this module runs in plain-node tests too), and only ever applied to
+// choice answers — an option label is short plain text, never real markup.
+function stripTags(s: string): string {
+  return s
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 // A radio answer is stored as "value" or "value\n---\nfollow-up"; the value is
-// the part before the separator.
+// the part before the separator. Answers written before radio values were kept
+// out of the rich-text CRDT bucket come back HTML-wrapped ("<p>Ja</p>"), and
+// with their separator flattened to " --- " by the HTML round-trip — hence the
+// tag strip and the whitespace-tolerant split. An option label never contains
+// "---", so splitting on it cannot swallow a real value.
 export function radioScalar(v: Answer | undefined): string {
   if (Array.isArray(v)) return ''
-  return (v ?? '').split('\n---\n')[0] ?? ''
+  const head = (v ?? '').split(/\s*---\s*/)[0] ?? ''
+  return stripTags(head)
 }
 
 /** Whether a question should render, given its `visibleIf` and current answers. */

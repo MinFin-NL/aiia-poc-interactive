@@ -186,7 +186,7 @@ import { useCrossFormMappings } from '../composables/useCrossFormMappings'
 import { useAiMode } from '../composables/useAiMode'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { answerPlainText } from '../utils/sourceMatching'
-import { mergedOptions } from '../utils/answerRefs'
+import { mergedOptions, radioScalar } from '../utils/answerRefs'
 import { getCachedForm } from '../services/formLoader'
 import { useCollab } from '../collab/useCollab'
 
@@ -295,12 +295,10 @@ const currentValueAsString = computed(() => {
   return props.modelValue ?? ''
 })
 
-const radioValue = computed(() => {
-  if (typeof props.modelValue === 'string') {
-    return props.modelValue.split('\n---\n')[0] ?? ''
-  }
-  return ''
-})
+// Shared with isQuestionVisible, so the checked option and the questions a
+// visibleIf reveals can never disagree — including for answers stored before
+// radio values were kept out of the rich-text bucket.
+const radioValue = computed(() => radioScalar(props.modelValue))
 
 const followUpModel = computed({
   get() {

@@ -27,6 +27,10 @@ function fixture(): DossierPayload {
       q_details: '<p>Eerste alinea.</p><ul><li><p>punt een</p></li><li><p>punt twee</p></li></ul>',
       // Checkbox answer — a string[], not HTML.
       q_datacategories: ['persoonsgegevens', 'locatiegegevens'],
+      // Radio answer with a follow-up: option label + separator + Tiptap HTML.
+      // Neither JSON nor HTML, so it needs the verbatim bucket — the rich-text
+      // path would flatten it to '<p>Ja --- …</p>' and lose the toelichting.
+      q_cloud: 'Ja\n---\n<p>Azure, regio West-Europa.</p>',
       // Table answer — a JSON string per the table-questions contract.
       q_processors: JSON.stringify([
         { naam: 'Verwerker A', rol: 'hosting', land: 'NL' },
@@ -129,6 +133,11 @@ describe('ydocCodec round-trip', () => {
     expect(restored.forms.aiia.answers.q_processors).toBe(
       original.forms.aiia.answers.q_processors,
     )
+  })
+
+  it('preserves a radio answer with its follow-up separator intact', () => {
+    const restored = yDocToDossier(dossierToYDoc(fixture()))
+    expect(restored.forms.aiia.answers.q_cloud).toBe('Ja\n---\n<p>Azure, regio West-Europa.</p>')
   })
 
   it('preserves answerSources incl. the grounded=false hallucination flag', () => {

@@ -80,6 +80,19 @@ describe('DossierDoc mutation dispatch', () => {
     expect(d.toPayload().forms.aiia.answers.q_table).toBe(tableValue)
   })
 
+  it('keeps a radio answer verbatim when marked opaque', () => {
+    // Regression: a radio answer is neither JSON nor HTML, so the shape check
+    // sent it through the rich-text bucket — "Ja" came back "<p>Ja</p>" (no
+    // visibleIf ever matched) and "Ja\n---\ntoelichting" lost its separator.
+    const d = DossierDoc.fromPayload(payload())
+    d.setAnswer('aiia', 'q_radio', 'Ja', true)
+    d.setAnswer('aiia', 'q_radio_follow', 'Ja\n---\n<p>toelichting</p>', true)
+
+    const answers = d.toPayload().forms.aiia.answers
+    expect(answers.q_radio).toBe('Ja')
+    expect(answers.q_radio_follow).toBe('Ja\n---\n<p>toelichting</p>')
+  })
+
   it('transact() coalesces several setAnswer calls into one update', () => {
     const d = DossierDoc.fromPayload(payload())
     let fires = 0

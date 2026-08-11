@@ -1,8 +1,10 @@
 # Toepasselijkheid van formulieren: wanneer geldt een formulier niet?
 
-**Status: open ontwerpvraag, nog niets gebouwd.** Dit document legt de vraag, de analyse en de
+**Status: richting bepaald, nog niets gebouwd.** Dit document legt de vraag, de analyse en de
 opties vast zodat er later een besluit over genomen kan worden. De aanleiding is de
-toegankelijkheidsverklaring, maar de vraag is algemener.
+toegankelijkheidsverklaring, maar de vraag is algemener. §1–4 zijn de oorspronkelijke analyse
+op basis van dat ene formulier; **§5 is de actuele richting** en gaat uit van een veel bredere
+scope (persoonsgegevens en AI), waardoor optie C alsnog de voorkeur krijgt.
 
 ## 1. De aanleiding
 
@@ -116,7 +118,181 @@ Openstaande punten voor het besluit:
   "mogelijk relevant"?
 - Wordt de toepasselijkheidsbeslissing meegenomen in de PDF-export van het dossier?
 
-## 5. Raakvlakken
+## 5. Actuele richting: een toepassingsscan als dossier-eigenschap
+
+De aanbeveling in §4 ("A + B nu, C later") ging uit van één regel. Zodra je dezelfde vraag
+stelt voor **persoonsgegevens** en **AI** vallen er niet één maar circa tien van de negentien
+formulieren onder een toepasselijkheidsregel — en dan is een generieke motor goedkoper dan
+tien losse gate-secties. Dit hoofdstuk beschrijft die motor.
+
+### 5.1 Waar de gate hoort
+
+Niet in de formulieren zelf, en ook niet in de intake, maar als **eigenschap van het
+dossier**. Redenen:
+
+- **Kip-ei.** De prescan DPIA is zélf het instrument dat bepaalt of een DPIA nodig is; die kan
+  dus niet gegate worden door een antwoord uit de DPIA. Hetzelfde geldt voor de beslishulp en
+  de EU AI Act-checklist.
+- **Herhaalbaarheid.** Scope verandert (er komt in maand vier een LLM-feature bij). De intake
+  is een aanvraagformulier met een afgerond besluit van de Intakeboard; die wil je niet
+  heropenen om een toepasselijkheidsvraag bij te stellen.
+- **Dossiers zonder intake** moeten ook werken.
+
+De vragen worden drie keer verspreid al gesteld (`quickscan.qs_d.persoonsgegevens`,
+`prescandpia.d1.1.1`, `prescandpia.d6.1.1`) — die blijven staan als inhoudelijke vragen, maar
+zijn te laat en te versnipperd om de formulierlijst mee te sturen.
+
+### 5.2 Precedent: hetzelfde patroon als de beslishulp
+
+De beslishulp doet nu al precies dit soort werk op dossierniveau en levert het bouwpatroon:
+
+| Beslishulp vandaag | Toepassingsscan |
+|---|---|
+| `BeslishulpTile.vue` op de dossierpagina, gefuseerd met de EU AI Act-kaart | eigen tegel bovenaan de dossierpagina, boven de spoorgroepen |
+| `BeslishulpModal.vue` als wizard | zelfde wizard-patroon, ~8–12 vragen |
+| Uitkomst één keer per dossier opgeslagen, gelezen via een store-getter | idem |
+| `labels` + `conclusionId` → `verdictSummary()` → badge met kleur | afgeleide **kenmerken** → zichtbare tags op de dossierpagina |
+
+**Zichtbaarheid is expliciet onderdeel van het ontwerp:** de uitkomst van de scan wordt
+getoond als een rij tags op de dossierpagina (bijv. `persoonsgegevens` · `bijzondere pg` ·
+`AI-systeem` · `besluit over personen` · `gebruikersinterface`), net zoals de beslishulp haar
+verdict toont. Die tags zijn tegelijk de verklaring waaróm bepaalde formulieren verplicht of
+niet van toepassing zijn — klikken op een tag zou de betrokken formulieren kunnen markeren.
+Ze staan naast, niet in plaats van, de bestaande `domains`-facettags op de formulierkaarten:
+`domains` beschrijft wat een formulier ís, de kenmerken beschrijven wat dit dossier heeft.
+
+**Opslagkeuze, nog te maken.** De beslishulp hangt haar run aan een *host-formulier*
+(`FormState.beslishulp` op `euaiact`, zie `BESLISHULP_HOST_FORM_ID`) omdat `FormState` er al
+was. Voor de scan is de nettere plek het dossierobject zelf. Dat raakt wél de serverkant
+(`dossierstore.py`, de grants en de CRDT-sync) waar het host-form-trucje dat ontloopt. Als dat
+te duur blijkt: hetzelfde trucje, met de intake als host. Zie ook `collab`-notities over
+generatiebumps bij schemawijzigingen.
+
+### 5.3 Tussenlaag: benoemde kenmerken, geen vraag-ids
+
+Formulieren verwijzen nooit rechtstreeks naar een scanvraag. De scan leidt **kenmerken** af;
+formulieren declareren condities over die kenmerken:
+
+```jsonc
+{
+  "persoonsgegevens": true,
+  "bijzondere_persoonsgegevens": false,
+  "grootschalig": true,
+  "besluit_over_personen": true,
+  "algoritme_of_ai": true,
+  "ai_verordening_in_scope": true,   // uit de beslishulp-conclusie (11.x = buiten scope)
+  "gebruikersinterface": false,
+  "eigen_dataset": true,
+  "raakt_burgers": true
+}
+```
+
+Dat ontkoppelt vraagteksten van de motor — je mag vragen herformuleren zonder negentien
+formulieren te breken, en het omzeilt de bekende val dat vraag-ids de persistence key zijn.
+
+Kenmerken hebben **twee bronnen**, en dat onderscheid is wezenlijk:
+
+| Bron | Voorbeeld | Karakter |
+|---|---|---|
+| Scan-antwoord | "verwerkt persoonsgegevens" | zelfverklaring, goedkoop, zwak bewijs |
+| Uitkomst van een formulier | prescan-verdict, beslishulp-conclusie, BBN uit de quickscan | afgeleid, duurder, sterk bewijs |
+
+De DPIA hangt daarom aan de tweede soort (de prescan-uitkomst), niet aan de eerste. De scan
+bepaalt alleen of de *prescan zelf* zin heeft. Een kenmerk mag ook `onbekend` zijn — dat is
+een derde waarde, geen `false`.
+
+### 5.4 Matrix
+
+| Formulier | Van toepassing wanneer | Voorbeeld van n.v.t. |
+|---|---|---|
+| intake, quickscan BIO | altijd | — |
+| prescan DPIA | `persoonsgegevens` | infrastructuurvervanging zonder pg |
+| DPIA | prescan-uitkomst = verplicht | — |
+| verwerkingsregister | `persoonsgegevens` | — |
+| data-ethiektoets | `persoonsgegevens` OF data over mensen | sensordata gebouwbeheer |
+| dataset-registratie, datakwaliteit | `eigen_dataset` of eigen datalevering | standaard SaaS zonder eigen data |
+| AIIA | `algoritme_of_ai` EN impact op mensen | — |
+| IAMA | `algoritme_of_ai` EN `besluit_over_personen` | voorspellend onderhoud van gebouwen |
+| EU AI Act-checklist | `ai_verordening_in_scope` (beslishulp) | — |
+| Model Card | `algoritme_of_ai` | — |
+| Algoritmeregister | `algoritme_of_ai` EN `raakt_burgers` EN publieke taak | intern hulpmiddel zonder externe werking |
+| Toegankelijkheids­verklaring | `gebruikersinterface` (zie §2) | API of koppelvlak |
+| PPM, PSA, aanbiedings­formulier, restrisico | omvang/budget — **andere as** | klein IV-verzoek |
+
+Let op de kruisgevallen: AI *zonder* persoonsgegevens zet IAMA en DPIA uit maar Model Card en
+datakwaliteit áán; persoonsgegevens *zonder* AI is het spiegelbeeld. Eén enkele "gebruikt u
+AI?"-vlag volstaat dus niet.
+
+De laatste rij is een tweede toepasselijkheidsas (projectomvang). Zelfde motor, andere
+kenmerken — een extra argument om de motor generiek te bouwen in plaats van per formulier.
+
+### 5.5 Hoe je de vragen stelt
+
+Hier staat het incentive verkeerd: "nee" invullen scheelt zes formulieren.
+
+**Vraag naar gedrag, niet naar labels.** Niemand herkent zijn Excel-scoringsregel of de "smart
+suggestions" van een leverancier als AI. Dus niet *"gebruikt u AI?"* maar: rangschikt, scoort
+of prioriteert het systeem mensen of zaken? · genereert het tekst, beeld of code? · leert het
+van data of past het zich aan? · ondersteunt of vervangt het een besluit over een persoon? ·
+zit er een ingekochte component in die als "slim" of "AI" wordt aangeprezen? Eén ja ⇒ de
+AI-tak aan, en dan **doorverwijzen naar de bestaande beslishulp** voor het echte oordeel.
+
+Idem voor persoonsgegevens: niet *"verwerkt u persoonsgegevens?"* maar: staan er gegevens in
+die — ook indirect — naar een persoon te herleiden zijn (IP-adres, personeelsnummer,
+dossiernummer, logging, pseudoniemen)? · gaat het (ook) om eigen medewerkers? · worden er
+gegevens uit een basisregistratie gebruikt?
+
+Dezelfde valkuil als in §2 bij inkoop: de vraag gaat over wat het project *oplevert of
+aanbiedt*, niet over wat MinFin zelf bouwt.
+
+**"Niet van toepassing" is een product, geen leegte.** Verplichte motivatie, plus wie en
+wanneer. Voor het n.v.t. verklaren van een DPIA hoort een tweede paar ogen (FG of privacy
+officer); daar past een akkoordveld bij, ook als dat proces buiten de tool loopt.
+
+### 5.6 Toestanden, drift en overrides
+
+Vier kaarttoestanden: **verplicht** · **mogelijk relevant** (aanbevolen, of kenmerk onbekend) ·
+**niet van toepassing** (ingeklapte groep, met reden) · **onbepaald** (scan niet gedaan → alles
+neutraal, met een banner die naar de scan wijst). Nooit verbergen — dat maakt de beslissing
+onvindbaar, conform de voorkeur in §4.
+
+- **Scope-drift.** Als een herziene scan een formulier van n.v.t. naar verplicht laat springen,
+  moet dat een zichtbare melding zijn ("scope gewijzigd: IAMA is nu van toepassing"), geen
+  stille verschijning in de lijst. Andersom: reeds ingevulde antwoorden worden nooit
+  weggegooid wanneer iets n.v.t. wordt.
+- **Overrides in beide richtingen**, altijd met reden vastgelegd. De motor adviseert, de mens
+  beslist.
+
+### 5.7 Aansprakelijkheidsrand
+
+"Een DPIA is niet nodig" wordt in de praktijk gelezen als juridisch oordeel. Houd de
+formulering op *"op basis van je antwoorden lijkt X niet van toepassing — leg dit voor aan
+FG/CISO"*, met de gebruikte kenmerken zichtbaar erbij. En neem de n.v.t.-verklaringen op als
+bijlage in de dossier-PDF ("Niet van toepassing verklaarde onderdelen, met motivatie"). Dat is
+het verschil tussen werk wegmoffelen en een verantwoordingsdocument.
+
+### 5.8 Bouwvolgorde
+
+1. **Nu, zonder code:** een `Deel 0 – Van toepassing?`-sectie in `toegankelijkheid`, `iama`,
+   `algoritmeregister` en `dataethiek`. Levert meteen de auditwaardige "nee, want…" op.
+2. **Scan + kenmerken:** dossiertegel, wizard, kenmerken in de store en als tags zichtbaar op
+   de dossierpagina — nog zonder effect op de formulierlijst.
+3. **`applicability` in `index.json` + kaarttoestanden** (`FormIndexEntry` in `formLoader.ts`,
+   `trackGroups` en de kaartweergave in `DossierDetail.vue`).
+4. **Overrides, driftdetectie, export-bijlage.**
+
+Stap 1 en 2 zijn onafhankelijk en goedkoop; stap 3 is het echte werk maar heeft dan zijn input
+al klaar.
+
+### 5.9 Nog open
+
+- Mag de motor "niet van toepassing" automatisch zetten, of moet een mens elke n.v.t.
+  bevestigen? (Trager, maar aanzienlijk verdedigbaarder.)
+- Kenmerken op het dossierobject (netjes, raakt sync) of op een host-formulier (goedkoop,
+  volgt de beslishulp)?
+- Zijn de kenmerktags klikbaar — filteren ze de formulierlijst, of zijn ze puur informatief?
+
+## 6. Raakvlakken
 
 - [`sporen-en-roadmap.md`](sporen-en-roadmap.md) §5 — waar `track`/`domains`/`index.json` in
   de code zitten; optie C haakt daar direct op aan.
