@@ -19,6 +19,12 @@ import { DossierDoc, SEED_ORIGIN } from '../collab/dossierDoc'
 import { connectDossier, disconnectAll, getProvider } from '../collab/dossierTransport'
 import type { DossierPayload } from '../collab/ydocCodec'
 import { BESLISHULP_HOST_FORM_ID, riskLevelFor, type BeslishulpRun } from '../utils/beslishulp'
+import {
+  TOEPASSINGSSCAN_HOST_FORM_ID,
+  deriveKenmerken,
+  type Kenmerken,
+  type ToepassingsscanRun,
+} from '../utils/toepassingsscan'
 
 export type FormId = string
 export type DossierId = string
@@ -39,6 +45,9 @@ export interface FormState {
   // BESLISHULP_HOST_FORM_ID — see the comment there for why it hangs off a form.
   // Optional: absent in dossiers persisted before this feature existed.
   beslishulp?: BeslishulpRun
+  // The dossier's toepassingsscan. Only ever set on TOEPASSINGSSCAN_HOST_FORM_ID
+  // — same host-form trick as `beslishulp` above, for the same reason.
+  toepassingsscan?: ToepassingsscanRun
 }
 
 export interface DocumentOntology {
@@ -220,6 +229,25 @@ export const useAssessmentStore = defineStore('assessment', {
      *  The single read path — see BESLISHULP_HOST_FORM_ID. */
     beslishulpRun(): BeslishulpRun | null {
       return this.activeDossier.forms[BESLISHULP_HOST_FORM_ID]?.beslishulp ?? null
+    },
+
+    /** The dossier's toepassingsscan — the single read path, mirroring
+     *  beslishulpRun. See TOEPASSINGSSCAN_HOST_FORM_ID. */
+    toepassingsscanRun(): ToepassingsscanRun | null {
+      return this.activeDossier.forms[TOEPASSINGSSCAN_HOST_FORM_ID]?.toepassingsscan ?? null
+    },
+
+    /**
+     * What this dossier *has*, derived live from the scan answers and the
+     * beslishulp conclusion. Null until a scan has been run — callers must
+     * treat that as "unknown", never as "nothing applies".
+     *
+     * Recomputed rather than read from the stored snapshot so a beslishulp run
+     * after the scan updates `ai_verordening_in_scope` without re-answering.
+     */
+    kenmerken(): Kenmerken | null {
+      const run = this.toepassingsscanRun
+      return run ? deriveKenmerken(run.answers, this.beslishulpRun) : null
     },
     showPartB(): boolean { return this.activeForm.goDecision === true },
 
@@ -558,6 +586,15 @@ export const useAssessmentStore = defineStore('assessment', {
       this.setRiskLevelForForm(formId, run ? riskLevelFor(new Set(run.labels)) : null)
     },
 
+    /** Record (or clear, with null) the dossier's toepassingsscan. */
+    setToepassingsscanRun(run: ToepassingsscanRun | null) {
+      const id = this.activeDossierId
+      if (!id) return
+      const formId = TOEPASSINGSSCAN_HOST_FORM_ID
+      if (!this.dossiers[id].forms[formId]) this.dossiers[id].forms[formId] = initialFormState()
+      this._docFor(id)?.setToepassingsscan(formId, run)
+    },
+
     setGoDecision(decision: boolean) {
       const id = this.activeDossierId
       const formId = this.activeDossier.activeFormId
@@ -609,6 +646,7 @@ export const useAssessmentStore = defineStore('assessment', {
           target.goDecision = incoming.goDecision
           target.completedSections = incoming.completedSections
           target.beslishulp = incoming.beslishulp
+          target.toepassingsscan = incoming.toepassingsscan
         }
         // Seeding (opening) is not an edit — don't bump updatedAt or persist.
         if (origin === SEED_ORIGIN) return

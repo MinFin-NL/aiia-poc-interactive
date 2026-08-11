@@ -33,6 +33,7 @@ import {
 } from './ydocCodec'
 import type { AnswerSourceMeta, QuestionAttachment, RiskLevelValue } from '../models/Assessment'
 import type { BeslishulpRun } from '../utils/beslishulp'
+import type { ToepassingsscanRun } from '../utils/toepassingsscan'
 
 /** Transaction origin tag for edits made through this wrapper, so `onChange`
  *  can tell a local edit from a synced remote one. */
@@ -200,6 +201,13 @@ export class DossierDoc {
    *  a run is replaced atomically, never merged step by step. */
   setBeslishulp(formId: string, run: BeslishulpRun | null): void {
     this.setMeta(formId, 'beslishulp', run)
+  }
+
+  /** Record the toepassingsscan (null clears it). Whole-value like the
+   *  beslishulp: a scan is saved in one go from the wizard, never merged
+   *  answer by answer. */
+  setToepassingsscan(formId: string, run: ToepassingsscanRun | null): void {
+    this.setMeta(formId, 'toepassingsscan', run)
   }
 
   setGoDecision(formId: string, decision: boolean | null): void {

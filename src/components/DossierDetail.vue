@@ -209,6 +209,14 @@
         <p v-else-if="!isUploading" class="docs-empty rvo-text rvo-text--sm">Nog geen documenten geüpload.</p>
       </section>
 
+      <!-- Toepassingsscan: which of the forms below actually apply here. -->
+      <ToepassingsscanTile
+        :run="store.toepassingsscanRun"
+        :kenmerken="store.kenmerken"
+        :counts="scanCounts"
+        @open="scanModal?.open()"
+      />
+
       <!-- Lifecycle timeline: one phase per step, always expanded. The spine is
            the point of the page — it is what makes the forms read as phases of
            a process rather than as six unrelated lists. -->
@@ -247,13 +255,13 @@
             {{ group.emptyHint }}
           </p>
 
-          <div v-else class="card-row">
+          <div v-else-if="applicableForms(group).length > 0" class="card-row">
             <!-- Connector + card travel as one unit, so a wrapping row never
                  strands a lone glyph at the end of the line above. -->
-            <template v-for="(form, idx) in group.forms" :key="form.id">
+            <template v-for="(form, idx) in applicableForms(group)" :key="form.id">
             <div class="card-chain-item">
             <div v-if="idx > 0" class="card-connector" aria-hidden="true">
-              {{ connectorGlyph(group, idx) }}
+              {{ connectorGlyph({ track: group.track, forms: applicableForms(group) }, idx) }}
             </div>
             <!-- The beslishulp host form is rendered as a pair: its card keeps
                  every affordance the others have, with the beslishulp tile fused
@@ -288,6 +296,18 @@
                   :class="`form-card__verdict--${verdictTone}`"
                 >
                   {{ verdictLabel }}
+                </span>
+                <!-- Why this form is here at all, per the toepassingsscan. The
+                     reason is hidden text rather than only a `title`, which a
+                     keyboard or screen reader never reaches. -->
+                <span
+                  v-if="verdictFor(form.id).status === 'verplicht' || verdictFor(form.id).status === 'mogelijk'"
+                  class="rvo-tag rvo-tag--pill form-card__status"
+                  :class="{ 'rvo-tag--warning': verdictFor(form.id).status === 'mogelijk' }"
+                  :title="verdictFor(form.id).reason"
+                >
+                  {{ applicabilityLabel(verdictFor(form.id).status) }}
+                  <span class="invulhulp-visually-hidden">: {{ verdictFor(form.id).reason }}</span>
                 </span>
                 <span
                   v-if="statusFor(form.id)"
@@ -327,6 +347,37 @@
             </div>
             </template>
           </div>
+
+          <!-- Not applicable, collapsed but never hidden: a decision nobody can
+               find is worse than a form nobody fills in (docs §5.6). Opening a
+               form from here still works — the scan advises, the user decides. -->
+          <details v-if="nvtForms(group).length > 0" class="rvo-expandable-content rvo-expandable-content--subtle nvt-group">
+            <summary class="rvo-expandable-content__summary rvo-text rvo-text--sm">
+              Niet van toepassing in dit dossier ({{ nvtForms(group).length }})
+            </summary>
+            <div class="rvo-expandable-content__details">
+              <ul class="rvo-item-list nvt-list">
+                <li v-for="form in nvtForms(group)" :key="form.id" class="rvo-item-list__item nvt-item">
+                  <div class="nvt-item__text">
+                    <span class="nvt-item__title">{{ form.title }}</span>
+                    <span class="rvo-text rvo-text--sm rvo-text--subtle">{{ verdictFor(form.id).reason }}</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="rvo-button rvo-button--tertiary rvo-button--size-sm"
+                    @click="$emit('open', form.id)"
+                  >
+                    Toch openen
+                  </button>
+                </li>
+              </ul>
+              <p class="rvo-text rvo-text--sm rvo-text--subtle nvt-note">
+                Op basis van de toepassingsscan lijken deze onderdelen niet te gelden. Dat is geen
+                juridisch oordeel: leg het voor aan de FG, privacy officer of CISO. Al ingevulde
+                antwoorden blijven bewaard.
+              </p>
+            </div>
+          </details>
         </div>
       </li>
       </ol>
@@ -365,6 +416,7 @@
       :dossier-id="store.activeDossierId"
     />
     <BeslishulpModal ref="beslishulpModal" />
+    <ToepassingsscanModal ref="scanModal" />
   </div>
 </template>
 
@@ -385,6 +437,13 @@ import ShareDialog from './ShareDialog.vue'
 import AiModeToggle from './AiModeToggle.vue'
 import BeslishulpModal from './BeslishulpModal.vue'
 import BeslishulpTile from './BeslishulpTile.vue'
+import ToepassingsscanModal from './ToepassingsscanModal.vue'
+import ToepassingsscanTile from './ToepassingsscanTile.vue'
+import {
+  applicabilityLabel,
+  evaluateApplicability,
+  type ApplicabilityVerdict,
+} from '../utils/toepassingsscan'
 import { BESLISHULP_HOST_FORM_ID, isOutOfScope, riskLevelFor, verdictLevelLabel } from '../utils/beslishulp'
 import { fetchDossier, saveDossier } from '../services/dossierService'
 import { PdfNoTextError } from '../services/llmService'
@@ -412,6 +471,43 @@ const shareError = ref('')
 const aiModeErrorDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
 const aiModeErrorFormId = ref<string | null>(null)
 const beslishulpModal = ref<InstanceType<typeof BeslishulpModal> | null>(null)
+const scanModal = ref<InstanceType<typeof ToepassingsscanModal> | null>(null)
+
+// ---- Toepassingsscan ------------------------------------------------------
+// One verdict per form, recomputed whenever the scan (or the beslishulp, which
+// feeds one of the kenmerken) changes. `store.kenmerken` is null until a scan
+// has been run — every verdict is then 'onbepaald' and the page looks exactly
+// as it did before the scan existed.
+const ALWAYS: ApplicabilityVerdict = { status: 'altijd', reason: '', kenmerken: [] }
+
+const verdicts = computed(
+  () => new Map(forms.value.map((f) => [f.id, evaluateApplicability(f.applicability, store.kenmerken)])),
+)
+
+function verdictFor(formId: string): ApplicabilityVerdict {
+  return verdicts.value.get(formId) ?? ALWAYS
+}
+
+function applicableForms(group: TrackGroup): FormIndexEntry[] {
+  return group.forms.filter((f) => verdictFor(f.id).status !== 'nvt')
+}
+
+function nvtForms(group: TrackGroup): FormIndexEntry[] {
+  return group.forms.filter((f) => verdictFor(f.id).status === 'nvt')
+}
+
+const nvtFormIds = computed(
+  () => new Set(forms.value.filter((f) => verdictFor(f.id).status === 'nvt').map((f) => f.id)),
+)
+
+const scanCounts = computed(() => {
+  const counts = { verplicht: 0, mogelijk: 0, nvt: 0 }
+  for (const form of forms.value) {
+    const status = verdictFor(form.id).status
+    if (status === 'verplicht' || status === 'mogelijk' || status === 'nvt') counts[status]++
+  }
+  return counts
+})
 
 // Verdict echoed as a tag on the EU AI Act card. Level only — the tile beside
 // it already spells out the roles, and the tag has one line to work with.
@@ -670,9 +766,11 @@ const trackGroups = computed(() => groupFormsByTrack(forms.value))
 
 // Per-phase completion, recomputed whenever answers change so the timeline
 // marker fills in as the user finishes forms in that phase.
+// Forms the scan ruled out are left out of the count: otherwise a phase could
+// never reach "afgerond" because of a form nobody is supposed to fill in.
 const trackCounts = computed(() => {
   const dossier = store.activeDossierId ? store.dossiers[store.activeDossierId] : null
-  return dossier ? trackSummary(dossier) : null
+  return dossier ? trackSummary(dossier, nvtFormIds.value) : null
 })
 
 function trackCount(group: TrackGroup): { done: number; total: number } {
@@ -713,7 +811,7 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
   const { done, total } = trackCount(group)
   if (total === 0) return 'empty'
   if (done === total) return 'done'
-  return done > 0 || group.forms.some((f) => statusFor(f.id)?.status === 'bezig') ? 'busy' : 'todo'
+  return done > 0 || applicableForms(group).some((f) => statusFor(f.id)?.status === 'bezig') ? 'busy' : 'todo'
 }
 </script>
 
@@ -1382,6 +1480,41 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
 .form-card__verdict--info    { background: var(--rvo-color-lichtblauw-150); color: var(--rvo-color-lintblauw); border-color: var(--rvo-color-lichtblauw-300); }
 .form-card__verdict--warning { background: #fdf3e0; color: #8a5a00; border-color: #f0d49b; }
 .form-card__verdict--error   { background: #fdecea; color: #8f2436; border-color: #f5c2bd; }
+
+/* --- Niet van toepassing, per phase. Stock rvo-item-list rows; only the
+   layout inside a row and the struck-through title are ours. --- */
+.nvt-group {
+  margin-block-start: var(--rvo-space-md);
+  max-inline-size: 52rem;
+}
+
+.nvt-list {
+  margin: 0;
+}
+
+.nvt-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rvo-space-md);
+}
+
+.nvt-item__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.nvt-item__title {
+  font-weight: var(--rvo-font-weight-semibold);
+  text-decoration: line-through;
+  text-decoration-color: var(--rvo-color-grijs-500);
+  color: var(--rvo-color-grijs-700);
+}
+
+.nvt-note {
+  margin-block: var(--rvo-space-sm) 0;
+  max-inline-size: 68ch;
+}
 
 /* AI Mode active: animated gradient border + pulsing glow */
 .form-card--ai-mode {

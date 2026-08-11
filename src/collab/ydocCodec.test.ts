@@ -10,6 +10,7 @@
  */
 import { describe, it, expect } from 'vitest'
 import { dossierToYDoc, yDocToDossier, type DossierPayload } from './ydocCodec'
+import { deriveKenmerken } from '../utils/toepassingsscan'
 import type { FormState } from '../stores/assessmentStore'
 
 /** One fixture that hits every answer kind and edge the codec must preserve. */
@@ -180,6 +181,20 @@ describe('ydocCodec round-trip', () => {
     // Absent stays absent: a dossier that never ran the beslishulp must serialize
     // exactly as it did before the feature existed.
     expect(restored.forms.dpia.beslishulp).toBeUndefined()
+  })
+
+  it('round-trips a toepassingsscan, and leaves forms without one undefined', () => {
+    const original = fixture()
+    original.forms.aiia.toepassingsscan = {
+      scanVersion: '1',
+      answers: { pg: ['ja'], oplevering: ['webapp', 'api'] },
+      kenmerken: deriveKenmerken({ pg: ['ja'], oplevering: ['webapp', 'api'] }),
+      completedAt: 1_752_000_400_000,
+      completedBy: 'A. Ambtenaar',
+    }
+    const restored = yDocToDossier(dossierToYDoc(original))
+    expect(restored.forms.aiia.toepassingsscan).toEqual(original.forms.aiia.toepassingsscan)
+    expect(restored.forms.dpia.toepassingsscan).toBeUndefined()
   })
 
   it('handles a second, empty form without inventing content', () => {

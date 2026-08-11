@@ -52,13 +52,19 @@ export function useFormProgress() {
    * on the dossier cards. Every phase is present, including ones without forms
    * (`beheer`), so callers can render the full lifecycle without holes.
    */
-  function trackSummary(dossier: Dossier): Record<TrackId, { done: number; total: number }> {
+  function trackSummary(
+    dossier: Dossier,
+    /** Forms to leave out of the count entirely — the toepassingsscan ruled
+     *  them not applicable, so a phase must be able to reach "afgerond"
+     *  without them. */
+    skip?: ReadonlySet<string>,
+  ): Record<TrackId, { done: number; total: number }> {
     const out = Object.fromEntries(
       TRACK_IDS.map((t) => [t, { done: 0, total: 0 }]),
     ) as Record<TrackId, { done: number; total: number }>
     for (const entry of formIndex.value) {
       const t = trackIdFor(entry.track, entry.id)
-      if (t === 'onbekend') continue
+      if (t === 'onbekend' || skip?.has(entry.id)) continue
       out[t].total++
       if (progressFor(dossier, entry.id)?.status === 'afgerond') out[t].done++
     }

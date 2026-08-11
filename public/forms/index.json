@@ -31,7 +31,15 @@
       "domains": [
         "privacy"
       ],
-      "shortDescription": "Scan op basis van AP/EDPB-criteria of een volledige DPIA verplicht is."
+      "shortDescription": "Scan op basis van AP/EDPB-criteria of een volledige DPIA verplicht is.",
+      "applicability": {
+        "allOf": [
+          [
+            "persoonsgegevens"
+          ]
+        ],
+        "reason": "Dit dossier verwerkt persoonsgegevens; de prescan bepaalt of een volledige DPIA verplicht is."
+      }
     },
     {
       "id": "aanbiedingsformulier",
@@ -90,7 +98,15 @@
       "domains": [
         "data"
       ],
-      "shortDescription": "Beoordeel een dataset op volledigheid, uniciteit, tijdigheid, validiteit, juistheid en consistentie, met regels, meting en verbeteracties."
+      "shortDescription": "Beoordeel een dataset op volledigheid, uniciteit, tijdigheid, validiteit, juistheid en consistentie, met regels, meting en verbeteracties.",
+      "applicability": {
+        "allOf": [
+          [
+            "eigen_dataset"
+          ]
+        ],
+        "reason": "Dit project beheert of levert een eigen dataset."
+      }
     },
     {
       "id": "datasetregistratie",
@@ -102,7 +118,15 @@
         "data",
         "privacy"
       ],
-      "shortDescription": "Registreer een dataset: herkomst, inhoud, grondslag, classificatie, bewaartermijn en gebruiksvoorwaarden — de datakant van de Model Card."
+      "shortDescription": "Registreer een dataset: herkomst, inhoud, grondslag, classificatie, bewaartermijn en gebruiksvoorwaarden — de datakant van de Model Card.",
+      "applicability": {
+        "allOf": [
+          [
+            "eigen_dataset"
+          ]
+        ],
+        "reason": "Dit project beheert of levert een eigen dataset."
+      }
     },
     {
       "id": "dpia",
@@ -113,7 +137,16 @@
       "domains": [
         "privacy"
       ],
-      "shortDescription": "Voer een volledige Data Protection Impact Assessment uit conform het Model DPIA Rijksdienst."
+      "shortDescription": "Voer een volledige Data Protection Impact Assessment uit conform het Model DPIA Rijksdienst.",
+      "applicability": {
+        "allOf": [
+          [
+            "persoonsgegevens"
+          ]
+        ],
+        "advisory": true,
+        "reason": "Of een volledige DPIA verplicht is, volgt uit de prescan DPIA — niet uit deze scan."
+      }
     },
     {
       "id": "aiia",
@@ -125,7 +158,20 @@
         "ai",
         "privacy"
       ],
-      "shortDescription": "Beoordeel de impact van een AI-systeem op grondrechten, proportionaliteit en beveiliging."
+      "shortDescription": "Beoordeel de impact van een AI-systeem op grondrechten, proportionaliteit en beveiliging.",
+      "applicability": {
+        "allOf": [
+          [
+            "algoritme_of_ai"
+          ],
+          [
+            "raakt_burgers",
+            "besluit_over_personen",
+            "persoonsgegevens"
+          ]
+        ],
+        "reason": "Er is sprake van een algoritme of AI met impact op mensen."
+      }
     },
     {
       "id": "iama",
@@ -136,7 +182,18 @@
       "domains": [
         "ai"
       ],
-      "shortDescription": "Doorloop het officiële Impact Assessment Mensenrechten en Algoritmes (MinBZK) voor de grondrechtentoets van een algoritme of AI-systeem."
+      "shortDescription": "Doorloop het officiële Impact Assessment Mensenrechten en Algoritmes (MinBZK) voor de grondrechtentoets van een algoritme of AI-systeem.",
+      "applicability": {
+        "allOf": [
+          [
+            "algoritme_of_ai"
+          ],
+          [
+            "besluit_over_personen"
+          ]
+        ],
+        "reason": "Een algoritme ondersteunt of vervangt een besluit over personen."
+      }
     },
     {
       "id": "euaiact",
@@ -147,7 +204,15 @@
       "domains": [
         "ai"
       ],
-      "shortDescription": "Classificeer een AI-systeem onder de AI-verordening en loop cumulatief de verplichtingen na, inclusief de EU-conformiteitsverklaring (bijlage V)."
+      "shortDescription": "Classificeer een AI-systeem onder de AI-verordening en loop cumulatief de verplichtingen na, inclusief de EU-conformiteitsverklaring (bijlage V).",
+      "applicability": {
+        "allOf": [
+          [
+            "ai_verordening_in_scope"
+          ]
+        ],
+        "reason": "De beslishulp concludeerde dat de AI-verordening van toepassing is."
+      }
     },
     {
       "id": "dataethiek",
@@ -159,7 +224,16 @@
         "data",
         "privacy"
       ],
-      "shortDescription": "Toets een gegevensverwerking op respect voor personen, baten versus schade en rechtvaardigheid (Belmont-principes)."
+      "shortDescription": "Toets een gegevensverwerking op respect voor personen, baten versus schade en rechtvaardigheid (Belmont-principes).",
+      "applicability": {
+        "allOf": [
+          [
+            "persoonsgegevens",
+            "besluit_over_personen"
+          ]
+        ],
+        "reason": "Er worden gegevens over mensen gebruikt, of er wordt over mensen besloten."
+      }
     },
     {
       "id": "modelcard",
@@ -171,7 +245,15 @@
         "ai",
         "data"
       ],
-      "shortDescription": "Registreer een AI-systeem centraal: doel, data, model, beperkingen, bias en compliance-status voor governance en audit."
+      "shortDescription": "Registreer een AI-systeem centraal: doel, data, model, beperkingen, bias en compliance-status voor governance en audit.",
+      "applicability": {
+        "allOf": [
+          [
+            "algoritme_of_ai"
+          ]
+        ],
+        "reason": "Elk algoritme of AI-systeem dat in gebruik gaat, wordt centraal geregistreerd."
+      }
     },
     {
       "id": "algoritmeregister",
@@ -182,7 +264,18 @@
       "domains": [
         "ai"
       ],
-      "shortDescription": "Bereid de publicatie in het Algoritmeregister voor: doel, grondslag, werking, data, menselijk toezicht en meldroute, in begrijpelijke taal."
+      "shortDescription": "Bereid de publicatie in het Algoritmeregister voor: doel, grondslag, werking, data, menselijk toezicht en meldroute, in begrijpelijke taal.",
+      "applicability": {
+        "allOf": [
+          [
+            "algoritme_of_ai"
+          ],
+          [
+            "raakt_burgers"
+          ]
+        ],
+        "reason": "Een algoritme met werking buiten de eigen organisatie hoort in het Algoritmeregister."
+      }
     },
     {
       "id": "verwerkingsregister",
@@ -194,7 +287,15 @@
         "privacy",
         "data"
       ],
-      "shortDescription": "Leg de verplichte registratie-elementen van artikel 30 AVG vast: doeleinden, categorieën, ontvangers, doorgifte, bewaartermijnen en beveiliging."
+      "shortDescription": "Leg de verplichte registratie-elementen van artikel 30 AVG vast: doeleinden, categorieën, ontvangers, doorgifte, bewaartermijnen en beveiliging.",
+      "applicability": {
+        "allOf": [
+          [
+            "persoonsgegevens"
+          ]
+        ],
+        "reason": "Elke verwerking van persoonsgegevens hoort in het register van artikel 30 AVG."
+      }
     },
     {
       "id": "toegankelijkheid",
@@ -205,7 +306,15 @@
       "domains": [
         "project"
       ],
-      "shortDescription": "Bereid de wettelijk verplichte toegankelijkheidsverklaring voor: onderzoek, nalevingsstatus, knelpunten, alternatieven en verbetermaatregelen."
+      "shortDescription": "Bereid de wettelijk verplichte toegankelijkheidsverklaring voor: onderzoek, nalevingsstatus, knelpunten, alternatieven en verbetermaatregelen.",
+      "applicability": {
+        "allOf": [
+          [
+            "gebruikersinterface"
+          ]
+        ],
+        "reason": "Dit project levert een website, app of andere gebruikersinterface op."
+      }
     }
   ]
 }

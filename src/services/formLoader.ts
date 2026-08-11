@@ -1,4 +1,5 @@
 import type { FormConfig, CrossFormMapping, Question } from '../models/Assessment'
+import type { ApplicabilityRule } from '../utils/toepassingsscan'
 
 const cache = new Map<string, FormConfig>()
 let mappingsCache: CrossFormMapping[] | null = null
@@ -31,13 +32,17 @@ export interface FormIndexEntry {
   order?: number
   domains?: FormDomain[]
   shortDescription?: string
+  // When this form applies to a dossier, expressed over the kenmerken the
+  // toepassingsscan derives. Absent ⇒ the form always applies. See
+  // src/utils/toepassingsscan.ts and docs/toepasselijkheid-van-formulieren.md.
+  applicability?: ApplicabilityRule
 }
 
 export async function loadAvailableForms(): Promise<FormIndexEntry[]> {
   const res = await fetch('/forms/index.json', REVALIDATE)
   if (!res.ok) throw new Error('Could not load form index')
   const raw = await res.json() as { forms: FormIndexEntry[] }
-  return raw.forms.map((f) => ({ id: f.id, title: f.title ?? f.id, track: f.track, order: f.order, domains: f.domains, shortDescription: f.shortDescription }))
+  return raw.forms.map((f) => ({ id: f.id, title: f.title ?? f.id, track: f.track, order: f.order, domains: f.domains, shortDescription: f.shortDescription, applicability: f.applicability }))
 }
 
 export async function loadCrossFormMappings(): Promise<CrossFormMapping[]> {

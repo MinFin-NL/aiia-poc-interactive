@@ -1,10 +1,11 @@
 # Toepasselijkheid van formulieren: wanneer geldt een formulier niet?
 
-**Status: richting bepaald, nog niets gebouwd.** Dit document legt de vraag, de analyse en de
-opties vast zodat er later een besluit over genomen kan worden. De aanleiding is de
-toegankelijkheidsverklaring, maar de vraag is algemener. §1–4 zijn de oorspronkelijke analyse
-op basis van dat ene formulier; **§5 is de actuele richting** en gaat uit van een veel bredere
-scope (persoonsgegevens en AI), waardoor optie C alsnog de voorkeur krijgt.
+**Status: stap 2 en 3 van §5.8 zijn gebouwd** — zie §7 voor wat er staat, welke open punten
+daarbij zijn beslist en wat er nog niet is. Dit document legt daarnaast de oorspronkelijke
+vraag, analyse en opties vast. De aanleiding is de toegankelijkheidsverklaring, maar de vraag
+is algemener. §1–4 zijn de oorspronkelijke analyse op basis van dat ene formulier; **§5 is de
+richting die is uitgevoerd** en gaat uit van een veel bredere scope (persoonsgegevens en AI),
+waardoor optie C alsnog de voorkeur kreeg.
 
 ## 1. De aanleiding
 
@@ -300,3 +301,51 @@ al klaar.
   de AI-verordening doet iets verwants (bepalen wat er geldt), maar op verplichtingenniveau
   binnen één formulier, niet op formulierniveau. Bij optie C is het de moeite waard te kijken
   of de twee patronen elkaar moeten kennen.
+
+## 7. Wat er gebouwd is
+
+Stap 2 en 3 van §5.8. Stap 1 (losse `Deel 0`-secties in vier formulieren) is bewust
+overgeslagen: met de motor erbij zou dat dezelfde vraag een tweede keer stellen, op een plek
+waar het antwoord niets aanstuurt.
+
+| Onderdeel | Waar |
+|---|---|
+| Kenmerken, scanvragen, afleiding, drie-waardige toepasselijkheidsregels | `src/utils/toepassingsscan.ts` |
+| Regels per formulier (data) | `applicability` in `public/forms/index.json` |
+| Wizard | `src/components/ToepassingsscanModal.vue` |
+| Dossiertegel met kenmerktags | `src/components/ToepassingsscanTile.vue` |
+| Kaarttoestanden + ingeklapte n.v.t.-groep per fase | `src/components/DossierDetail.vue` |
+| Opslag + sync | `FormState.toepassingsscan`, `assessmentStore.setToepassingsscanRun`, `DossierDoc.setToepassingsscan`, codec |
+| Tests (32 + render-smoke + codec-roundtrip) | `src/utils/toepassingsscan.test.ts`, `src/components/toepassingsscan.render.test.ts`, `src/collab/ydocCodec.test.ts` |
+
+### 7.1 Beslissingen op de open punten uit §4 en §5.9
+
+- **Verbergen of doorstrepen?** Doorstrepen. N.v.t.-formulieren staan per fase in een
+  ingeklapte groep, met reden, en zijn met "Toch openen" gewoon te openen.
+- **Dossier zonder scan?** Alles blijft staan zoals voorheen; elk oordeel is dan `onbepaald`
+  en er verschijnt geen enkele badge. De motor gokt nooit.
+- **Kenmerken op het dossierobject of op een host-formulier?** Host-formulier — de intake,
+  via dezelfde constructie als de beslishulp (`TOEPASSINGSSCAN_HOST_FORM_ID`). Dat scheelt
+  een wijziging in `dossierstore.py`, de grants en het CRDT-schema; een echte dossier-eigen
+  plek blijft de nettere optie zodra er meer dossier-brede state komt.
+- **Mag de motor automatisch n.v.t. zetten?** Ja, maar alleen als *advies*: de tekst zegt dat
+  het geen juridisch oordeel is, de reden staat erbij, en er is niets dat een formulier
+  onbereikbaar maakt.
+- **Zijn de kenmerktags klikbaar?** Nee — voorlopig puur informatief.
+- **Verplicht versus mogelijk relevant.** Een regel met `advisory: true` levert "mogelijk
+  relevant" op ook als de conditie klopt. Dat is precies het DPIA-geval uit §5.3: alleen de
+  prescan maakt een DPIA verplicht, persoonsgegevens op zichzelf niet.
+
+### 7.2 Wat nog niet is gebouwd
+
+- **Stap 4:** overrides in beide richtingen, driftdetectie ("scope gewijzigd: IAMA is nu van
+  toepassing") en de n.v.t.-bijlage in de dossier-PDF (§5.7).
+- **Kenmerken uit formulier-uitkomsten.** Alleen `ai_verordening_in_scope` komt uit een ander
+  instrument (de beslishulp). De prescan-uitkomst en de BBN uit de quickscan zijn nog geen
+  kenmerk; de DPIA hangt daarom voorlopig aan een `advisory`-regel op `persoonsgegevens`.
+- **Motivatie bij n.v.t.** De scan legt vast *dat* iets niet van toepassing is en waarom
+  volgens de kenmerken, maar er is nog geen vrij motivatieveld en geen akkoordveld voor een
+  tweede paar ogen (FG/privacy officer), zoals §5.5 beschrijft.
+- **Dossieroverzicht.** De voortgangsbalk op de dossierkaarten in `DossierList.vue` telt nog
+  alle formulieren mee; alleen de fasetelling op de dossierpagina zelf houdt rekening met
+  n.v.t.
