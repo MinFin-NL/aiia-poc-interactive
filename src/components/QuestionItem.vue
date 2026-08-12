@@ -148,14 +148,18 @@
     />
     <DocumentViewerModal v-if="sourceMeta" ref="docViewer" />
 
-    <!-- One suggestion panel per source form that has a mapping for this question -->
+    <!-- One suggestion panel per mapping for this question. A target question
+         can have several mappings from the SAME source form (different angles
+         on it), so the source questions belong in the key — without them the
+         panels collide and Vue reuses one for the other. -->
     <CrossFormSuggestion
       v-for="mapping in store.readOnly ? [] : matchingMappings"
-      :key="`${mapping.sourceFormId}-${mapping.targetQuestionId}`"
+      :key="`${mapping.sourceFormId}-${mapping.targetQuestionId}-${mapping.sourceQuestionIds.join(',')}`"
       :mapping="mapping"
+      :question="question"
       :target-question-text="question.text"
-      :question-type="question.type"
-      :current-value="textModel"
+      :resolved-options="resolvedOptions"
+      :current-value="modelValue"
       @apply-suggestion="onApplySuggestion"
     />
 
@@ -240,13 +244,16 @@ function clearSmoothed(value: string) {
 }
 
 // Table questions can't be filled by the synthesize flow (it produces free
-// text, not grid rows), so cross-form suggestions are suppressed for them.
-const matchingMappings = computed(() => {
-  if (props.question.type === 'table') return []
-  return mappings.value.filter(
-    (m) => m.targetFormId === store.activeFormId && m.targetQuestionId === props.question.id,
-  )
-})
+// text, not grid rows), so only copy mappings — which move the grid over
+// as-is, columns permitting — are offered for them.
+const matchingMappings = computed(() =>
+  mappings.value.filter(
+    (m) =>
+      m.targetFormId === store.activeFormId &&
+      m.targetQuestionId === props.question.id &&
+      (props.question.type !== 'table' || m.mode === 'copy'),
+  ),
+)
 
 // Radio/checkbox options, including any live values pulled via `optionsFrom`.
 const resolvedOptions = computed(() =>
@@ -320,11 +327,11 @@ function onRadioSelect(option: string) {
   clearUnanswered()
 }
 
-function onApplySuggestion(value: string, meta?: AnswerSourceMeta) {
+function onApplySuggestion(value: string | string[], meta?: AnswerSourceMeta) {
   emit('update:modelValue', value)
   if (meta) store.setAnswerSources(props.question.id, meta)
   clearUnanswered()
-  clearSmoothed(value)
+  if (typeof value === 'string') clearSmoothed(value)
 }
 
 const checkboxValues = computed(() =>

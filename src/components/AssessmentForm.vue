@@ -65,6 +65,25 @@
       <!-- Main content -->
       <main class="assessment-shell__main">
 
+        <!-- Answers taken over verbatim from an earlier form on opening -->
+        <div
+          v-if="prefill"
+          class="rvo-alert rvo-alert--info rvo-alert--padding-sm assessment-shell__prefill"
+          role="status"
+        >
+          <div class="rvo-alert__container">
+            <span>{{ prefillMessage }}</span>
+            <button
+              type="button"
+              class="rvo-button rvo-button--tertiary rvo-button--size-sm"
+              aria-label="Melding over overgenomen antwoorden sluiten"
+              @click="prefill = null"
+            >
+              Sluiten
+            </button>
+          </div>
+        </div>
+
         <!-- Home -->
         <FormIntro
           v-if="store.currentView === 'home'"
@@ -137,7 +156,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
-import { loadForm } from '../services/formLoader'
+import { loadForm, getCachedForm } from '../services/formLoader'
+import { prefillCopyAnswers, type PrefillSummary } from '../composables/useCrossFormPrefill'
 import { computeNavOrder } from '../utils/formProgress'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { useAuthStore } from '../stores/authStore'
@@ -159,6 +179,16 @@ const store = useAssessmentStore()
 const auth = useAuthStore()
 const { aiModeActive, aiModeProgress, aiModePhase, cancelAiMode } = useAiMode()
 const formConfig = ref<FormConfig | null>(null)
+const prefill = ref<PrefillSummary | null>(null)
+
+const prefillMessage = computed(() => {
+  const p = prefill.value
+  if (!p) return ''
+  // prefillCopyAnswers loaded every source form, so the cache has their titles.
+  const bronnen = p.sourceFormIds.map((id) => getCachedForm(id)?.title ?? id).join(' en ')
+  const vragen = p.count === 1 ? '1 vraag is' : `${p.count} vragen zijn`
+  return `${vragen} automatisch overgenomen uit ${bronnen}. Controleer de antwoorden en pas ze aan waar nodig.`
+})
 const isLoading = ref(true)
 
 const isAiActive = computed(
@@ -220,8 +250,13 @@ async function loadActiveForm() {
     return
   }
   isLoading.value = true
+  prefill.value = null
   try {
     formConfig.value = await loadForm(store.activeFormId)
+    // Take over the answers this form shares verbatim with an earlier form
+    // (Intake → Aanbiedingsformulier and friends) before the user sees it.
+    const summary = await prefillCopyAnswers(formConfig.value)
+    if (summary.count > 0) prefill.value = summary
   } catch (err) {
     // A dossier persisted while a since-removed form was open would otherwise
     // hang here forever: the dev server and nginx both answer an unknown
@@ -384,6 +419,21 @@ function onDecisionNext(go: boolean) {
 .assessment-shell__layout {
   display: flex;
   flex: 1;
+}
+
+.assessment-shell__prefill {
+  margin: var(--rvo-space-md) var(--rvo-space-lg) 0;
+}
+
+.assessment-shell__prefill .rvo-alert__container {
+  display: flex;
+  align-items: center;
+  gap: var(--rvo-space-md);
+  flex-wrap: wrap;
+}
+
+.assessment-shell__prefill .rvo-alert__container > span {
+  flex: 1 1 20rem;
 }
 
 .assessment-shell__main {

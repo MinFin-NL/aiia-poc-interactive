@@ -1,12 +1,22 @@
 # Cross-form connecties
 
-Overzicht van alle koppelingen tussen formulieren. Antwoorden uit het bronformulier verschijnen automatisch als suggestie bij de betreffende vraag in het doelformulier. Bij tekstvragen kan het systeem via AI-synthese de inhoud omschrijven naar de context van de doelvraag.
+Overzicht van alle koppelingen tussen formulieren. Antwoorden uit het bronformulier verschijnen automatisch als suggestie bij de betreffende vraag in het doelformulier.
 
-**Totaal: 152 koppelingen** verdeeld over 38 formulierparen.
+Een koppeling heeft een **modus**:
+
+| Modus | Wat er gebeurt | Wanneer |
+|---|---|---|
+| `copy` | Het antwoord wordt **letterlijk overgenomen**, en bij het openen van het doelformulier automatisch ingevuld zolang de vraag nog leeg is. Geen AI. Werkt ook voor keuzevragen en tabellen. | De twee vragen stellen dezelfde vraag |
+| `synthesize` (standaard) | Het bronantwoord staat naast de vraag; met **✦ AI-suggestie** herschrijft het model het naar de context van de doelvraag. Alleen bij tekstvragen. | De vragen raken elkaar, maar vragen iets anders |
+
+Een `copy`-koppeling naar een keuzevraag waarvan het bronantwoord geen geldige optie is (of een tabel met andere kolommen) vult niets in — dan toont het paneel alleen het bronantwoord ter informatie.
+
+**Totaal: 244 koppelingen** verdeeld over 46 formulierparen, waarvan 29 in `copy`-modus.
 
 > De per-paar secties hieronder beschrijven de oorspronkelijke koppelingen; de tellingen erin zijn
 > niet allemaal bijgewerkt. De koppelingen van de zeven formulieren die in juli 2026 zijn
-> toegevoegd staan gebundeld in [§ Nieuwe formulieren](#nieuwe-formulieren-juli-2026) onderaan.
+> toegevoegd staan gebundeld in [§ Nieuwe formulieren](#nieuwe-formulieren-juli-2026) onderaan;
+> de IAMA-koppelingen staan in [§ IAMA](#iama-augustus-2026).
 > `public/forms/crossFormMappings.json` is de bron van waarheid.
 
 ---
@@ -25,23 +35,52 @@ Quick scan BIO → Prescan DPIA ────────────────
 
 ---
 
-## Intake → Aanbiedingsformulier (3 koppelingen)
+## Intake → Aanbiedingsformulier (18 koppelingen)
+
+De twee formulieren zijn op hun gedeelde velden op elkaar afgestemd: die worden
+letterlijk overgenomen en staan al ingevuld zodra je het aanbiedingsformulier
+opent. Alleen de vragen die het aanbiedingsformulier écht anders stelt gaan via
+AI-synthese.
+
+**Automatisch overgenomen (`copy`)**
 
 | Bronvraag (Intake) | Doelvraag (Aanbiedingsformulier) |
 |---|---|
-| Omschrijving van het IV-verzoek | Projectbeschrijving algemeen (strategische doelstelling / noodzaak) |
-| Aanleiding | Politieke en bestuurlijke urgentie |
-| Mogelijke impact | Impact op de gebruikersorganisatie |
+| Directie / afdeling(en) | Directie / Afdeling(en) |
+| Naam contactpersoon | Contactpersoon |
+| E-mailadres contactpersoon | E-mailadres |
+| Telefoonnummer contactpersoon | Telefoonnummer |
+| Naam opdrachtgever | Naam opdrachtgever |
+| Aanleiding | Aanleiding |
+| Doelstelling | Doelstelling (strategische context) |
+| Mogelijke oplossingen | Mogelijke oplossingen |
+| Afhankelijkheden met andere activiteiten/projecten | Afhankelijkheden |
+| Risico's (tabel) | Risico's |
+| Beoogde start-/einddatum | Beoogde start- / einddatum |
+| Globale raming van de kosten | Raming projectkosten *(alleen ter info — keuzevraag)* |
+| Benodigde resources | Benodigde resources *(alleen ter info — andere tabelkolommen)* |
+
+**Via AI-synthese (`synthesize`)**
+
+| Bronvraag (Intake) | Doelvraag (Aanbiedingsformulier) |
+|---|---|
+| Omschrijving van het IV-verzoek | Naam project |
+| Mogelijke impact | Mogelijke impact op gebruikers, processen en organisatie |
+| Mogelijke impact + Mogelijke oplossingen | Mogelijke impact op technische systemen & aspecten |
+| Beoogde start-/einddatum + Aanleiding | Is het project tijdgevoelig? |
+| Kostenraming + Benodigde resources | Is er budget nodig voor de initiatiefase? |
 
 ---
 
-## Intake → PPM Projectplan (3 koppelingen)
+## Intake → PPM Projectplan (5 koppelingen)
 
 | Bronvraag (Intake) | Doelvraag (PPM Projectplan) |
 |---|---|
 | Omschrijving van het IV-verzoek + Aanleiding | Achtergrond |
 | Aanleiding + Doelstelling | Redenen om te starten met het project |
 | Relatie en/of afhankelijkheid met andere activiteiten of projecten | Afhankelijkheden van andere projecten of activiteiten |
+| Doelstelling | Projectdoelstellingen en randvoorwaarden |
+| Omschrijving van het IV-verzoek + Mogelijke oplossingen | Projectscope en afbakening |
 
 ---
 
@@ -210,3 +249,30 @@ en deelt inhoudelijk weinig met de risico- en privacy-instrumenten.
 
 Twee koppelingen lopen tussen de nieuwe formulieren onderling: Datakwaliteit → Dataset-registratie
 (kwaliteitsoordeel en beperkingen) en Verwerkingsregister → Dataset-registratie (grondslag).
+
+---
+
+## IAMA (augustus 2026)
+
+Het IAMA (Impact Assessment Mensenrechten en Algoritmes) stond met 83 vragen volledig los: nul
+koppelingen, in geen van beide richtingen. Dat is nu rechtgezet met **60 koppelingen**, alle in
+`synthesize`-modus — het IAMA stelt zijn vragen in mensenrechtentermen, dus antwoorden uit de AIIA
+en de DPIA moeten daarheen worden herschreven en kunnen niet letterlijk worden overgenomen.
+
+**IAMA als doelformulier (52 koppelingen)**
+
+| Bronformulier | Koppelingen | Zwaartepunt |
+|---|---|---|
+| AIIA | 44 | Aanleiding en doel (1.1), publieke waarden (1.2), verantwoordelijkheden (1.4), totstandkoming en kwaliteit van het algoritme (2.x), gebruikscontext en rol van de medewerker (3.x), grondrechten en de afwegingen in 4.x |
+| DPIA | 8 | Wettelijke grondslag (1.3), verwerkingslocatie (3.1.4), betrokkenen en hun risico's (3.5), ernst van de inbreuk (4.3), subsidiariteit/proportionaliteit (4.4–4.5), restrisico's |
+
+**IAMA als bronformulier (22 koppelingen)**
+
+| Doelformulier | Koppelingen | Zwaartepunt |
+|---|---|---|
+| Algoritmeregister-publicatie | 8 | Doel, proces, geraakte groepen, grondslag, grondrechten, menselijke tussenkomst, monitoring, beperkingen — steeds herschreven naar begrijpelijke taal |
+| Restrisico-acceptatie | 4 | Restrisico's voor betrokkenen, baten, overwogen alternatieven |
+| Data-ethiektoets | 3 | Geraakte betrokkenen, het "niet doen"-scenario, blijvend dilemma |
+| AIIA | 3 | Grondrechtenimpact, proportionaliteit, human in the loop |
+| DPIA | 2 | Subsidiariteit en proportionaliteit |
+| AI-systeemregistratie (Model Card) | 2 | Bekende beperkingen en bias-risico's |

@@ -203,33 +203,6 @@
     "synthesisHint": "Beschrijf de resterende risico's na het treffen van maatregelen, gebaseerd op de risicoanalyse uit de AIIA."
   },
   {
-    "targetFormId": "aanbiedingsformulier",
-    "targetQuestionId": "aa_b.aanleiding",
-    "sourceFormId": "intake",
-    "sourceQuestionIds": [
-      "intake_b.omschrijving"
-    ],
-    "synthesisHint": "Herschrijf de IV-verzoekbeschrijving als strategische projectbeschrijving voor het aanbiedingsformulier, met nadruk op strategische doelstelling en toegevoegde waarde."
-  },
-  {
-    "targetFormId": "aanbiedingsformulier",
-    "targetQuestionId": "aa_d.tijdgevoelig",
-    "sourceFormId": "intake",
-    "sourceQuestionIds": [
-      "intake_b.aanleiding"
-    ],
-    "synthesisHint": "Herschrijf de aanleiding uit het intakeformulier tot een beschrijving van de politieke en bestuurlijke urgentie van het project."
-  },
-  {
-    "targetFormId": "aanbiedingsformulier",
-    "targetQuestionId": "aa_c.impact_gebruikers",
-    "sourceFormId": "intake",
-    "sourceQuestionIds": [
-      "intake_b.impact"
-    ],
-    "synthesisHint": "Vertaal de mogelijke impact uit het intakeformulier naar een beschrijving van de impact op de gebruikersorganisatie voor het aanbiedingsformulier."
-  },
-  {
     "targetFormId": "ppm",
     "targetQuestionId": "ppm_a.achtergrond",
     "sourceFormId": "intake",
@@ -402,7 +375,8 @@
     "sourceQuestionIds": [
       "qs_d.persoonsgegevens_toelichting"
     ],
-    "synthesisHint": "Gebruik de toelichting over persoonsgegevensverwerking uit de quickscan om te specificeren welke typen persoonsgegevens worden verwerkt in de prescan DPIA."
+    "synthesisHint": "Gebruik de toelichting over persoonsgegevensverwerking uit de quickscan om te specificeren welke typen persoonsgegevens worden verwerkt in de prescan DPIA.",
+    "mode": "copy"
   },
   {
     "targetFormId": "prescandpia",
@@ -461,7 +435,8 @@
     "sourceQuestionIds": [
       "d1.2.1"
     ],
-    "synthesisHint": "Gebruik het antwoord uit de Pre-scan DPIA of er bijzondere persoonsgegevens worden verwerkt om paragraaf 12 van de DPIA vooraf in te vullen. (par-dpia-form reference: prescan 1.2.1 -> DPIA 12.1.1, pre-fill)"
+    "synthesisHint": "Gebruik het antwoord uit de Pre-scan DPIA of er bijzondere persoonsgegevens worden verwerkt om paragraaf 12 van de DPIA vooraf in te vullen. (par-dpia-form reference: prescan 1.2.1 -> DPIA 12.1.1, pre-fill)",
+    "mode": "copy"
   },
   {
     "targetFormId": "aiia",
@@ -506,7 +481,8 @@
     "sourceQuestionIds": [
       "d6.2"
     ],
-    "synthesisHint": "Vertaal de AVG-rolverdeling (verwerkingsverantwoordelijke, verwerker) uit de DPIA naar de projectrolverdeling in de AIIA (ontwikkelaar, opdrachtgever, beheerder)."
+    "synthesisHint": "Vertaal de AVG-rolverdeling (verwerkingsverantwoordelijke, verwerker) uit de DPIA naar de projectrolverdeling in de AIIA (ontwikkelaar, opdrachtgever, beheerder).",
+    "mode": "copy"
   },
   {
     "targetFormId": "aiia",
@@ -608,7 +584,8 @@
     "sourceQuestionIds": [
       "d14.1"
     ],
-    "synthesisHint": "Gebruik de noodzakelijkheidsafweging uit de DPIA als basis voor de dataminimalisatiebeschrijving in de AIIA: is de gebruikte data echt noodzakelijk voor het systeem?"
+    "synthesisHint": "Gebruik de noodzakelijkheidsafweging uit de DPIA als basis voor de dataminimalisatiebeschrijving in de AIIA: is de gebruikte data echt noodzakelijk voor het systeem?",
+    "mode": "copy"
   },
   {
     "targetFormId": "aiia",
@@ -617,7 +594,8 @@
     "sourceQuestionIds": [
       "d14.2"
     ],
-    "synthesisHint": "Gebruik de proportionaliteitsafweging uit de DPIA als basis voor de beoordeling of de persoonsgegevensverwerking proportioneel en subsidiair is in de AIIA."
+    "synthesisHint": "Gebruik de proportionaliteitsafweging uit de DPIA als basis voor de beoordeling of de persoonsgegevensverwerking proportioneel en subsidiair is in de AIIA.",
+    "mode": "copy"
   },
   {
     "targetFormId": "aiia",
@@ -645,7 +623,8 @@
     "sourceQuestionIds": [
       "d15.8.2"
     ],
-    "synthesisHint": "Gebruik de informatieverstrekking aan betrokkenen uit de DPIA als basis voor de communicatie over AI-gegenereerde output aan eindgebruikers en betrokkenen in de AIIA."
+    "synthesisHint": "Gebruik de informatieverstrekking aan betrokkenen uit de DPIA als basis voor de communicatie over AI-gegenereerde output aan eindgebruikers en betrokkenen in de AIIA.",
+    "mode": "copy"
   },
   {
     "targetFormId": "aiia",
@@ -654,7 +633,8 @@
     "sourceQuestionIds": [
       "d15.1.2"
     ],
-    "synthesisHint": "Gebruik de AVG-rechtenbeschrijving uit de DPIA als basis voor de bezwaar- en beroepsprocedures in de AIIA."
+    "synthesisHint": "Gebruik de AVG-rechtenbeschrijving uit de DPIA als basis voor de bezwaar- en beroepsprocedures in de AIIA.",
+    "mode": "copy"
   },
   {
     "targetFormId": "aiia",
@@ -860,7 +840,8 @@
       "d2.1",
       "d12.4"
     ],
-    "synthesisHint": "Zet de categorieën persoonsgegevens om in tabelrijen: categorie, concrete gegevens, van welke betrokkenen en waarom noodzakelijk voor het doel."
+    "synthesisHint": "Zet de categorieën persoonsgegevens om in tabelrijen: categorie, concrete gegevens, van welke betrokkenen en waarom noodzakelijk voor het doel.",
+    "mode": "copy"
   },
   {
     "targetFormId": "verwerkingsregister",
@@ -870,7 +851,8 @@
       "d6.1",
       "d6.2"
     ],
-    "synthesisHint": "Zet de betrokken partijen om in categorieën ontvangers met doel, grondslag en frequentie van de verstrekking (art. 30 lid 1 sub d)."
+    "synthesisHint": "Zet de betrokken partijen om in categorieën ontvangers met doel, grondslag en frequentie van de verstrekking (art. 30 lid 1 sub d).",
+    "mode": "copy"
   },
   {
     "targetFormId": "verwerkingsregister",
@@ -889,7 +871,8 @@
       "d10.1",
       "d10.2"
     ],
-    "synthesisHint": "Zet de bewaartermijnen om in tabelrijen: categorie gegevens, termijn, startpunt, grondslag van de termijn en wat er daarna gebeurt."
+    "synthesisHint": "Zet de bewaartermijnen om in tabelrijen: categorie gegevens, termijn, startpunt, grondslag van de termijn en wat er daarna gebeurt.",
+    "mode": "copy"
   },
   {
     "targetFormId": "verwerkingsregister",
@@ -936,7 +919,8 @@
     "sourceQuestionIds": [
       "d17.1"
     ],
-    "synthesisHint": "Neem per rij het restrisico over met de reeds getroffen maatregelen; laat risico's weg die volledig zijn weggenomen. Vul kans en impact in op basis van de risico-inschatting."
+    "synthesisHint": "Neem per rij het restrisico over met de reeds getroffen maatregelen; laat risico's weg die volledig zijn weggenomen. Vul kans en impact in op basis van de risico-inschatting.",
+    "mode": "copy"
   },
   {
     "targetFormId": "restrisico",
@@ -1058,7 +1042,8 @@
     "sourceQuestionIds": [
       "5.1.9"
     ],
-    "synthesisHint": "Zet de factoren die de datakwaliteit beïnvloeden om in tabelrijen: issue, dimensie, vermoedelijke oorzaak, gevolg voor het gebruik en ernst."
+    "synthesisHint": "Zet de factoren die de datakwaliteit beïnvloeden om in tabelrijen: issue, dimensie, vermoedelijke oorzaak, gevolg voor het gebruik en ernst.",
+    "mode": "copy"
   },
   {
     "targetFormId": "datasetregistratie",
@@ -1202,7 +1187,8 @@
     "sourceQuestionIds": [
       "d16.1"
     ],
-    "synthesisHint": "Zet de risico's voor betrokkenen om in tabelrijen: mogelijke schade, wie wordt geraakt, soort schade, kans en beperkende maatregel."
+    "synthesisHint": "Zet de risico's voor betrokkenen om in tabelrijen: mogelijke schade, wie wordt geraakt, soort schade, kans en beperkende maatregel.",
+    "mode": "copy"
   },
   {
     "targetFormId": "dataethiek",
@@ -1351,7 +1337,8 @@
       "mc_b.inputdata",
       "mc_c.trainingsdata_bron"
     ],
-    "synthesisHint": "Zet de gebruikte gegevensbronnen om in tabelrijen: bron, welke gegevens, gebruikt als trainings- of invoerdata, en bronhouder."
+    "synthesisHint": "Zet de gebruikte gegevensbronnen om in tabelrijen: bron, welke gegevens, gebruikt als trainings- of invoerdata, en bronhouder.",
+    "mode": "copy"
   },
   {
     "targetFormId": "algoritmeregister",
@@ -1411,7 +1398,8 @@
       "6.1.1",
       "6.2.2"
     ],
-    "synthesisHint": "Zet de onderkende risico's om in tabelrijen: risico, mogelijk gevolg voor mensen, maatregel — in begrijpelijke taal."
+    "synthesisHint": "Zet de onderkende risico's om in tabelrijen: risico, mogelijk gevolg voor mensen, maatregel — in begrijpelijke taal.",
+    "mode": "copy"
   },
   {
     "targetFormId": "toegankelijkheid",
@@ -1430,5 +1418,914 @@
       "psa_b.architectuurkaders"
     ],
     "synthesisHint": "Beschrijf de structurele maatregelen die nieuwe toegankelijkheidsproblemen voorkomen: eisen in de definition of done, geautomatiseerde controles, toegankelijke componentenbibliotheek, training."
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_a.directie_afdeling",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.directie_afdeling"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_a.contactpersoon",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.contactpersoon"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_a.email",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.email"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_a.telefoonnummer",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.telefoonnummer"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_a.naam_opdrachtgever",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.naam_opdrachtgever"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_b.aanleiding",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.aanleiding"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_b.doelstelling",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.doelstelling"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_b.mogelijke_oplossingen",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.oplossingen"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_c.afhankelijkheden",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_d.afhankelijkheden"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_c.risicos",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_d.risicos"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_d.start_einddatum",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_c.planning"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_e.raming_projectkosten",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_e.kosten_raming"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_d.resources",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_c.resources"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het intakeformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_a.naam_project",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.omschrijving"
+    ],
+    "synthesisHint": "Destilleer uit de omschrijving van het IV-verzoek een korte, herkenbare projectnaam van enkele woorden."
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_c.impact_gebruikers",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.impact"
+    ],
+    "synthesisHint": "Vertaal de mogelijke impact uit het intakeformulier naar een beschrijving van de impact op gebruikers, processen en organisatie."
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_c.impact_techniek",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.impact",
+      "intake_b.oplossingen"
+    ],
+    "synthesisHint": "Beschrijf op basis van de impact en de mogelijke oplossingen uit het intakeformulier de gevolgen voor technische systemen, koppelvlakken en beheer."
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_d.tijdgevoelig",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_c.planning",
+      "intake_b.aanleiding"
+    ],
+    "synthesisHint": "Leid uit de beoogde planning en de aanleiding af of het project tijdgevoelig is, en waardoor (deadline, wetgeving, bestuurlijke toezegging, aflopend contract)."
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_e.budget_initiatiefase",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_e.kosten_raming",
+      "intake_c.resources"
+    ],
+    "synthesisHint": "Beschrijf op basis van de kostenraming en de benodigde resources uit het intakeformulier of er budget nodig is voor de initiatiefase, en waarvoor."
+  },
+  {
+    "targetFormId": "ppm",
+    "targetQuestionId": "ppm_a.afhankelijkheden",
+    "sourceFormId": "aanbiedingsformulier",
+    "sourceQuestionIds": [
+      "aa_c.afhankelijkheden"
+    ],
+    "synthesisHint": "Dezelfde vraag als in het aanbiedingsformulier — neem het antwoord ongewijzigd over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "ppm",
+    "targetQuestionId": "ppm_a.doelstellingen",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.doelstelling"
+    ],
+    "synthesisHint": "Werk de doelstelling uit het intakeformulier uit tot projectdoelstellingen met de bijbehorende randvoorwaarden."
+  },
+  {
+    "targetFormId": "ppm",
+    "targetQuestionId": "ppm_a.scope",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.omschrijving",
+      "intake_b.oplossingen"
+    ],
+    "synthesisHint": "Bepaal op basis van de omschrijving en de mogelijke oplossingen wat binnen en buiten de projectscope valt."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.1.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.1.4"
+    ],
+    "synthesisHint": "Herschrijf de aanleiding voor de inzet van het AI-systeem als de aanleiding voor de ontwikkeling van het algoritme, inclusief het probleem dat het moet oplossen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.1.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.1.1",
+      "1.1.5"
+    ],
+    "synthesisHint": "Formuleer op basis van het beoogde doel en de verwachte voordelen het hoofddoel van het algoritme en de onderliggende subdoelen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.2.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "2.3.1",
+      "1.1.5"
+    ],
+    "synthesisHint": "Benoem de publieke waarden die positief geraakt worden, uitgaande van de bijdrage aan de organisatiemissie en de verwachte voordelen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.2.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "2.1.1",
+      "2.3.2"
+    ],
+    "synthesisHint": "Benoem de publieke waarden die negatief geraakt kunnen worden, uitgaande van de impact op grondrechten en de effecten voor specifieke groepen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.3.4",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "2.1.2"
+    ],
+    "synthesisHint": "Herschrijf de wettelijke grondslag voor de inzet van het AI-systeem als de wettelijke grondslag voor de wettelijke taak die het algoritme uitvoert."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.4.1.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.3.1"
+    ],
+    "synthesisHint": "Benoem uit de rolverdeling wie verantwoordelijk is bij de ontwikkeling van het algoritme."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.4.1.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.3.1"
+    ],
+    "synthesisHint": "Benoem uit de rolverdeling wie verantwoordelijk is bij de inzet van het algoritme."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.4.1.3",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.4.1"
+    ],
+    "synthesisHint": "Benoem uit de rolverdeling voor onderhoud en beheer wie verantwoordelijk is bij het beheer van het algoritme."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.4.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.3.1"
+    ],
+    "synthesisHint": "Benoem wie eindverantwoordelijk is voor het algoritme, uitgaande van de rolverdeling in het AI Impact Assessment."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.1.1.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.2.1",
+      "1.2.2"
+    ],
+    "synthesisHint": "Licht op basis van de systeembeschrijving toe wat voor type algoritme het is en waarom voor deze vorm is gekozen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.1.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.2.3"
+    ],
+    "synthesisHint": "Herschrijf de overwogen alternatieven als onderbouwing waarom dit type algoritme het meest geschikt is voor de doelstelling."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.2B.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "5.1.1"
+    ],
+    "synthesisHint": "Herschrijf de trainingsdata en hun bronnen als antwoord op de vraag welke databronnen gebruikt worden om het model te trainen en testen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.2B.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "5.1.2"
+    ],
+    "synthesisHint": "Herschrijf de borging van datakwaliteit als beoordeling of kwaliteit en betrouwbaarheid van trainings- en testdata voldoende zijn."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.2B.3",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "4.1.2",
+      "4.1.3"
+    ],
+    "synthesisHint": "Beoordeel op basis van de representativiteit van de inputdata en de bescherming van subpopulaties of de trainings- en testdata representatief zijn voor de inzetcontext."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.2B.4",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "5.1.3"
+    ],
+    "synthesisHint": "Herschrijf de onderbouwing van dataminimalisatie als antwoord op de vraag hoe dataminimalisatie wordt gewaarborgd."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.2A.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "4.1.1"
+    ],
+    "synthesisHint": "Herschrijf de omgang met ongewenste bias als beschrijving van de aannames en bias die in de beslisregels besloten liggen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.3.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "5.1.7"
+    ],
+    "synthesisHint": "Herschrijf de verzameling en combinatie van inputdata als beschrijving van het type data dat als input dient bij inzet in de praktijk."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.3.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "5.1.9"
+    ],
+    "synthesisHint": "Herschrijf de factoren die de kwaliteit van de inputdata beïnvloeden als beoordeling of kwaliteit en betrouwbaarheid van de inputdata voldoende zijn."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.3.3",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "4.1.1",
+      "4.1.5"
+    ],
+    "synthesisHint": "Beschrijf welke aannames en bias besloten liggen in de data die als input voor het algoritme worden gebruikt."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.4.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "4.2.1",
+      "4.2.2"
+    ],
+    "synthesisHint": "Beschrijf hoe de kwaliteit van het algoritme wordt bepaald en welke metrics daarbij leidend zijn."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.4.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "4.2.2",
+      "4.2.3"
+    ],
+    "synthesisHint": "Herschrijf de acceptatiecriteria als antwoord op de vraag wanneer de kwaliteit goed genoeg is."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.4.3",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "2.1.4",
+      "6.2.2"
+    ],
+    "synthesisHint": "Beschrijf tot welke ongewenste uitkomsten fouten van het algoritme kunnen leiden en wat de gevolgen daarvan zijn."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.5.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "5.2.8",
+      "6.3.1"
+    ],
+    "synthesisHint": "Beoordeel of de data voldoende beveiligd zijn, met onderscheid tussen input- en outputdata."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.5.3",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "4.4.6",
+      "6.3.2"
+    ],
+    "synthesisHint": "Beschrijf hoe de toegang tot de data wordt gecontroleerd, met onderscheid tussen input- en outputdata."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.1.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.1.3"
+    ],
+    "synthesisHint": "Beschrijf het proces waar het algoritme onderdeel van is en wat er met de uitkomsten gebeurt."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.1.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.1.6"
+    ],
+    "synthesisHint": "Herschrijf de termijn en looptijd van de inzet als antwoord op de vraag wanneer en hoe lang het algoritme wordt ingezet."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.2.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "7.1.2"
+    ],
+    "synthesisHint": "Herschrijf de rol van mensen in de besluitvorming als beschrijving van de menselijke tussenkomst van medewerkers in het proces."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.2.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "7.1.3"
+    ],
+    "synthesisHint": "Beoordeel op basis van het human oversight-antwoord of een medewerker kan afwijken van de uitkomst van het algoritme."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.2.4",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "6.2.3"
+    ],
+    "synthesisHint": "Herschrijf het deskilling-risico als antwoord op de vraag of de inzet een risico vormt voor de kennis en kunde van de medewerker."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.3.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "7.2.1"
+    ],
+    "synthesisHint": "Herschrijf de transparantie naar verschillende groepen als externe communicatiestrategie over het algoritme."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.3.4",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "7.2.8"
+    ],
+    "synthesisHint": "Herschrijf de uitlegbaarheid voor eindgebruikers als antwoord op de vraag hoe uitlegbaar en begrijpelijk het algoritme is voor betrokkenen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.4.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "4.2.4",
+      "4.2.5"
+    ],
+    "synthesisHint": "Beschrijf hoe de inzet van het algoritme gedurende de levenscyclus wordt gemonitord en welke bijsturing mogelijk is."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.4.3",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "7.2.2",
+      "7.2.12"
+    ],
+    "synthesisHint": "Beschrijf hoe betrokkenen laagdrempelig melding kunnen maken, bezwaar kunnen maken of in beroep kunnen gaan."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.5.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.3.2"
+    ],
+    "synthesisHint": "Herschrijf de gebruikers en betrokkenen als antwoord op de vraag welke mensen en groepen door de inzet geraakt worden."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.5.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "2.1.1",
+      "2.3.2"
+    ],
+    "synthesisHint": "Beschrijf welke risico’s en nadelige effecten de inzet introduceert voor de geraakte mensen en groepen, met aandacht voor kwetsbare groepen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.5.3",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.1.5",
+      "2.3.1"
+    ],
+    "synthesisHint": "Beschrijf welke positieve effecten de inzet introduceert voor de geraakte mensen en groepen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.5.4",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.3.3",
+      "1.3.4"
+    ],
+    "synthesisHint": "Herschrijf de stakeholderconsultatie en verzamelde feedback als antwoord op de vraag hoe betrokkenen inspraak hebben."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.1.1.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "2.1.1",
+      "2.1.3"
+    ],
+    "synthesisHint": "Licht toe welke grondrechten door het algoritme worden aangetast, uitgaande van de impact op grondrechten en de toepasselijke grondrechtelijke bepalingen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.2.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "1.1.2"
+    ],
+    "synthesisHint": "Beoordeel op basis van de risicocategorie of het algoritme een hoog-risico AI-systeem is in de zin van de AI-verordening."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.2.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "5.2.2",
+      "5.2.1"
+    ],
+    "synthesisHint": "Beoordeel op basis van de verwerking van persoonsgegevens of een DPIA verplicht is."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.2.3",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "4.1.1",
+      "4.1.5"
+    ],
+    "synthesisHint": "Beoordeel of het algoritme een direct of indirect onderscheid of een potentieel discriminatoir profiel oplevert."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.4.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "3.1"
+    ],
+    "synthesisHint": "Beoordeel op basis van de proportionaliteitsafweging of het algoritme de geformuleerde doelen daadwerkelijk gaat bereiken."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.5.1",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "3.1",
+      "1.2.3"
+    ],
+    "synthesisHint": "Beoordeel op basis van de proportionaliteitsafweging en de overwogen alternatieven of de doelen ook zonder het algoritme bereikt kunnen worden."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.5.2",
+    "sourceFormId": "aiia",
+    "sourceQuestionIds": [
+      "3.2"
+    ],
+    "synthesisHint": "Herschrijf de aanvullende maatregelen als aanpassingen aan het algoritme of de toepassing waardoor de grondrechteninbreuk kleiner wordt."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.3.4",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d11.1",
+      "d9.1"
+    ],
+    "synthesisHint": "Herschrijf de rechtsgrond en het juridische kader uit de DPIA als de wettelijke grondslag voor de wettelijke taak die het algoritme uitvoert."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.1.4",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d8.1"
+    ],
+    "synthesisHint": "Herschrijf de verwerkingslocaties als antwoord op de vraag waar de inzet van het algoritme plaatsvindt."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.5.1",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d3.1"
+    ],
+    "synthesisHint": "Herschrijf de categorieën betrokkenen uit de DPIA als antwoord op de vraag welke mensen en groepen door de inzet geraakt worden."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.5.2",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d16.1"
+    ],
+    "synthesisHint": "Herschrijf de risico’s voor betrokkenen uit de DPIA als de nadelige effecten die de inzet van het algoritme voor hen introduceert."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.3.2",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d16.1"
+    ],
+    "synthesisHint": "Bepaal op basis van de risico’s voor betrokkenen hoe groot de verwachte negatieve impact op het grondrecht is."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.4.2",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d14.2"
+    ],
+    "synthesisHint": "Herschrijf de proportionaliteitsbeoordeling uit de DPIA als afweging of het redelijk is om het algoritme in te zetten."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.5.1",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d14.1"
+    ],
+    "synthesisHint": "Herschrijf de subsidiariteitsbeoordeling uit de DPIA als antwoord op de vraag of de doelen ook zonder het algoritme bereikt kunnen worden."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.5.3",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d17.1",
+      "d17.3"
+    ],
+    "synthesisHint": "Herschrijf de resterende risico’s en de onderbouwing van hun acceptatie als de restrisico’s die voor het grondrecht overblijven."
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "2.1.1",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d4.1.3",
+      "d4.1.1.2"
+    ],
+    "synthesisHint": "Herschrijf de grondrechtenanalyse uit het IAMA als beschrijving van de mogelijke impact van het AI-systeem op grondrechten van burgers."
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "3.1",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d4.4.1",
+      "d4.5.1"
+    ],
+    "synthesisHint": "Herschrijf de doeltreffendheids- en noodzakelijkheidsafweging uit het IAMA als proportionaliteitsoordeel over het AI-systeem."
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "7.1.2",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d3.2.1",
+      "d3.2.2"
+    ],
+    "synthesisHint": "Herschrijf de rol van de medewerker uit het IAMA als beschrijving van de menselijke rol in de besluitvorming (human in the loop)."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d14.1",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d4.5.1",
+      "d4.5.2"
+    ],
+    "synthesisHint": "Herschrijf de noodzakelijkheids- en subsidiariteitsafweging uit het IAMA als beoordeling van de subsidiariteit van de gegevensverwerking."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d14.2",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d4.3.3",
+      "d4.4.2"
+    ],
+    "synthesisHint": "Herschrijf de ernst van de inbreuk en de redelijkheidsafweging uit het IAMA als beoordeling van de proportionaliteit van de gegevensverwerking."
+  },
+  {
+    "targetFormId": "dataethiek",
+    "targetQuestionId": "de_a.betrokkenen",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d3.5.1"
+    ],
+    "synthesisHint": "Herschrijf de geraakte mensen en groepen uit het IAMA als antwoord op de vraag wie door deze verwerking geraakt worden."
+  },
+  {
+    "targetFormId": "dataethiek",
+    "targetQuestionId": "de_c.nietdoen",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d4.5.1"
+    ],
+    "synthesisHint": "Herschrijf de noodzakelijkheidsafweging uit het IAMA als antwoord op de vraag wat er gebeurt als deze verwerking niet plaatsvindt."
+  },
+  {
+    "targetFormId": "dataethiek",
+    "targetQuestionId": "de_d.dilemma",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d3.5.7",
+      "d5.B"
+    ],
+    "synthesisHint": "Herschrijf de openstaande zorgen en het advies uit het IAMA als het dilemma of de twijfel die bij deze toets is blijven staan."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_a.doel",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d1.1.1",
+      "d1.1.2"
+    ],
+    "synthesisHint": "Herschrijf de aanleiding en doelstelling uit het IAMA als publieksvriendelijke uitleg waarom dit algoritme wordt gebruikt (B1-niveau, geen jargon)."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_a.proces",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d3.1.1"
+    ],
+    "synthesisHint": "Herschrijf de gebruikscontext uit het IAMA als publieksvriendelijke beschrijving van het proces waarin het algoritme wordt gebruikt en op welk moment."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_a.geraakt",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d3.5.1"
+    ],
+    "synthesisHint": "Herschrijf de geraakte mensen en groepen uit het IAMA als publieksvriendelijk antwoord op de vraag wie door het algoritme geraakt worden."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_b.grondslag",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d1.3.4"
+    ],
+    "synthesisHint": "Herschrijf de wettelijke grondslag uit het IAMA als publieksvriendelijke uitleg van de grondslag waarop de inzet rust."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_b.grondrechten",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d4.1.3",
+      "d4.5.2"
+    ],
+    "synthesisHint": "Herschrijf de geraakte grondrechten en de getroffen maatregelen uit het IAMA als publieksvriendelijke uitleg van welke grondrechten geraakt kunnen worden en hoe dat wordt beperkt."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_d.menselijk",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d3.2.1",
+      "d3.2.2"
+    ],
+    "synthesisHint": "Herschrijf de rol van de medewerker uit het IAMA als publieksvriendelijke uitleg van hoe de menselijke tussenkomst is geregeld."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_d.monitoring",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d3.4.1"
+    ],
+    "synthesisHint": "Herschrijf de monitoring en evaluatie uit het IAMA als publieksvriendelijke uitleg van hoe de werking van het algoritme wordt gemonitord."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_c.beperkingen",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d2.4.3"
+    ],
+    "synthesisHint": "Herschrijf de ongewenste uitkomsten van fouten uit het IAMA als publieksvriendelijke beschrijving van de bekende beperkingen van het algoritme."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_d.beperkingen",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d2.4.3",
+      "d2.4.2"
+    ],
+    "synthesisHint": "Vat de ongewenste uitkomsten en kwaliteitsdrempels uit het IAMA samen als bekende beperkingen van het systeem."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_d.bias_risicos",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d2.2A.2",
+      "d2.3.3"
+    ],
+    "synthesisHint": "Vat de aannames en bias uit het IAMA samen als de bekende bias-risico’s van het model."
+  },
+  {
+    "targetFormId": "restrisico",
+    "targetQuestionId": "rr_b.betrokkenen",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d3.5.2"
+    ],
+    "synthesisHint": "Herschrijf de nadelige effecten voor mensen en groepen uit het IAMA als de restrisico’s die burgers of andere betrokkenen rechtstreeks raken."
+  },
+  {
+    "targetFormId": "restrisico",
+    "targetQuestionId": "rr_c.baten",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d3.5.3",
+      "d1.2.1"
+    ],
+    "synthesisHint": "Herschrijf de positieve effecten en de positief geraakte publieke waarden uit het IAMA als wat tegenover de restrisico’s staat."
+  },
+  {
+    "targetFormId": "restrisico",
+    "targetQuestionId": "rr_c.alternatief",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d4.5.1",
+      "d4.5.2"
+    ],
+    "synthesisHint": "Herschrijf de overwogen alternatieven en mitigerende aanpassingen uit het IAMA als het alternatief met een lager restrisico."
+  },
+  {
+    "targetFormId": "restrisico",
+    "targetQuestionId": "rr_b.zwaarste",
+    "sourceFormId": "iama",
+    "sourceQuestionIds": [
+      "d4.5.3",
+      "d5.C"
+    ],
+    "synthesisHint": "Herschrijf de restrisico’s en hun acceptatie uit het IAMA als gedetailleerde beschrijving van het zwaarste restrisico."
   }
 ]

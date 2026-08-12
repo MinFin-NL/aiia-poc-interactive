@@ -1,7 +1,12 @@
 <template>
   <div v-if="sourceContext.length > 0" class="cross-suggestion">
     <div class="cross-suggestion__header">
-      <span class="cross-suggestion__label">Beschikbaar uit {{ sourceLabel }}</span>
+      <span class="cross-suggestion__label">
+        {{ alreadyCopied ? `Overgenomen uit ${sourceLabel}` : `Beschikbaar uit ${sourceLabel}` }}
+      </span>
+      <span v-if="isCopy && canCopy" class="cross-suggestion__note">
+        Dezelfde vraag als in {{ sourceLabel }} — het antwoord wordt letterlijk overgenomen.
+      </span>
     </div>
 
     <!-- Source form answer blocks -->
@@ -65,16 +70,23 @@
       </div>
     </div>
 
-    <!-- Action buttons (only for text-type questions, hidden while streaming) -->
-    <div v-if="isTextType && suggestion === null && !streamingText" class="cross-suggestion__actions rvo-layout-row rvo-layout-gap--xs">
+    <!-- Action buttons (hidden while streaming). "Gebruik direct" works for
+         every question type that has a copyable value; AI synthesis is only
+         offered for free-text questions that need rewriting. -->
+    <div
+      v-if="(canCopy || canSynthesize) && suggestion === null && !streamingText"
+      class="cross-suggestion__actions rvo-layout-row rvo-layout-gap--xs"
+    >
       <button
+        v-if="canCopy"
         type="button"
         class="rvo-button rvo-button--secondary rvo-button--size-sm"
         @click="useDirectly"
       >
-        Gebruik direct
+        {{ alreadyCopied ? 'Opnieuw overnemen' : 'Gebruik direct' }}
       </button>
       <button
+        v-if="canSynthesize"
         type="button"
         class="rvo-button rvo-button--primary rvo-button--size-sm"
         :disabled="isLoading"
@@ -93,64 +105,83 @@
 import { computed, ref } from 'vue'
 import { diffWords } from 'diff'
 import type { Change } from 'diff'
-import type { CrossFormMapping } from '../models/Assessment'
+import type { CrossFormMapping, FormConfig, Question } from '../models/Assessment'
 import { useAssessmentStore } from '../stores/assessmentStore'
-import { getCachedForm } from '../services/formLoader'
+import { getCachedForm, flattenFormQuestions } from '../services/formLoader'
 import { synthesizeStream } from '../services/llmService'
 import { answerPlainText } from '../utils/sourceMatching'
+import { copyValueFor, sourceAnswerText } from '../utils/crossFormCopy'
 
 const props = defineProps<{
   mapping: CrossFormMapping
+  question: Question
   targetQuestionText: string
-  questionType: string
-  currentValue: string
+  /** Options as rendered, so an `optionsFrom` list is honoured on copy too. */
+  resolvedOptions: string[]
+  currentValue: string | string[]
 }>()
 
 const emit = defineEmits<{
-  'apply-suggestion': [value: string]
+  'apply-suggestion': [value: string | string[]]
 }>()
 
 const store = useAssessmentStore()
 
+function findSourceQuestion(form: FormConfig | undefined, questionId: string): Question | undefined {
+  return form ? flattenFormQuestions(form).find((q) => q.id === questionId) : undefined
+}
+
 function findSourceQuestionText(sourceFormId: string, questionId: string): string {
-  const form = getCachedForm(sourceFormId)
-  if (!form) return questionId
-  for (const section of form.sections) {
-    for (const sub of section.subsections) {
-      for (const q of sub.questions) {
-        if (q.id === questionId) return q.text
-      }
-    }
-  }
-  return questionId
+  return findSourceQuestion(getCachedForm(sourceFormId), questionId)?.text ?? questionId
 }
 
 const sourceContext = computed(() => {
   const { sourceFormId, sourceQuestionIds } = props.mapping
+  const sourceForm = getCachedForm(sourceFormId)
   return sourceQuestionIds
     .map((id) => {
       const raw = store.forms[sourceFormId]?.answers[id]
-      // Source answers may be Tiptap HTML; flatten to plain text before they
-      // land in the synthesize prompt or the "gebruik direct" value.
-      const answer =
-        typeof raw === 'string'
-          ? answerPlainText(raw.replace('\n---\n', ': '))
-          : Array.isArray(raw)
-            ? raw.join(', ')
-            : ''
+      // Source answers may be Tiptap HTML or a table's JSON; flatten to plain
+      // text before they land in the synthesize prompt or the panel.
+      const answer = raw === undefined ? '' : sourceAnswerText(raw, findSourceQuestion(sourceForm, id))
       return { id, questionText: findSourceQuestionText(sourceFormId, id), answer }
     })
     .filter((item) => item.answer.trim().length > 0)
 })
 
 const sourceLabel = computed(() => props.mapping.sourceFormId.toUpperCase())
-const isTextType = computed(() => props.questionType === 'text')
+const isTextType = computed(() => props.question.type === 'text')
+const isCopy = computed(() => props.mapping.mode === 'copy')
+
+/** The exact value this mapping would write into the target question. Null when
+ *  the source answer doesn't fit the target's shape (unknown option, other
+ *  table columns) — then no copy is offered at all. */
+const copyValue = computed(() =>
+  copyValueFor(
+    props.mapping,
+    props.question,
+    (formId, questionId) => store.forms[formId]?.answers[questionId],
+    getCachedForm(props.mapping.sourceFormId),
+    props.resolvedOptions,
+  ),
+)
+
+const canCopy = computed(() => copyValue.value !== null)
+// An identical question needs no rewriting, so copy mappings skip the LLM.
+const canSynthesize = computed(() => isTextType.value && !isCopy.value)
+
+/** True once the target already holds exactly what the copy would write. */
+const alreadyCopied = computed(() => {
+  const value = copyValue.value
+  if (value === null) return false
+  if (Array.isArray(value) || Array.isArray(props.currentValue)) {
+    return JSON.stringify(value) === JSON.stringify(props.currentValue)
+  }
+  return answerPlainText(value) === answerPlainText(props.currentValue)
+})
 
 function useDirectly() {
-  const combined = sourceContext.value
-    .map((item) => (sourceContext.value.length > 1 ? `${item.questionText}:\n${item.answer}` : item.answer))
-    .join('\n\n')
-  emit('apply-suggestion', combined)
+  if (copyValue.value !== null) emit('apply-suggestion', copyValue.value)
 }
 
 const suggestion = ref<string | null>(null)
@@ -245,9 +276,15 @@ function rejectSuggestion() {
 
 .cross-suggestion__header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: var(--rvo-space-xs);
   margin-block-end: var(--rvo-space-xs);
+  flex-wrap: wrap;
+}
+
+.cross-suggestion__note {
+  font-size: var(--rvo-font-size-xs);
+  color: var(--invulhulp-color-text-muted);
 }
 
 .cross-suggestion__label {

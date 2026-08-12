@@ -239,12 +239,23 @@ export interface FormConfig {
   riskLevelInfo?: Record<string, RiskLevelInfoEntry>
 }
 
+// How a mapping moves an answer from the source form to the target form:
+//   'synthesize' — the two questions ask related but different things, so the
+//                  source answer has to be rewritten for the target's context
+//                  (the ✦ AI-suggestie button). The default.
+//   'copy'       — the two questions ask the *same* thing. The source answer is
+//                  taken over verbatim, and prefilled automatically when the
+//                  target form is opened with the question still empty. No LLM
+//                  is involved, so this works for radio/checkbox/table too.
+export type CrossFormMode = 'copy' | 'synthesize'
+
 export interface CrossFormMapping {
   targetFormId: string
   targetQuestionId: string
   sourceFormId: string
   sourceQuestionIds: string[]
   synthesisHint: string
+  mode?: CrossFormMode
 }
 
 export type AssessmentData = Pick<FormConfig, 'version' | 'title' | 'sections'>
