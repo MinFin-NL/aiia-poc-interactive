@@ -55,12 +55,13 @@
     </div>
 
     <div v-else-if="formConfig" class="assessment-shell__layout">
-      <!-- Sidebar (hidden on home) -->
-      <SectionNav
-        v-if="store.currentView !== 'home'"
-        :form-config="formConfig"
-        :nav-order="navOrder"
-      />
+      <!-- Sidebar. Rendered for EVERY view of an open form, introductie
+           included — it is the only place the voortgang and the sectielijst
+           live, and hiding it on one view reads as "de zijbalk is weg". The
+           nav already highlights "Introductie" when currentView === 'home',
+           so it was always built for this. Do not put a v-if back here:
+           sectionNav.contract.test.ts fails if you do. -->
+      <SectionNav :form-config="formConfig" :nav-order="navOrder" />
 
       <!-- Main content -->
       <main class="assessment-shell__main">

@@ -202,10 +202,17 @@ function navigate(id: string) {
      AI Modus banner while it runs) and stick flush to its underside. Both
      heights are measured at runtime — a hardcoded value here left a dead gap
      once the fase-rail breadcrumb made the header taller than the 100px this
-     used to assume. */
-  block-size: calc(100vh - var(--invulhulp-sticky-offset));
+     used to assume.
+
+     max() is the floor that keeps this bug from coming back: a bogus or
+     oversized offset (a stale banner height, a header taller than the
+     viewport) would otherwise make the calc zero or negative and the whole
+     sidebar would silently vanish. Below 320px it stops shrinking and
+     overflows instead — visible beats correct here. The var() fallbacks do
+     the same for the case where the custom property never lands at all. */
+  block-size: max(320px, calc(100vh - var(--invulhulp-sticky-offset, 173px)));
   position: sticky;
-  top: var(--invulhulp-sticky-offset);
+  top: var(--invulhulp-sticky-offset, 173px);
   /* The banner animates with a transform, so its layout height lands in one
      step; match its 0.3s so the sidebar slides with it instead of snapping. */
   transition: top 0.3s ease, block-size 0.3s ease;

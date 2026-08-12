@@ -23,11 +23,18 @@
      emit every icon as a build asset, so we don't import it. Without the token
      the mask resolves to nothing and the ::after renders as a solid coloured
      block (visible on every <details class="rvo-expandable-content">). Define
-     just the two chevrons we actually use. Static url() on purpose: a runtime
+     just the icons we actually use. Static url() on purpose: a runtime
      one breaks in the production build (see the icon-mask note in
-     DossierDetail.vue). */
+     DossierDetail.vue).
+
+     Het vinkje is hetzelfde verhaal, maar erger: een aangevinkte
+     .rvo-checkbox__input tekent ::before als blauw vlak en legt daar ::after
+     (het witte vinkje) overheen. Zonder de mask blijft die ::after een massief
+     wit vierkant dat het blauwe vlak volledig afdekt — een aangevinkt vakje
+     zag er dan precies zo uit als een leeg vakje. */
   --rvo-icon-delta-omlaag: url('@nl-rvo/assets/icons/functioneel/delta-omlaag.svg');
   --rvo-icon-delta-omhoog: url('@nl-rvo/assets/icons/functioneel/delta-omhoog.svg');
+  --rvo-icon-vinkje: url('@nl-rvo/assets/icons/functioneel/vinkje.svg');
 }
 
 /* Starting value for the first paint only. AppHeader measures the real header
