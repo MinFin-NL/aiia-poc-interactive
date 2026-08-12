@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { useAssessmentStore } from '../stores/assessmentStore'
-import { loadForm, flattenFormQuestions } from '../services/formLoader'
+import { loadForm, aiFillableQuestions, isAiFillable } from '../services/formLoader'
 import {
   bulkExtractFromDocument,
   fetchImageDimensions,
@@ -76,7 +76,9 @@ export function useAiMode() {
       return
     }
 
-    const questions = flattenFormQuestions(formConfig)
+    // Sections another party fills in (`aiFill: false`) are left untouched, and
+    // don't count toward the progress total either.
+    const questions = aiFillableQuestions(formConfig)
     if (questions.length === 0) return
 
     // Pre-flight: verify documents are actually in the vector store
@@ -207,6 +209,7 @@ export function useAiMode() {
     for (const section of formConfig.sections) {
       const eligible: SmoothSection['answers'] = []
       for (const q of section.subsections.flatMap((ss) => ss.questions)) {
+        if (!isAiFillable(q, section)) continue
         if (q.type !== 'text' || (q.format && q.format !== 'longtext')) continue
         const value = answers[q.id]
         if (typeof value !== 'string' || !value.trim()) continue

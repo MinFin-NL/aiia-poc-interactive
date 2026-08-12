@@ -1,6 +1,7 @@
 import type { AnswerSource, AnswerSourceMeta, Question, TableColumn } from '../models/Assessment'
 import { answerPlainText, filterSupportingSources, topRetrievedSources } from '../utils/sourceMatching'
 import { parsePipeSuggestion, serializeTableAnswer } from '../utils/tableAnswer'
+import { markdownToHtml } from '../utils/htmlRuns'
 
 export interface ImproveResponse {
   suggestion: string
@@ -458,12 +459,13 @@ function stripLabel(text: string, questionText: string): string {
 // Literal placeholders the model sometimes copies straight from the XML template.
 const PLACEHOLDERS = new Set(['jouw antwoord hier', 'jouw verbeterde versie hier', 'antwoord hier', '[invullen]'])
 
-/** Wrap plaintext paragraphs into the Tiptap HTML shape answers are stored in. */
+/** Model output → the Tiptap HTML shape answers are stored in. The models write
+ *  Markdown ("- item", "**kop**") whether or not we ask them to, and wrapping
+ *  that in bare <p> tags left the markers visible as source code in the editor,
+ *  the summary and the exports. markdownToHtml turns them into real lists and
+ *  emphasis, and escapes any raw HTML the model emitted. */
 export function plainTextToHtml(text: string): string {
-  return text
-    .split(/\n{2,}/)
-    .map((p) => `<p>${p.replace(/\n/g, '<br>')}</p>`)
-    .join('')
+  return markdownToHtml(text)
 }
 
 function mapSuggestionToAnswer(question: Question, suggestion: string): string | string[] | null {

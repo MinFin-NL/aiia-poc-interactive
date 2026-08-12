@@ -12,6 +12,15 @@
         </h1>
       </header>
 
+      <!-- Sections another party fills in: say so, and say that AI Modus keeps
+           its hands off, so nobody wonders where an answer came from. -->
+      <div v-if="section.aiFill === false" class="rvo-alert rvo-alert--info rvo-alert--padding-md">
+        <div class="rvo-alert__container">
+          Dit onderdeel wordt door een andere partij ingevuld. AI Modus vult hier niets in — antwoorden komen
+          alleen van de beoordelaar zelf.
+        </div>
+      </div>
+
       <!-- Subsections -->
       <div v-for="subsection in section.subsections" :key="subsection.id" class="rvo-layout-column rvo-layout-gap--lg">
         <div>

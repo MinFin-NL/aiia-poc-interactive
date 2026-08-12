@@ -68,6 +68,14 @@ export interface Question {
   notesLabel?: string
   minRows?: number
   maxRows?: number
+  // Table questions only: the grid itself is optional. It stays collapsed until
+  // the user opens it (or the AI fills rows), so a respondent for whom a table
+  // adds nothing can answer in the toelichting alone.
+  optionalTable?: boolean
+  // Opt out of AI Modus for this question. Also settable per section — see
+  // Section.aiFill. Used for parts that a different party fills in, where a
+  // pre-filled answer would be mistaken for the applicant's own words.
+  aiFill?: boolean
 }
 
 export interface Subsection {
@@ -84,6 +92,9 @@ export interface Section {
   // Small eyebrow label shown above the section title. Defaults to "Deel {part}"
   // (or "Samenvatting" for the summary part) when omitted.
   kicker?: string
+  // Set to false for a section another party fills in (e.g. the intakeboard's
+  // assessment): AI Modus skips every question in it and the section says so.
+  aiFill?: boolean
   subsections: Subsection[]
 }
 

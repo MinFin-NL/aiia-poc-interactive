@@ -1,6 +1,20 @@
 <template>
   <div class="invulhulp-table-question">
-    <div class="invulhulp-table-question__viewport">
+    <!-- Optional grid, still closed: the toelichting below is the whole answer
+         until the user asks for a table. -->
+    <p v-if="!gridOpen" class="rvo-text rvo-text--sm invulhulp-table-question__optional-hint">
+      Een tabel is hier optioneel. Beantwoord de vraag in de toelichting hieronder, of voeg een tabel toe.
+    </p>
+    <button
+      v-if="!gridOpen && !store.readOnly"
+      type="button"
+      class="rvo-button rvo-button--tertiary rvo-button--sm invulhulp-table-question__toggle-btn"
+      @click="openGrid"
+    >
+      + Tabel toevoegen
+    </button>
+
+    <div v-show="gridOpen" class="invulhulp-table-question__viewport">
       <div class="invulhulp-table-question__scroll" ref="scrollEl" @scroll="updateScrollState">
       <table class="rvo-table invulhulp-table-question__table">
         <thead class="rvo-table-head">
@@ -110,20 +124,31 @@
       </button>
     </div>
 
-    <p v-if="overflowing" class="invulhulp-table-question__scroll-hint">
+    <p v-if="overflowing && gridOpen" class="invulhulp-table-question__scroll-hint">
       <span class="invulhulp-table-question__scroll-hint-icon" aria-hidden="true">↔</span>
       Deze tabel heeft {{ columns.length }} kolommen — scroll of gebruik de pijlen om ze allemaal te zien.
     </p>
 
-    <button
-      v-if="!store.readOnly"
-      type="button"
-      class="rvo-button rvo-button--tertiary rvo-button--sm invulhulp-table-question__add-btn"
-      :disabled="table.rows.length >= maxRows"
-      @click="addRow"
-    >
-      + Rij toevoegen
-    </button>
+    <div v-if="gridOpen && !store.readOnly" class="invulhulp-table-question__grid-actions">
+      <button
+        type="button"
+        class="rvo-button rvo-button--tertiary rvo-button--sm invulhulp-table-question__add-btn"
+        :disabled="table.rows.length >= maxRows"
+        @click="addRow"
+      >
+        + Rij toevoegen
+      </button>
+      <!-- Only offered while the grid is still empty: closing it drops the rows,
+           and silently discarding typed cells would be a data loss. -->
+      <button
+        v-if="optionalTable && !hasRowContent"
+        type="button"
+        class="rvo-button rvo-button--tertiary rvo-button--sm invulhulp-table-question__toggle-btn"
+        @click="closeGrid"
+      >
+        Tabel weglaten
+      </button>
+    </div>
 
     <div class="rvo-form-field invulhulp-table-question__notes">
       <label :for="`${questionId}-notes`" class="rvo-form-field__label invulhulp-table-question__notes-label">
@@ -252,6 +277,27 @@ function normalize(answer: TableAnswer | null): TableAnswer {
 }
 
 const table = reactive<TableAnswer>(normalize(parseModelValue(props.modelValue)))
+
+// `optionalTable` questions start without a grid: not every respondent has
+// something to tabulate, and an empty grid reads as an obligation. It opens on
+// request, and by itself as soon as rows arrive (AI Modus, an imported answer,
+// a collaborator).
+const optionalTable = computed(() => props.question.optionalTable === true)
+const hasRowContent = computed(() => table.rows.some((row) => row.some((cell) => cell.trim() !== '')))
+const gridRequested = ref(false)
+const gridOpen = computed(() => !optionalTable.value || gridRequested.value || hasRowContent.value)
+
+function openGrid() {
+  gridRequested.value = true
+  nextTick(updateScrollState)
+}
+
+function closeGrid() {
+  gridRequested.value = false
+  // Only reachable while every cell is empty, so this discards nothing.
+  table.rows = [blankRow()]
+  emitValue()
+}
 
 // External updates (AI Modus fill, suggestion accept, dossier switch) rewrite
 // the grid; guard against echoing our own emits back into the state.
@@ -435,8 +481,22 @@ function removeRow(rowIndex: number) {
   font-size: var(--rvo-font-size-sm);
 }
 
-.invulhulp-table-question__add-btn {
+.invulhulp-table-question__grid-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rvo-space-2xs);
+  align-items: center;
+}
+
+.invulhulp-table-question__add-btn,
+.invulhulp-table-question__toggle-btn {
   margin-block-start: var(--rvo-space-2xs);
+  font-size: var(--rvo-font-size-sm);
+}
+
+.invulhulp-table-question__optional-hint {
+  margin: 0;
+  color: var(--invulhulp-color-text-muted);
 }
 
 .invulhulp-table-question__notes {

@@ -183,7 +183,12 @@ function tableAnswerChildren(
 ): (Paragraph | Table)[] | null {
   if (question.type !== 'table' || typeof value !== 'string') return null
   const table = parseTableAnswer(value)
-  if (!table || table.rows.length === 0) return null
+  if (!table) return null
+  // The grid always holds at least one (possibly blank) row while editing, and
+  // a table can be left empty on purpose with only a toelichting — so export
+  // the rows that carry content, and no grid at all when there are none.
+  const rows = table.rows.filter((row) => row.some((cell) => cell.trim() !== ''))
+  if (rows.length === 0 && !table.notes.trim()) return null
   const columns = question.columns ?? []
 
   const cellBorder = { style: BorderStyle.SINGLE, size: 4, color: RVO.grijs200 }
@@ -203,7 +208,7 @@ function tableAnswerChildren(
         }),
     ),
   })
-  const dataRows = table.rows.map(
+  const dataRows = rows.map(
     (row, ri) =>
       new TableRow({
         children: columns.map(
@@ -221,13 +226,16 @@ function tableAnswerChildren(
       }),
   )
 
-  const children: (Paragraph | Table)[] = [
-    new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      indent: { size: BODY_INDENT, type: WidthType.DXA },
-      rows: [headerRow, ...dataRows],
-    }),
-  ]
+  const children: (Paragraph | Table)[] =
+    rows.length > 0
+      ? [
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            indent: { size: BODY_INDENT, type: WidthType.DXA },
+            rows: [headerRow, ...dataRows],
+          }),
+        ]
+      : []
   if (table.notes.trim()) {
     children.push(
       new Paragraph({

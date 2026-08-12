@@ -1,4 +1,4 @@
-import type { FormConfig, CrossFormMapping, Question } from '../models/Assessment'
+import type { FormConfig, CrossFormMapping, Question, Section } from '../models/Assessment'
 import type { ApplicabilityRule } from '../utils/toepassingsscan'
 
 const cache = new Map<string, FormConfig>()
@@ -76,4 +76,18 @@ export function getCachedForm(id: string): FormConfig | undefined {
 
 export function flattenFormQuestions(form: FormConfig): Question[] {
   return form.sections.flatMap((s) => s.subsections.flatMap((ss) => ss.questions))
+}
+
+/** Whether AI Modus may write an answer here. Sections (and single questions)
+ *  can opt out with `aiFill: false` — used for parts another party fills in,
+ *  where generated text would be mistaken for that party's own judgement. */
+export function isAiFillable(question: Question, section: Section): boolean {
+  return section.aiFill !== false && question.aiFill !== false
+}
+
+/** The questions AI Modus is allowed to answer, in form order. */
+export function aiFillableQuestions(form: FormConfig): Question[] {
+  return form.sections.flatMap((s) =>
+    s.subsections.flatMap((ss) => ss.questions.filter((q) => isAiFillable(q, s))),
+  )
 }

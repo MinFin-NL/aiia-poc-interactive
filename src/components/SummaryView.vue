@@ -98,12 +98,48 @@
               <p class="rvo-text rvo-text--sm summary-view__question">
                 {{ question.text }}
               </p>
-              <p
-                class="rvo-text rvo-text--sm summary-view__answer"
-                :class="{ 'summary-view__answer--empty': !hasAnswer(question.id) }"
-              >
-                {{ formattedAnswer(question.id) }}
-              </p>
+
+              <!-- The answer keeps the shape it was written in: paragraphs and
+                   lists as markup, checkbox answers as a list, a table answer
+                   as an actual table. -->
+              <template v-for="answer in [renderedAnswers[question.id]]" :key="question.id">
+                <p
+                  v-if="!answer || answer.kind === 'empty'"
+                  class="rvo-text rvo-text--sm summary-view__answer summary-view__answer--empty"
+                >
+                  (niet ingevuld)
+                </p>
+
+                <ul v-else-if="answer.kind === 'list'" class="rvo-text rvo-text--sm summary-view__answer summary-view__answer-list">
+                  <li v-for="item in answer.items" :key="item">{{ item }}</li>
+                </ul>
+
+                <div v-else-if="answer.kind === 'table'" class="summary-view__answer">
+                  <div v-if="answer.table.rows.length > 0" class="summary-view__table-scroll">
+                    <table class="rvo-table summary-view__table">
+                      <thead v-if="answer.columns.length > 0" class="rvo-table-head">
+                        <tr class="rvo-table-row">
+                          <th v-for="col in answer.columns" :key="col" class="rvo-table-header" scope="col">
+                            {{ col }}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="rvo-table-body">
+                        <tr v-for="(row, i) in answer.table.rows" :key="i" class="rvo-table-row">
+                          <td v-for="(cell, j) in row" :key="j" class="rvo-table-cell">{{ cell }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div v-if="answer.table.notes" class="rvo-text rvo-text--sm summary-view__answer-html" v-html="answer.notesHtml"></div>
+                </div>
+
+                <div
+                  v-else
+                  class="rvo-text rvo-text--sm summary-view__answer summary-view__answer-html"
+                  v-html="answer.html"
+                ></div>
+              </template>
             </div>
           </article>
         </div>
@@ -120,7 +156,8 @@ import { exportToWord } from '../services/wordExport'
 import { exportToLegacyDocx } from '../services/legacyDocxExport'
 import { importFromJson } from '../services/dataExport'
 import type { FormConfig, Question } from '../models/Assessment'
-import { parseTableAnswer, tableAnswerToPlainText } from '../utils/tableAnswer'
+import { parseTableAnswer, type TableAnswer } from '../utils/tableAnswer'
+import { answerToSafeHtml } from '../utils/answerHtml'
 
 const props = defineProps<{
   formConfig: FormConfig
@@ -188,25 +225,54 @@ const alertType = computed(() => {
   }
 })
 
-function hasAnswer(id: string): boolean {
-  const a = store.getAnswer(id)
-  if (Array.isArray(a)) return a.length > 0
-  return typeof a === 'string' && a.trim() !== ''
+// The summary used to flatten every answer with a tag-stripping regex, which
+// turned a bulleted answer into one run-on lump and left HTML entities visible
+// as source code. Each answer shape now keeps its own rendering.
+type RenderedAnswer =
+  | { kind: 'empty' }
+  | { kind: 'list'; items: string[] }
+  | { kind: 'table'; columns: string[]; table: TableAnswer; notesHtml: string }
+  | { kind: 'html'; html: string }
+
+function renderAnswer(question: Question): RenderedAnswer {
+  const value = store.getAnswer(question.id)
+  if (Array.isArray(value)) {
+    const items = value.filter((v) => v.trim() !== '')
+    return items.length > 0 ? { kind: 'list', items } : { kind: 'empty' }
+  }
+  if (typeof value !== 'string' || value.trim() === '') return { kind: 'empty' }
+
+  const table = parseTableAnswer(value)
+  if (table) {
+    const columns = (question.columns ?? []).map((c) => c.label)
+    const rows = table.rows
+      .filter((row) => row.some((cell) => cell.trim() !== ''))
+      // Pad short rows so every row lines up with the header.
+      .map((row) => Array.from({ length: Math.max(columns.length, row.length) }, (_, i) => row[i] ?? ''))
+    if (rows.length === 0 && !table.notes.trim()) return { kind: 'empty' }
+    return {
+      kind: 'table',
+      columns,
+      table: { rows, notes: table.notes.trim() },
+      notesHtml: answerToSafeHtml(table.notes),
+    }
+  }
+
+  // Radio answers with a follow-up are stored as "option\n---\nfollow-up";
+  // render the two as separate paragraphs instead of gluing them together.
+  const html = value
+    .split('\n---\n')
+    .map((segment) => answerToSafeHtml(segment))
+    .filter((segment) => segment !== '')
+    .join('')
+  return html ? { kind: 'html', html } : { kind: 'empty' }
 }
 
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, '').trim()
-}
-
-function formattedAnswer(id: string): string {
-  const a = store.getAnswer(id)
-  if (!a) return '(niet ingevuld)'
-  if (Array.isArray(a)) return a.length > 0 ? a.join(', ') : '(niet ingevuld)'
-  const table = parseTableAnswer(a)
-  if (table) return tableAnswerToPlainText(table) || '(niet ingevuld)'
-  const clean = stripHtml(a).replace('\n---\n', ' — ')
-  return clean.trim() || '(niet ingevuld)'
-}
+const renderedAnswers = computed(() => {
+  const map: Record<string, RenderedAnswer> = {}
+  for (const q of allQuestions.value) map[q.id] = renderAnswer(q)
+  return map
+})
 
 // The legacy exporter reproduces the official "Intakeformulier 2.0" template
 // layout exactly; it only applies to the intake form.
@@ -365,5 +431,68 @@ async function handleImport(event: Event) {
 .summary-view__answer--empty {
   color: var(--rvo-color-grijs-500);
   font-style: italic;
+}
+
+/* Rich answers keep their own block rhythm: paragraphs stay apart, lists keep
+   their bullets, so a long answer reads as text instead of one wall. */
+.summary-view__answer-html :deep(p) {
+  margin: 0 0 var(--rvo-space-2xs);
+}
+
+.summary-view__answer-html :deep(p:last-child) {
+  margin-block-end: 0;
+}
+
+.summary-view__answer-html :deep(ul),
+.summary-view__answer-html :deep(ol),
+.summary-view__answer-list {
+  margin: 0 0 var(--rvo-space-2xs);
+  padding-inline-start: var(--rvo-space-md);
+}
+
+.summary-view__answer-html :deep(ul:last-child),
+.summary-view__answer-html :deep(ol:last-child) {
+  margin-block-end: 0;
+}
+
+.summary-view__answer-html :deep(li) {
+  margin-block-end: var(--rvo-space-3xs, 4px);
+}
+
+.summary-view__answer-html :deep(li > p) {
+  margin: 0;
+}
+
+.summary-view__answer-html :deep(blockquote) {
+  margin: 0 0 var(--rvo-space-2xs);
+  padding-inline-start: var(--rvo-space-xs);
+  border-inline-start: 2px solid var(--invulhulp-color-border);
+}
+
+.summary-view__table-scroll {
+  overflow-x: auto;
+}
+
+.summary-view__table-scroll + .summary-view__answer-html {
+  margin-block-start: var(--rvo-space-2xs);
+}
+
+.summary-view__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--rvo-font-size-sm);
+}
+
+.summary-view__table .rvo-table-header,
+.summary-view__table .rvo-table-cell {
+  text-align: start;
+  vertical-align: top;
+  padding: var(--rvo-space-3xs, 4px) var(--rvo-space-2xs);
+  border-block-end: 1px solid var(--invulhulp-color-border);
+}
+
+.summary-view__table .rvo-table-header {
+  background: var(--invulhulp-color-surface, #f0f4f8);
+  font-weight: var(--rvo-font-weight-bold);
 }
 </style>

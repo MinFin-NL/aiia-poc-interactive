@@ -218,6 +218,8 @@
               "text": "Zijn er risico's of andere factoren die belangrijk zijn voor het succesvol afronden van dit initiatief?",
               "type": "table",
               "importance": "optional",
+              "optionalTable": true,
+              "notesLabel": "Toelichting (u kunt de risico's hier ook in gewone tekst beschrijven)",
               "columns": [
                 { "id": "risico", "label": "Risico of factor" },
                 { "id": "impact", "label": "Impact" },
@@ -276,6 +278,7 @@
       "id": "intake_f",
       "title": "Deel 6: Beoordeling en besluit Intakeboard",
       "part": "D",
+      "aiFill": false,
       "subsections": [
         {
           "id": "intake_f1",
