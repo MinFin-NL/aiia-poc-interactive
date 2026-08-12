@@ -49,8 +49,9 @@ export function useFormProgress() {
 
   /**
    * Completion per lifecycle phase, for the dossier timeline and the phase bar
-   * on the dossier cards. Every phase is present, including ones without forms
-   * (`beheer`), so callers can render the full lifecycle without holes.
+   * on the dossier cards. Every track is present, including ones that only hold
+   * placeholders (`afronding`), so callers can render the full lifecycle
+   * without holes.
    */
   function trackSummary(
     dossier: Dossier,

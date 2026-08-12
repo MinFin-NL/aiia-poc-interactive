@@ -51,7 +51,7 @@
                 <!-- One segment per lifecycle phase, in order, filled to the
                      share of that phase's forms that are done. Hidden from AT:
                      the whole card is one button, so a label here would append
-                     six more clauses to its accessible name — and the line
+                     five more clauses to its accessible name — and the line
                      above already announces the total. The per-phase numbers
                      are on the dossier page, under proper phase headings. -->
                 <span class="dossier-card__phases" aria-hidden="true">
@@ -243,7 +243,7 @@ function onCreateConfirmed(name: string) {
   font-size: var(--rvo-font-size-xs);
 }
 
-/* Phase bar: the same six lifecycle phases as the dossier timeline, so the
+/* Phase bar: the same five lifecycle steps as the dossier timeline, so the
    overview already shows how far a dossier is along the process. */
 .dossier-card__phases {
   display: flex;
@@ -261,7 +261,7 @@ function onCreateConfirmed(name: string) {
   overflow: hidden;
 }
 
-/* A phase without forms yet (beheer) — visibly present, visibly unfillable. */
+/* A phase without forms yet (afronding) — visibly present, visibly unfillable. */
 .dossier-card__phase--empty {
   background: transparent;
   box-shadow: inset 0 0 0 1px var(--rvo-color-grijs-400);

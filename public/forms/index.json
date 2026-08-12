@@ -4,7 +4,7 @@
       "id": "intake",
       "file": "intake.json",
       "title": "Intakeformulier",
-      "track": "verkennen",
+      "track": "intake",
       "order": 1,
       "domains": [
         "project"
@@ -12,11 +12,46 @@
       "shortDescription": "Registreer een nieuw IV-verzoek: doelstelling, doelgroep, urgentie en benodigde resources."
     },
     {
+      "id": "aanbiedingsformulier",
+      "file": "aanbiedingsformulier.json",
+      "title": "Projectaanbiedingsformulier",
+      "track": "aanbieding",
+      "order": 1,
+      "domains": [
+        "project"
+      ],
+      "shortDescription": "Bouw de business case op: nut, noodzaak, baten, risico's en kostenraming voor portfolioafweging."
+    },
+    {
+      "id": "ppm",
+      "file": "ppm.json",
+      "title": "PPM Projectplan",
+      "track": "initiatie",
+      "order": 1,
+      "domains": [
+        "project"
+      ],
+      "shortDescription": "Stel het projectplan op: scope, aanpak, organisatie, afhankelijkheden en fasering."
+    },
+    {
+      "id": "psa",
+      "file": "psa.json",
+      "title": "PSA",
+      "track": "initiatie",
+      "order": 2,
+      "domains": [
+        "project",
+        "beveiliging",
+        "data"
+      ],
+      "shortDescription": "Beschrijf de architectuurkaders, gegevensstromen en niet-functionele eisen voor het project."
+    },
+    {
       "id": "quickscan",
       "file": "quickscan.json",
       "title": "Quick scan BIO",
-      "track": "verkennen",
-      "order": 2,
+      "track": "initiatie",
+      "order": 3,
       "domains": [
         "beveiliging"
       ],
@@ -26,8 +61,8 @@
       "id": "prescandpia",
       "file": "prescandpia.json",
       "title": "Prescan DPIA",
-      "track": "verkennen",
-      "order": 3,
+      "track": "initiatie",
+      "order": 4,
       "domains": [
         "privacy"
       ],
@@ -42,98 +77,11 @@
       }
     },
     {
-      "id": "aanbiedingsformulier",
-      "file": "aanbiedingsformulier.json",
-      "title": "Aanbiedingsformulier",
-      "track": "besluiten",
-      "order": 1,
-      "domains": [
-        "project"
-      ],
-      "shortDescription": "Bouw de business case op: nut, noodzaak, baten, risico's en kostenraming voor portfolioafweging."
-    },
-    {
-      "id": "restrisico",
-      "file": "restrisico.json",
-      "title": "Restrisico-acceptatie",
-      "track": "besluiten",
-      "order": 2,
-      "domains": [
-        "project",
-        "privacy",
-        "beveiliging"
-      ],
-      "shortDescription": "Bundel de restrisico's uit DPIA, AIIA, IAMA en BIO-quickscan en leg per risico een expliciet acceptatiebesluit vast."
-    },
-    {
-      "id": "ppm",
-      "file": "ppm.json",
-      "title": "PPM Projectplan",
-      "track": "ontwerpen",
-      "order": 1,
-      "domains": [
-        "project"
-      ],
-      "shortDescription": "Stel het projectplan op: scope, aanpak, organisatie, afhankelijkheden en fasering."
-    },
-    {
-      "id": "psa",
-      "file": "psa.json",
-      "title": "PSA",
-      "track": "ontwerpen",
-      "order": 2,
-      "domains": [
-        "project",
-        "beveiliging",
-        "data"
-      ],
-      "shortDescription": "Beschrijf de architectuurkaders, gegevensstromen en niet-functionele eisen voor het project."
-    },
-    {
-      "id": "datakwaliteit",
-      "file": "datakwaliteit.json",
-      "title": "Datakwaliteit-assessment",
-      "track": "ontwerpen",
-      "order": 3,
-      "domains": [
-        "data"
-      ],
-      "shortDescription": "Beoordeel een dataset op volledigheid, uniciteit, tijdigheid, validiteit, juistheid en consistentie, met regels, meting en verbeteracties.",
-      "applicability": {
-        "allOf": [
-          [
-            "eigen_dataset"
-          ]
-        ],
-        "reason": "Dit project beheert of levert een eigen dataset."
-      }
-    },
-    {
-      "id": "datasetregistratie",
-      "file": "datasetregistratie.json",
-      "title": "Dataset-registratie (datasheet)",
-      "track": "ontwerpen",
-      "order": 4,
-      "domains": [
-        "data",
-        "privacy"
-      ],
-      "shortDescription": "Registreer een dataset: herkomst, inhoud, grondslag, classificatie, bewaartermijn en gebruiksvoorwaarden — de datakant van de Model Card.",
-      "applicability": {
-        "allOf": [
-          [
-            "eigen_dataset"
-          ]
-        ],
-        "reason": "Dit project beheert of levert een eigen dataset."
-      }
-    },
-    {
       "id": "dpia",
       "file": "dpia.json",
       "title": "DPIA",
-      "track": "toetsen",
-      "order": 1,
+      "track": "initiatie",
+      "order": 5,
       "domains": [
         "privacy"
       ],
@@ -152,8 +100,8 @@
       "id": "aiia",
       "file": "aiia.json",
       "title": "AI Impact Assessment",
-      "track": "toetsen",
-      "order": 2,
+      "track": "initiatie",
+      "order": 6,
       "domains": [
         "ai",
         "privacy"
@@ -177,8 +125,8 @@
       "id": "iama",
       "file": "iama.json",
       "title": "IAMA",
-      "track": "toetsen",
-      "order": 3,
+      "track": "initiatie",
+      "order": 7,
       "domains": [
         "ai"
       ],
@@ -199,8 +147,8 @@
       "id": "euaiact",
       "file": "euaiact.json",
       "title": "EU AI Act Compliance Checklist",
-      "track": "toetsen",
-      "order": 4,
+      "track": "initiatie",
+      "order": 8,
       "domains": [
         "ai"
       ],
@@ -218,8 +166,8 @@
       "id": "dataethiek",
       "file": "dataethiek.json",
       "title": "Data-ethiektoets",
-      "track": "toetsen",
-      "order": 5,
+      "track": "initiatie",
+      "order": 9,
       "domains": [
         "data",
         "privacy"
@@ -236,11 +184,86 @@
       }
     },
     {
+      "id": "ihhtoets",
+      "title": "IHH-toets",
+      "track": "initiatie",
+      "order": 10,
+      "domains": [
+        "data",
+        "project"
+      ],
+      "placeholder": "gepland",
+      "shortDescription": "Toets wat het project betekent voor de informatiehuishouding: archivering, vindbaarheid en openbaarmaking (Archiefwet en Woo)."
+    },
+    {
+      "id": "cloudtoets",
+      "title": "Cloudtoets",
+      "track": "initiatie",
+      "order": 11,
+      "domains": [
+        "beveiliging",
+        "project"
+      ],
+      "placeholder": "onzeker",
+      "shortDescription": "Weeg af of een clouddienst is toegestaan onder het Rijksbrede cloudbeleid: risicoafweging, datalocatie, afhankelijkheid en exitstrategie."
+    },
+    {
+      "id": "bia",
+      "title": "BIA",
+      "track": "initiatie",
+      "order": 12,
+      "domains": [
+        "beveiliging",
+        "project"
+      ],
+      "placeholder": "onzeker",
+      "shortDescription": "Business Impact Analyse: bepaal per bedrijfsproces de gevolgen van uitval en de bijbehorende hersteltijden (RTO/RPO)."
+    },
+    {
+      "id": "datakwaliteit",
+      "file": "datakwaliteit.json",
+      "title": "Datakwaliteit-assessment",
+      "track": "uitvoering",
+      "order": 1,
+      "domains": [
+        "data"
+      ],
+      "shortDescription": "Beoordeel een dataset op volledigheid, uniciteit, tijdigheid, validiteit, juistheid en consistentie, met regels, meting en verbeteracties.",
+      "applicability": {
+        "allOf": [
+          [
+            "eigen_dataset"
+          ]
+        ],
+        "reason": "Dit project beheert of levert een eigen dataset."
+      }
+    },
+    {
+      "id": "datasetregistratie",
+      "file": "datasetregistratie.json",
+      "title": "Dataset-registratie (datasheet)",
+      "track": "uitvoering",
+      "order": 2,
+      "domains": [
+        "data",
+        "privacy"
+      ],
+      "shortDescription": "Registreer een dataset: herkomst, inhoud, grondslag, classificatie, bewaartermijn en gebruiksvoorwaarden — de datakant van de Model Card.",
+      "applicability": {
+        "allOf": [
+          [
+            "eigen_dataset"
+          ]
+        ],
+        "reason": "Dit project beheert of levert een eigen dataset."
+      }
+    },
+    {
       "id": "modelcard",
       "file": "modelcard.json",
       "title": "AI-systeemregistratie (Model Card)",
-      "track": "ingebruikname",
-      "order": 1,
+      "track": "uitvoering",
+      "order": 3,
       "domains": [
         "ai",
         "data"
@@ -259,8 +282,8 @@
       "id": "algoritmeregister",
       "file": "algoritmeregister.json",
       "title": "Algoritmeregister-publicatie",
-      "track": "ingebruikname",
-      "order": 2,
+      "track": "uitvoering",
+      "order": 4,
       "domains": [
         "ai"
       ],
@@ -281,8 +304,8 @@
       "id": "verwerkingsregister",
       "file": "verwerkingsregister.json",
       "title": "Verwerkingsregister (AVG art. 30)",
-      "track": "ingebruikname",
-      "order": 3,
+      "track": "uitvoering",
+      "order": 5,
       "domains": [
         "privacy",
         "data"
@@ -301,8 +324,8 @@
       "id": "toegankelijkheid",
       "file": "toegankelijkheid.json",
       "title": "Toegankelijkheidsverklaring",
-      "track": "ingebruikname",
-      "order": 4,
+      "track": "uitvoering",
+      "order": 6,
       "domains": [
         "project"
       ],
@@ -315,6 +338,64 @@
         ],
         "reason": "Dit project levert een website, app of andere gebruikersinterface op."
       }
+    },
+    {
+      "id": "restrisico",
+      "file": "restrisico.json",
+      "title": "Restrisico-acceptatie",
+      "track": "uitvoering",
+      "order": 7,
+      "domains": [
+        "project",
+        "privacy",
+        "beveiliging"
+      ],
+      "shortDescription": "Bundel de restrisico's uit DPIA, AIIA, IAMA en BIO-quickscan en leg per risico een expliciet acceptatiebesluit vast."
+    },
+    {
+      "id": "voortgangsrapportage",
+      "title": "Projectvoortgangsrapportage",
+      "track": "uitvoering",
+      "order": 8,
+      "domains": [
+        "project"
+      ],
+      "placeholder": "onzeker",
+      "shortDescription": "Periodieke rapportage over voortgang, planning, budget, risico's en bijsturing tijdens de uitvoering."
+    },
+    {
+      "id": "afwijkingsformulier",
+      "title": "Projectafwijkingsformulier",
+      "track": "uitvoering",
+      "order": 9,
+      "domains": [
+        "project"
+      ],
+      "placeholder": "onzeker",
+      "shortDescription": "Leg vast wanneer het project afwijkt van scope, planning of budget, met onderbouwing en het besluit dat daarop volgt."
+    },
+    {
+      "id": "evaluatie",
+      "title": "Evaluatieformulier",
+      "track": "afronding",
+      "order": 1,
+      "domains": [
+        "project"
+      ],
+      "placeholder": "gepland",
+      "shortDescription": "Evalueer bij afronding wat is opgeleverd, of de baten zijn gehaald en welke lessen meegaan naar volgende projecten."
+    },
+    {
+      "id": "risicoimpact",
+      "title": "Risico-impactformulier",
+      "track": "afronding",
+      "order": 2,
+      "domains": [
+        "project",
+        "beveiliging"
+      ],
+      "placeholder": "onzeker",
+      "shortDescription": "Beoordeel bij overdracht welke restrisico's meegaan naar de beheerorganisatie en wat de impact daarvan is."
     }
   ]
 }

@@ -64,16 +64,24 @@
            share of that phase's forms that are afgerond. -->
       <nav class="phase-rail" aria-label="Fasen in dit dossier">
         <ol class="phase-rail__list">
-          <li v-for="group in railGroups" :key="group.track" class="phase-rail__item">
+          <li
+            v-for="group in railGroups"
+            :key="group.track"
+            class="phase-rail__item"
+          >
             <button
               type="button"
               class="phase-rail__step"
               :aria-label="phaseRailLabel(group)"
-              @click="goToPhase(group.track)"
+              @click="goToPhase(group)"
             >
               <span
                 class="phase-rail__circle"
-                :class="[`phase-rail__circle--${markerState(group)}`, `phase-rail__circle--icon-${group.track}`]"
+                :class="[
+                  `phase-rail__circle--${markerState(group)}`,
+                  `phase-rail__circle--icon-${group.track}`,
+                  { 'phase-rail__circle--minor': !group.isPhase },
+                ]"
                 :style="{ '--phase-fill': phaseFill(group) }"
               >
                 <span class="phase-rail__icon" aria-hidden="true" />
@@ -217,12 +225,38 @@
         @open="scanModal?.open()"
       />
 
+      <!-- Intake en aanbieding gaan aan de fasering vooraf. Ze horen erbij, maar
+           als eigen tijdlijnsectie kostten ze een half scherm voor één kaart —
+           dus staan ze samen in één platte band boven de spine. -->
+      <section
+        v-if="preludeForms.length > 0"
+        id="fase-vooraf"
+        class="prelude"
+        aria-labelledby="prelude-title"
+      >
+        <div class="prelude__header">
+          <h2 id="prelude-title" class="rvo-heading rvo-heading--md prelude__title">Vooraf</h2>
+          <p class="rvo-text rvo-text--sm prelude__meta">
+            Nog geen projectfase<template v-if="preludeCount.total > 0">
+              · {{ preludeCount.done }}/{{ preludeCount.total }} afgerond</template>
+          </p>
+        </div>
+        <div class="card-row">
+          <template v-for="(form, idx) in preludeForms" :key="form.id">
+            <div class="card-chain-item">
+              <div v-if="idx > 0" class="card-connector" aria-hidden="true">→</div>
+              <FormCard v-bind="cardProps(form)" @open="$emit('open', $event)" v-on="cardHandlers" />
+            </div>
+          </template>
+        </div>
+      </section>
+
       <!-- Lifecycle timeline: one phase per step, always expanded. The spine is
            the point of the page — it is what makes the forms read as phases of
-           a process rather than as six unrelated lists. -->
+           a process rather than as three unrelated lists. -->
       <ol class="track-timeline">
       <li
-        v-for="group in trackGroups"
+        v-for="group in timelineGroups"
         :key="group.track"
         :id="`fase-${group.track}`"
         class="track-phase"
@@ -266,84 +300,11 @@
             <!-- The beslishulp host form is rendered as a pair: its card keeps
                  every affordance the others have, with the beslishulp tile fused
                  to its leading edge. -->
-            <div class="form-slot" :class="{ 'form-slot--paired': form.id === BESLISHULP_HOST_FORM_ID }">
-              <BeslishulpTile
-                v-if="form.id === BESLISHULP_HOST_FORM_ID"
-                :run="store.beslishulpRun"
-                @open="beslishulpModal?.open()"
-              />
-            <article
-              class="rvo-card rvo-card--outline rvo-card--padding--md form-card"
-              :class="{
-                'form-card--ai-mode': aiModeActive.has(form.id),
-                'form-card--paired': form.id === BESLISHULP_HOST_FORM_ID,
-              }"
-            >
-              <div class="form-card__body">
-                <h3 class="rvo-heading rvo-heading--md form-card__title">{{ form.title }}</h3>
-                <ul v-if="form.domains?.length" class="form-card__domains">
-                  <li v-for="domain in form.domains" :key="domain" class="form-card__domain">
-                    {{ domainLabel(domain) }}
-                  </li>
-                </ul>
-                <p class="rvo-text rvo-text--sm form-card__desc">{{ form.shortDescription }}</p>
-              </div>
-              <div class="form-card__actions">
-                <!-- The beslishulp verdict, echoed on the card it belongs to. -->
-                <span
-                  v-if="form.id === BESLISHULP_HOST_FORM_ID && store.beslishulpRun"
-                  class="rvo-tag rvo-tag--pill form-card__status form-card__verdict"
-                  :class="`form-card__verdict--${verdictTone}`"
-                >
-                  {{ verdictLabel }}
-                </span>
-                <!-- Why this form is here at all, per the toepassingsscan. The
-                     reason is hidden text rather than only a `title`, which a
-                     keyboard or screen reader never reaches. -->
-                <span
-                  v-if="verdictFor(form.id).status === 'verplicht' || verdictFor(form.id).status === 'mogelijk'"
-                  class="rvo-tag rvo-tag--pill form-card__status"
-                  :class="{ 'rvo-tag--warning': verdictFor(form.id).status === 'mogelijk' }"
-                  :title="verdictFor(form.id).reason"
-                >
-                  {{ applicabilityLabel(verdictFor(form.id).status) }}
-                  <span class="invulhulp-visually-hidden">: {{ verdictFor(form.id).reason }}</span>
-                </span>
-                <span
-                  v-if="statusFor(form.id)"
-                  class="rvo-tag rvo-tag--pill form-card__status"
-                  :class="{
-                    'rvo-tag--info': statusFor(form.id)!.status === 'bezig',
-                    'rvo-tag--success': statusFor(form.id)!.status === 'afgerond',
-                  }"
-                >
-                  {{ statusLabel(statusFor(form.id)!) }}
-                </span>
-                <button
-                  class="rvo-button rvo-button--primary rvo-button--size-sm form-card__btn"
-                  @click="$emit('open', form.id)"
-                >
-                  {{ statusFor(form.id)?.status === 'bezig' ? 'Verder' : 'Openen' }}
-                </button>
-                <AiModeToggle
-                  v-if="store.canEdit"
-                  :form-id="form.id"
-                  :has-documents="readyDocIds.length > 0"
-                  :is-active="aiModeActive.has(form.id)"
-                  :is-done="form.id in aiModeDone"
-                  :done-filled-count="aiModeDone[form.id] ?? 0"
-                  :done-total-count="aiModeTotal[form.id] ?? 0"
-                  :progress="aiModeProgress[form.id] ?? null"
-                  :phase="aiModePhase[form.id] ?? null"
-                  :can-undo-smoothing="hasSmoothingUndo(form.id)"
-                  @activate="startAiMode"
-                  @cancel="cancelAiMode"
-                  @dismiss="dismissAiModeDone"
-                  @undo-smoothing="undoSmoothing"
-                />
-              </div>
-            </article>
-            </div>
+            <FormCard v-bind="cardProps(form)" @open="$emit('open', $event)" v-on="cardHandlers">
+              <template v-if="form.id === BESLISHULP_HOST_FORM_ID" #lead>
+                <BeslishulpTile :run="store.beslishulpRun" @open="beslishulpModal?.open()" />
+              </template>
+            </FormCard>
             </div>
             </template>
           </div>
@@ -431,7 +392,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import bevestigingIcon from '@nl-rvo/assets/icons/status/bevestiging.svg'
 import infoIcon from '@nl-rvo/assets/icons/functioneel/info.svg'
-import { loadAvailableForms, type FormIndexEntry } from '../services/formLoader'
+import { loadFormRegistry, type FormIndexEntry } from '../services/formLoader'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { useAiMode } from '../composables/useAiMode'
 import { useFormProgress } from '../composables/useFormProgress'
@@ -441,16 +402,12 @@ import DocumentOntology from './DocumentOntology.vue'
 import EntityGraph from './EntityGraph.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import ShareDialog from './ShareDialog.vue'
-import AiModeToggle from './AiModeToggle.vue'
+import FormCard from './FormCard.vue'
 import BeslishulpModal from './BeslishulpModal.vue'
 import BeslishulpTile from './BeslishulpTile.vue'
 import ToepassingsscanModal from './ToepassingsscanModal.vue'
 import ToepassingsscanTile from './ToepassingsscanTile.vue'
-import {
-  applicabilityLabel,
-  evaluateApplicability,
-  type ApplicabilityVerdict,
-} from '../utils/toepassingsscan'
+import { evaluateApplicability, type ApplicabilityVerdict } from '../utils/toepassingsscan'
 import { BESLISHULP_HOST_FORM_ID, isOutOfScope, riskLevelFor, verdictLevelLabel } from '../utils/beslishulp'
 import { fetchDossier, saveDossier } from '../services/dossierService'
 import { PdfNoTextError } from '../services/llmService'
@@ -568,7 +525,8 @@ const deleteImpact = computed(() => {
 
 onMounted(async () => {
   store.ensureDossier()
-  forms.value = await loadAvailableForms()
+  // Registry incl. placeholders: dit overzicht toont ook wat er nog niet is.
+  forms.value = await loadFormRegistry()
 })
 
 function onAiModeErrorDismissed() {
@@ -582,12 +540,6 @@ function statusFor(formId: string): FormProgress | null {
   if (!store.activeDossierId) return null
   const dossier = store.dossiers[store.activeDossierId]
   return dossier ? progressFor(dossier, formId) : null
-}
-
-function statusLabel(p: FormProgress): string {
-  if (p.status === 'afgerond') return 'Afgerond'
-  if (p.status === 'bezig') return `Bezig (${p.completed}/${p.total})`
-  return 'Niet gestart'
 }
 
 function openRenameDialog() {
@@ -781,19 +733,62 @@ function formatSize(bytes: number): string {
   return `${(bytes / 1024).toFixed(1)} KB`
 }
 
-const DOMAIN_LABELS: Record<string, string> = {
-  privacy: 'Privacy',
-  beveiliging: 'Beveiliging',
-  ai: 'AI',
-  data: 'Data',
-  project: 'Project',
-}
-
-function domainLabel(domain: string): string {
-  return DOMAIN_LABELS[domain] ?? domain
-}
-
 const trackGroups = computed(() => groupFormsByTrack(forms.value))
+
+// Intake en aanbieding: geen fase, dus geen sectie op de spine. Ze komen samen
+// in de "Vooraf"-band, in dezelfde volgorde als hun sporen (TRACK_META.order,
+// en `order` daarbinnen).
+const preludeGroups = computed(() =>
+  trackGroups.value.filter((g) => !g.isPhase && g.track !== 'onbekend'),
+)
+const preludeForms = computed(() => preludeGroups.value.flatMap((g) => applicableForms(g)))
+
+// De tijdlijn houdt de echte fasen — plus de `onbekend`-bak, want die is het
+// zichtbare vangnet voor een typo in index.json.
+const timelineGroups = computed(() =>
+  trackGroups.value.filter((g) => g.isPhase || g.track === 'onbekend'),
+)
+
+const preludeCount = computed(() =>
+  preludeGroups.value.reduce(
+    (acc, g) => {
+      const { done, total } = trackCount(g)
+      return { done: acc.done + done, total: acc.total + total }
+    },
+    { done: 0, total: 0 },
+  ),
+)
+
+/** Alles wat een kaart nodig heeft, op één plek berekend — de kaart in de band
+ *  en de kaart in de tijdlijn krijgen zo gegarandeerd dezelfde affordances. */
+function cardProps(form: FormIndexEntry) {
+  return {
+    form,
+    status: statusFor(form.id),
+    verdict: verdictFor(form.id),
+    paired: form.id === BESLISHULP_HOST_FORM_ID,
+    beslishulpVerdict:
+      form.id === BESLISHULP_HOST_FORM_ID && store.beslishulpRun
+        ? { label: verdictLabel.value, tone: verdictTone.value }
+        : null,
+    canEdit: store.canEdit,
+    hasDocuments: readyDocIds.value.length > 0,
+    aiActive: aiModeActive.value.has(form.id),
+    aiDone: form.id in aiModeDone.value,
+    aiDoneFilled: aiModeDone.value[form.id] ?? 0,
+    aiDoneTotal: aiModeTotal.value[form.id] ?? 0,
+    aiProgress: aiModeProgress.value[form.id] ?? null,
+    aiPhase: aiModePhase.value[form.id] ?? null,
+    canUndoSmoothing: hasSmoothingUndo(form.id),
+  }
+}
+
+const cardHandlers = {
+  activate: startAiMode,
+  cancel: cancelAiMode,
+  dismiss: dismissAiModeDone,
+  undoSmoothing: undoSmoothing,
+}
 
 // Per-phase completion, recomputed whenever answers change so the timeline
 // marker fills in as the user finishes forms in that phase.
@@ -806,13 +801,17 @@ const trackCounts = computed(() => {
 
 function trackCount(group: TrackGroup): { done: number; total: number } {
   if (group.track === 'onbekend') return { done: 0, total: 0 }
-  return trackCounts.value?.[group.track] ?? { done: 0, total: group.forms.length }
+  // Placeholders zijn geen formulier: ze mogen de noemer niet optillen, anders
+  // kan een fase nooit "afgerond" worden.
+  const real = group.forms.filter((f) => !f.placeholder).length
+  return trackCounts.value?.[group.track] ?? { done: 0, total: real }
 }
 
 // The rail is the lifecycle, so the `onbekend` bucket — which is a symptom of a
-// typo in index.json, not a phase — stays out of it. It is still rendered as a
-// section in the timeline below.
-const railGroups = computed(() => trackGroups.value.filter((g) => g.phaseNumber > 0))
+// typo in index.json, not a track — stays out of it. It is still rendered as a
+// section in the timeline below. Intake en aanbieding staan er wél in: ze zijn
+// geen fase, maar wel een stap die de gebruiker doorloopt.
+const railGroups = computed(() => trackGroups.value.filter((g) => g.track !== 'onbekend'))
 
 /** How full the rail circle is: the share of this phase's forms that are done.
  *  Any progress at all gets a visible sliver, so "started" never reads as
@@ -826,13 +825,16 @@ function phaseFill(group: TrackGroup): string {
 
 function phaseRailLabel(group: TrackGroup): string {
   const { done, total } = trackCount(group)
-  const progress = total === 0 ? 'nog geen formulieren' : `${done} van ${total} afgerond`
-  return `Fase ${group.phaseNumber} van ${group.phaseCount}: ${group.label} — ${progress}`
+  const progress = total === 0 ? 'nog geen formulieren beschikbaar' : `${done} van ${total} afgerond`
+  const prefix = group.phaseNumber > 0 ? `Fase ${group.phaseNumber} van ${group.phaseCount}: ` : ''
+  return `${prefix}${group.label} — ${progress}`
 }
 
-function goToPhase(track: string) {
-  const el = document.getElementById(`fase-${track}`)
-  el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+/** Intake en aanbieding hebben geen eigen sectie meer: beide railstappen
+ *  landen op de gedeelde "Vooraf"-band. */
+function goToPhase(group: TrackGroup) {
+  const id = group.isPhase ? `fase-${group.track}` : 'fase-vooraf'
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 /** Marker state on the spine: filled+check when the phase is finished, a solid
@@ -1168,6 +1170,18 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
   position: relative;
 }
 
+/* Intake en aanbieding zijn aanloop, geen fase: alleen een kleiner rondje.
+   Alle cellen houden dezelfde breedte — de verbindingslijn hieronder is
+   `inline-size: 100%` van de eigen cel en loopt tot het midden van de volgende,
+   wat alleen klopt zolang buren even breed zijn. */
+
+/* Verkleinen met `transform`, niet met --rail-circle-size: de verbindingslijn
+   loopt op de hoogte van het grote midden, dus het rondje moet zijn hoogte
+   houden om erop uitgelijnd te blijven. */
+.phase-rail__circle--minor {
+  transform: scale(0.72);
+}
+
 /* The connector runs behind the circles, from this step's centre to the next. */
 .phase-rail__item:not(:last-child)::after {
   content: "";
@@ -1267,29 +1281,25 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
 
 /* Static mask URLs so Vite resolves the NLDS icons in the production build —
    a runtime url(...) binding renders as a white square. One rule per phase. */
-.phase-rail__circle--icon-verkennen .phase-rail__icon {
-  -webkit-mask: url('@nl-rvo/assets/icons/navigatie/kompas.svg') center / contain no-repeat;
-  mask: url('@nl-rvo/assets/icons/navigatie/kompas.svg') center / contain no-repeat;
+.phase-rail__circle--icon-intake .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-lijnen.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-lijnen.svg') center / contain no-repeat;
 }
-.phase-rail__circle--icon-besluiten .phase-rail__icon {
+.phase-rail__circle--icon-aanbieding .phase-rail__icon {
   -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-lijnen-en-lint.svg') center / contain no-repeat;
   mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-lijnen-en-lint.svg') center / contain no-repeat;
 }
-.phase-rail__circle--icon-ontwerpen .phase-rail__icon {
-  -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-potlood.svg') center / contain no-repeat;
-  mask: url('@nl-rvo/assets/icons/op-kantoor/document-met-potlood.svg') center / contain no-repeat;
+.phase-rail__circle--icon-initiatie .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/navigatie/kompas.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/navigatie/kompas.svg') center / contain no-repeat;
 }
-.phase-rail__circle--icon-toetsen .phase-rail__icon {
-  -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/klembord-met-loep.svg') center / contain no-repeat;
-  mask: url('@nl-rvo/assets/icons/op-kantoor/klembord-met-loep.svg') center / contain no-repeat;
+.phase-rail__circle--icon-uitvoering .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/gereedschap/moersleutel-en-schroevendraaier.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/gereedschap/moersleutel-en-schroevendraaier.svg') center / contain no-repeat;
 }
-.phase-rail__circle--icon-ingebruikname .phase-rail__icon {
-  -webkit-mask: url('@nl-rvo/assets/icons/functioneel/publicatie.svg') center / contain no-repeat;
-  mask: url('@nl-rvo/assets/icons/functioneel/publicatie.svg') center / contain no-repeat;
-}
-.phase-rail__circle--icon-beheer .phase-rail__icon {
-  -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/pijlen-in-cirkel-om-document.svg') center / contain no-repeat;
-  mask: url('@nl-rvo/assets/icons/op-kantoor/pijlen-in-cirkel-om-document.svg') center / contain no-repeat;
+.phase-rail__circle--icon-afronding .phase-rail__icon {
+  -webkit-mask: url('@nl-rvo/assets/icons/op-kantoor/klembord-met-vinkje.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/op-kantoor/klembord-met-vinkje.svg') center / contain no-repeat;
 }
 
 .phase-rail__label {
@@ -1304,6 +1314,38 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
 .phase-rail__count {
   font-size: var(--rvo-font-size-2xs, 0.75rem);
   color: var(--invulhulp-color-text-subtle);
+}
+
+/* ---- Vooraf-band ------------------------------------------------------ */
+
+/* Platter dan .portal-card en zonder de blauwe kaartrand bovenaan: de band mag
+   niet concurreren met de fasen eronder — hij gaat eraan vooraf. */
+.prelude {
+  margin-block-end: var(--rvo-space-2xl);
+  padding: var(--rvo-space-md) var(--rvo-space-lg);
+  background: var(--rvo-color-wit);
+  border: 1px solid var(--rvo-color-lichtblauw-300);
+  border-radius: var(--rvo-border-radius-md);
+  /* Clear the sticky header when the fase rail scrolls here. */
+  scroll-margin-block-start: calc(var(--invulhulp-header-height) + var(--rvo-space-lg));
+}
+
+.prelude__header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--rvo-space-sm);
+  flex-wrap: wrap;
+  margin-block-end: var(--rvo-space-sm);
+}
+
+.prelude__title {
+  color: var(--rvo-color-lintblauw);
+  margin: 0;
+}
+
+.prelude__meta {
+  color: var(--invulhulp-color-text-subtle);
+  margin: 0;
 }
 
 /* ---- Timeline --------------------------------------------------------- */
@@ -1472,46 +1514,6 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
   align-self: center;
 }
 
-/* One card, or — for the beslishulp host form — the tile-plus-card pair. */
-.form-slot {
-  display: flex;
-  align-items: stretch;
-}
-
-.form-card {
-  inline-size: 210px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: box-shadow 0.15s, border-color 0.3s;
-}
-
-.form-card:hover {
-  box-shadow: 0 2px 8px rgb(21 66 115 / 0.12);
-}
-
-/* Fused to the beslishulp tile: no rounding or hairline on the joined edge, so
-   the pair reads as a single framed object. */
-.form-card--paired {
-  border-start-start-radius: 0;
-  border-end-start-radius: 0;
-  border-inline-start-color: var(--rvo-color-lintblauw);
-}
-
-.form-slot--paired:hover .form-card--paired {
-  box-shadow: 0 2px 8px rgb(21 66 115 / 0.12);
-}
-
-.form-card__verdict {
-  border: 1px solid transparent;
-}
-
-.form-card__verdict--success { background: #e6f6ec; color: #1d6b3a; border-color: #b7e4c7; }
-.form-card__verdict--info    { background: var(--rvo-color-lichtblauw-150); color: var(--rvo-color-lintblauw); border-color: var(--rvo-color-lichtblauw-300); }
-.form-card__verdict--warning { background: #fdf3e0; color: #8a5a00; border-color: #f0d49b; }
-.form-card__verdict--error   { background: #fdecea; color: #8f2436; border-color: #f5c2bd; }
-
 /* --- Niet van toepassing, per phase. Stock rvo-item-list rows; only the
    layout inside a row and the struck-through title are ours. --- */
 .nvt-group {
@@ -1547,81 +1549,4 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
   max-inline-size: 68ch;
 }
 
-/* AI Mode active: animated gradient border + pulsing glow */
-.form-card--ai-mode {
-  border: 2px solid transparent;
-  background-image:
-    linear-gradient(var(--rvo-color-wit), var(--rvo-color-wit)),
-    linear-gradient(135deg, #0f2d5c, #5b21b6, #0ea5e9, #5b21b6, #0f2d5c);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  background-size: 100%, 300% 100%;
-  animation: ai-border-shift 4s linear infinite, ai-card-glow 3s ease-in-out infinite;
-}
-
-@keyframes ai-border-shift {
-  0%   { background-position: 0 0, 0% 50%; }
-  100% { background-position: 0 0, 200% 50%; }
-}
-
-@keyframes ai-card-glow {
-  0%, 100% { box-shadow: 0 0 8px 3px rgba(91, 33, 182, 0.2); }
-  50%       { box-shadow: 0 0 22px 7px rgba(14, 165, 233, 0.35); }
-}
-
-.form-card__body {
-  margin-block-end: var(--rvo-space-md);
-}
-
-/* Dutch compound nouns ("Toegankelijkheidsverklaring") are wider than the
-   210px card, so hyphenate and hard-break rather than overflow the border. */
-.form-card__title {
-  color: var(--rvo-color-lintblauw);
-  margin: 0 0 var(--rvo-space-xs);
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
-
-/* Subject-domain facet: which domains this form touches, independent of the
-   lifecycle track it is filed under. */
-.form-card__domains {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--rvo-space-2xs);
-  list-style: none;
-  padding: 0;
-  margin: 0 0 var(--rvo-space-xs);
-}
-
-.form-card__domain {
-  font-size: var(--rvo-font-size-2xs, 0.75rem);
-  line-height: 1.4;
-  color: var(--invulhulp-color-text-subtle);
-  background: var(--rvo-color-lichtblauw-150);
-  border-radius: var(--rvo-border-radius-md, 4px);
-  padding: 0 var(--rvo-space-2xs);
-  white-space: nowrap;
-}
-
-.form-card__desc {
-  color: var(--invulhulp-color-text-subtle);
-  line-height: var(--rvo-line-height-md);
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
-
-.form-card__actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--rvo-space-xs);
-}
-
-.form-card__status {
-  font-size: var(--rvo-font-size-2xs);
-}
-
-.form-card__btn {
-  align-self: flex-start;
-}
 </style>

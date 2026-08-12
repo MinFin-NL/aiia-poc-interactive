@@ -2,6 +2,14 @@
 
 > **Status:** de indeling is doorgevoerd (juli 2026). De roadmap in §4 is een voorstel —
 > geen commitment.
+>
+> **Herzien 12 augustus 2026 — de sporen zijn hernoemd naar de projectfasering van de
+> organisatie** (zie `docs/nieuwe_indeling.md`): `intake` → `aanbieding` → `initiatie` →
+> `uitvoering` → `afronding`. Intake en aanbieding zijn géén fase; ze staan wel in de
+> tijdlijn maar krijgen geen fasenummer. Het spoor `beheer` is vervallen: `afronding`
+> dekt het einde van het traject. De redenering in §1–§3 hieronder — één as, domein als
+> facet — blijft onverkort gelden; alleen de namen en de knip tussen de fasen zijn
+> veranderd. `TRACK_META` in `src/utils/tracks.ts` is de bron van waarheid.
 
 Dit document legt vast *waarom* de formulieren zijn ingedeeld zoals ze zijn ingedeeld, zodat
 de volgende persoon die een formulier toevoegt niet opnieuw hoeft te gokken. Het vervangt de
