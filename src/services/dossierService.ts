@@ -49,6 +49,16 @@ export interface UserSearchResult {
   email: string | null
 }
 
+/** An HTTP error from the dossier API. `status` distinguishes "the server said
+ *  no" (403/404/…) from a network failure, which surfaces as a plain TypeError
+ *  and means the request never reached a decision. */
+export class DossierApiError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message)
+    this.name = 'DossierApiError'
+  }
+}
+
 async function readErrorDetail(res: Response): Promise<string> {
   try {
     const data = await res.json()
@@ -94,7 +104,9 @@ export async function saveDossier(payload: DossierPushPayload): Promise<ServerDo
 export async function deleteDossierOnServer(id: string): Promise<void> {
   const res = await fetch(`/api/dossiers/${encodeURIComponent(id)}`, { method: 'DELETE' })
   // 404 = never synced to the server; nothing to clean up there.
-  if (!res.ok && res.status !== 404) throw new Error(await readErrorDetail(res))
+  if (!res.ok && res.status !== 404) {
+    throw new DossierApiError(await readErrorDetail(res), res.status)
+  }
 }
 
 export async function setGrant(

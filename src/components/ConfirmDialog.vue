@@ -24,6 +24,35 @@
       <div class="invulhulp-modal__body">
         <p v-if="message" class="rvo-text invulhulp-modal__message">{{ message }}</p>
 
+        <!-- Danger zone: onomkeerbare actie. De gevolgen staan er voluit,
+             daarna typt de gebruiker de naam over — een bevestigingsknop alleen
+             is te makkelijk per ongeluk te raken. -->
+        <div v-if="confirmPhrase" class="rvo-alert rvo-alert--error rvo-alert--padding-md invulhulp-modal__danger">
+          <div class="rvo-alert__container invulhulp-modal__danger-body">
+            <strong class="invulhulp-modal__danger-title">Let op: dit kan niet ongedaan worden gemaakt</strong>
+            <slot name="danger" />
+            <div class="rvo-form-field invulhulp-modal__danger-field">
+              <label class="rvo-form-field__label" :for="phraseId">
+                Typ <strong>{{ confirmPhrase }}</strong> om te bevestigen
+              </label>
+              <input
+                :id="phraseId"
+                ref="phraseEl"
+                v-model="phraseValue"
+                type="text"
+                autocomplete="off"
+                class="utrecht-textbox utrecht-textbox--md invulhulp-modal__input"
+                :aria-describedby="phraseHintId"
+              />
+              <span :id="phraseHintId" class="rvo-text rvo-text--sm invulhulp-modal__danger-hint">
+                {{ phraseMatches
+                  ? 'De naam komt overeen — de knop is nu actief.'
+                  : 'De knop wordt actief zodra de naam exact overeenkomt.' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <div v-if="kind === 'prompt'" class="rvo-form-field">
           <label class="rvo-form-field__label" :for="inputId">{{ inputLabel || 'Naam' }}</label>
           <input
@@ -42,6 +71,7 @@
           type="submit"
           class="rvo-button"
           :class="confirmVariant"
+          :disabled="confirmDisabled"
         >
           {{ confirmLabel }}
         </button>
@@ -68,6 +98,9 @@ const props = withDefaults(defineProps<{
   confirmLabel?: string
   cancelLabel?: string
   variant?: 'primary' | 'warning'
+  /** Onomkeerbare actie: de gebruiker moet deze tekst (de dossier- of
+   *  gebruikersnaam) letterlijk overtypen voordat bevestigen mogelijk is. */
+  confirmPhrase?: string
 }>(), {
   kind: 'confirm',
   confirmLabel: 'Bevestigen',
@@ -82,26 +115,42 @@ const emit = defineEmits<{
 
 const dialogEl = ref<HTMLDialogElement | null>(null)
 const inputEl = ref<HTMLInputElement | null>(null)
+const phraseEl = ref<HTMLInputElement | null>(null)
 const inputValue = ref('')
+const phraseValue = ref('')
 const uid = Math.random().toString(36).slice(2, 9)
 const inputId = `invulhulp-dialog-input-${uid}`
+const phraseId = `invulhulp-dialog-phrase-${uid}`
+const phraseHintId = `invulhulp-dialog-phrase-hint-${uid}`
 const titleId = `invulhulp-dialog-title-${uid}`
 
 const confirmVariant = computed(() =>
   props.variant === 'warning' ? 'rvo-button--warning' : 'rvo-button--primary',
 )
 
+// Spaties aan de randen negeren (plakken uit de kaart levert die zo op), maar
+// verder letterlijk: de naam overtypen is juist de rem.
+const phraseMatches = computed(
+  () => !!props.confirmPhrase && phraseValue.value.trim() === props.confirmPhrase.trim(),
+)
+const confirmDisabled = computed(() => !!props.confirmPhrase && !phraseMatches.value)
+
 async function open(initial?: string) {
   inputValue.value = initial ?? props.initialValue ?? ''
+  phraseValue.value = ''
   dialogEl.value?.showModal()
+  await nextTick()
   if (props.kind === 'prompt') {
-    await nextTick()
     inputEl.value?.focus()
     inputEl.value?.select()
+  } else if (props.confirmPhrase) {
+    phraseEl.value?.focus()
   }
 }
 
 function onConfirm() {
+  // Vangnet naast :disabled — Enter in het tekstveld submit het formulier ook.
+  if (confirmDisabled.value) return
   emit('confirm', inputValue.value)
   dialogEl.value?.close()
 }
@@ -206,6 +255,33 @@ defineExpose({ open })
 
 .invulhulp-modal__input {
   inline-size: 100%;
+}
+
+.invulhulp-modal__danger-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rvo-space-sm);
+}
+
+.invulhulp-modal__danger-title {
+  display: block;
+}
+
+.invulhulp-modal__danger-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rvo-space-2xs);
+}
+
+.invulhulp-modal__danger-hint {
+  color: var(--invulhulp-color-text-subtle);
+}
+
+/* Een uitgeschakelde knop blijft leesbaar (contrast ≥ 4,5:1) — hij is de
+   volgende stap, niet weggevallen decor. */
+.invulhulp-modal__actions .rvo-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .invulhulp-modal__actions {

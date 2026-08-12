@@ -403,13 +403,20 @@
     />
     <ConfirmDialog
       ref="deleteDialog"
-      title="Dossier verwijderen"
+      title="Dossier definitief verwijderen"
       :message="deleteMessage"
-      confirm-label="Verwijderen"
+      :confirm-phrase="store.activeDossier?.name"
+      confirm-label="Dossier verwijderen"
       cancel-label="Annuleren"
       variant="warning"
       @confirm="onDeleteConfirmed"
-    />
+    >
+      <template #danger>
+        <ul class="rvo-item-list">
+          <li v-for="line in deleteImpact" :key="line" class="rvo-item-list__item">{{ line }}</li>
+        </ul>
+      </template>
+    </ConfirmDialog>
     <ShareDialog
       v-if="store.activeDossierId"
       ref="shareDialog"
@@ -539,7 +546,23 @@ watch(aiModeError, (errors) => {
 const deleteMessage = computed(() => {
   const current = store.activeDossierId ? store.dossiers[store.activeDossierId] : null
   if (!current) return ''
-  return `Dossier "${current.name}" verwijderen? Alle formulierantwoorden en brondocumenten in dit dossier gaan verloren.`
+  return `U staat op het punt het dossier "${current.name}" en alle bijbehorende gegevens te verwijderen.`
+})
+
+/** Wat er concreet weg is na het verwijderen — zodat de bevestiging over dit
+ *  dossier gaat en niet over "een dossier". */
+const deleteImpact = computed(() => {
+  const current = store.activeDossierId ? store.dossiers[store.activeDossierId] : null
+  if (!current) return []
+  const docs = current.documents.length
+  const filled = Object.values(current.forms).filter(
+    (f) => Object.values(f.answers ?? {}).some((a) => a),
+  ).length
+  return [
+    `${docs} ${docs === 1 ? 'brondocument' : 'brondocumenten'}, inclusief de zoekindex en geüploade afbeeldingen`,
+    `Alle ingevulde antwoorden${filled ? ` (${filled} ${filled === 1 ? 'formulier' : 'formulieren'})` : ''} en de bewerkgeschiedenis`,
+    'De toegang van iedereen met wie dit dossier is gedeeld',
+  ]
 })
 
 
@@ -619,9 +642,17 @@ function onRenameConfirmed(name: string) {
   store.renameDossier(store.activeDossierId, trimmed)
 }
 
-function onDeleteConfirmed() {
+async function onDeleteConfirmed() {
   if (!store.activeDossierId) return
-  store.deleteDossier(store.activeDossierId)
+  shareError.value = ''
+  try {
+    await store.deleteDossier(store.activeDossierId)
+  } catch (e) {
+    // De server weigerde (bijv. geen eigenaar meer): het dossier blijft staan,
+    // dus blijf hier en zeg waarom in plaats van stil terug te navigeren.
+    shareError.value = `Verwijderen lukt niet: ${e instanceof Error ? e.message : String(e)}`
+    return
+  }
   // Never land unannounced in whichever dossier became active next
   store.goToDossierList()
 }

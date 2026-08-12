@@ -213,22 +213,40 @@ export function connectDossier(doc: Y.Doc, dossierId: string, onReady: () => voi
   )
 }
 
-/** Tear down a dossier's live sync (revoked share, dossier closed). */
-export function disconnectDossier(dossierId: string): void {
+/** Tear down a dossier's live sync (revoked share, dossier closed). Resolves
+ *  once the IndexedDB connection is actually closed — callers that want to
+ *  delete that database have to wait for it, or the delete blocks. */
+export function disconnectDossier(dossierId: string): Promise<void> {
   const p = providers.get(dossierId)
   if (p) {
     p.destroy()
     providers.delete(dossierId)
   }
+  let closed = Promise.resolve()
   const idb = idbPersistences.get(dossierId)
   if (idb) {
     // destroy() detaches but keeps the IndexedDB data for the next open.
-    void idb.destroy()
+    closed = idb.destroy().catch(() => {})
     idbPersistences.delete(dossierId)
   }
   connecting.delete(dossierId)
   presenceRoster.set(dossierId, [])
   presenceCbs.get(dossierId)?.forEach((cb) => cb([]))
+  return closed
+}
+
+/** Erase a deleted dossier's local trace: disconnect, then drop its IndexedDB
+ *  database. disconnectDossier alone keeps the stored doc for the next open —
+ *  which for a deleted dossier means its answers stay on the machine. */
+export function purgeDossierLocalState(dossierId: string): Promise<void> {
+  return disconnectDossier(dossierId).then(() => {
+    if (typeof indexedDB === 'undefined') return
+    try {
+      indexedDB.deleteDatabase(`dossier:${dossierId}:g2`)
+    } catch {
+      // Private mode / storage disabled — nothing was persisted either.
+    }
+  })
 }
 
 /** Drop all live connections (e.g. before a full server reload). */

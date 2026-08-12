@@ -28,6 +28,9 @@ from pydantic import BaseModel
 
 import auth
 
+# `dossiers` wordt binnen de handlers geïmporteerd, niet hier: dossiers → users
+# → admin_users is een importcyclus (users leent _kc uit deze module).
+
 ADMIN_CLIENT_ID = os.environ.get("OIDC_ADMIN_CLIENT_ID", "findocs-admin")
 ADMIN_CLIENT_SECRET = os.environ.get("OIDC_ADMIN_CLIENT_SECRET", "dev-admin-secret-change-me")
 
@@ -262,10 +265,36 @@ async def reset_password(user_id: str) -> dict:
     return {"tempPassword": password}
 
 
-@router.delete("/{user_id}", status_code=204)
-async def delete_user(user_id: str, request: Request) -> None:
+@router.get("/{user_id}/impact")
+async def delete_impact(user_id: str) -> dict:
+    """Wat verdwijnt er als deze gebruiker wordt verwijderd?
+
+    De beheerder ziet dit in de bevestigingsdialoog vóórdat hij de naam intypt:
+    dossiers waarvan deze gebruiker de enige eigenaar is, gaan mee — die zijn
+    voor niemand anders meer te openen.
+    """
+    import dossiers
+
+    async with httpx.AsyncClient(timeout=15) as client:
+        res = await _kc(client, "GET", f"/users/{user_id}")
+    email = res.json().get("email") if res.status_code == 200 else None
+    return await dossiers.user_data_impact(user_id, email)
+
+
+@router.delete("/{user_id}")
+async def delete_user(user_id: str, request: Request) -> dict:
+    import dossiers
+
     async with httpx.AsyncClient(timeout=15) as client:
         await _guard_not_self(client, request, user_id, "verwijderen")
+        # E-mail vóór de verwijdering ophalen: grants kunnen na een
+        # Keycloak-herseed nog op een oude sub staan en zijn dan alleen via
+        # e-mail terug te vinden (zie dossierstore.grant_for).
+        res = await _kc(client, "GET", f"/users/{user_id}")
+        email = res.json().get("email") if res.status_code == 200 else None
         res = await _kc(client, "DELETE", f"/users/{user_id}")
         if res.status_code not in (200, 204):
             raise HTTPException(status_code=502, detail="Gebruiker verwijderen mislukt")
+    # Pas opruimen als Keycloak de gebruiker echt weg heeft: mislukt het daar,
+    # dan staan de dossiers er nog en kan de beheerder het opnieuw proberen.
+    return await dossiers.purge_user_data(user_id, email)

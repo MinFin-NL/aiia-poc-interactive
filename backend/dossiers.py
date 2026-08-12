@@ -28,6 +28,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 import auth
+import collab
 import docstore
 import dossierstore
 import imagestore
@@ -206,6 +207,26 @@ async def put_dossier(dossier_id: str, body: DossierPayload, request: Request) -
     return _view(record, user_sub, user.get("email"))
 
 
+async def purge_dossier(record: dict[str, Any], fallback_sub: str = "anonymous") -> None:
+    """Delete a dossier and every piece of data hanging off it.
+
+    Cascade like main.py's DELETE /api/sessions/{id}, keyed on the storage owner
+    so shared documents/images are cleaned up too: vector chunks (rag), uploaded
+    document text (docstore), question images (imagestore), the CRDT collab
+    state, and finally the dossier record itself. The record goes last so a
+    failure halfway leaves a dossier that still points at its leftovers instead
+    of orphaning them.
+    """
+    storage_sub = record.get("ownerSub") or fallback_sub
+    session_id = record.get("sessionId")
+    if session_id:
+        await rag.delete_session(session_id)
+        await asyncio.to_thread(docstore.delete_session, storage_sub, session_id)
+        await asyncio.to_thread(imagestore.delete_session_images, storage_sub, session_id)
+    await collab.purge_dossier(record["id"])
+    await asyncio.to_thread(dossierstore.delete_dossier, record["id"])
+
+
 @router.delete("/{dossier_id}")
 async def delete_dossier(dossier_id: str, request: Request) -> dict:
     user = auth.current_user(request)
@@ -215,16 +236,50 @@ async def delete_dossier(dossier_id: str, request: Request) -> dict:
         raise HTTPException(status_code=404, detail="Dossier niet gevonden")
     await asyncio.to_thread(dossierstore.reconcile_identity, record, user_sub, user.get("email"))
     _require_role(record, user_sub, "owner", user.get("email"))
-    # Cascade like main.py's DELETE /api/sessions/{id}, keyed on the storage
-    # owner so shared documents/images are cleaned up too.
-    storage_sub = record.get("ownerSub") or user_sub
-    session_id = record.get("sessionId")
-    if session_id:
-        await rag.delete_session(session_id)
-        await asyncio.to_thread(docstore.delete_session, storage_sub, session_id)
-        await asyncio.to_thread(imagestore.delete_session_images, storage_sub, session_id)
-    await asyncio.to_thread(dossierstore.delete_dossier, dossier_id)
+    await purge_dossier(record, user_sub)
     return {"deleted": dossier_id}
+
+
+async def user_data_impact(user_sub: str | None, user_email: str | None) -> dict[str, Any]:
+    """Dry run of purge_user_data: what would be deleted vs. only unshared."""
+    records = await asyncio.to_thread(dossierstore.list_dossiers_for, user_sub or "", user_email)
+    doomed: list[str] = []
+    kept = 0
+    for record in records:
+        grant = dossierstore.grant_for(record, user_sub, user_email)
+        if grant is None:
+            continue
+        if grant.get("role") == "owner" and _owner_count(record) <= 1:
+            doomed.append(record.get("name") or record["id"])
+        else:
+            kept += 1
+    return {"dossiersToDelete": doomed, "dossiersToUnshare": kept}
+
+
+async def purge_user_data(user_sub: str | None, user_email: str | None) -> dict[str, int]:
+    """Remove a deleted account from every dossier it can still reach.
+
+    Deleting the Keycloak user alone would leave their grants behind as dead
+    entries and, for dossiers only they owned, data nobody can ever open again
+    (an owner grant is the only way in, and grants are owner-managed). So:
+    dossiers where this user is the last owner are purged whole; anywhere else
+    only their grant is dropped, leaving the co-owners' dossier intact.
+    """
+    records = await asyncio.to_thread(dossierstore.list_dossiers_for, user_sub or "", user_email)
+    deleted = 0
+    revoked = 0
+    for record in records:
+        grant = dossierstore.grant_for(record, user_sub, user_email)
+        if grant is None:
+            continue
+        if grant.get("role") == "owner" and _owner_count(record) <= 1:
+            await purge_dossier(record, user_sub or "anonymous")
+            deleted += 1
+        else:
+            record["grants"] = [g for g in record.get("grants", []) if g is not grant]
+            await asyncio.to_thread(dossierstore.save_dossier, record)
+            revoked += 1
+    return {"deletedDossiers": deleted, "revokedGrants": revoked}
 
 
 def _owner_count(record: dict[str, Any]) -> int:

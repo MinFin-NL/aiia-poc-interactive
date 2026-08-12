@@ -8,6 +8,7 @@ import {
   listDocuments,
 } from '../services/llmService'
 import {
+  DossierApiError,
   deleteDossierOnServer,
   fetchDossiers,
   saveDossier,
@@ -16,7 +17,12 @@ import {
 } from '../services/dossierService'
 import { getCachedForm, flattenFormQuestions } from '../services/formLoader'
 import { DossierDoc, SEED_ORIGIN } from '../collab/dossierDoc'
-import { connectDossier, disconnectAll, getProvider } from '../collab/dossierTransport'
+import {
+  connectDossier,
+  disconnectAll,
+  getProvider,
+  purgeDossierLocalState,
+} from '../collab/dossierTransport'
 import type { DossierPayload } from '../collab/ydocCodec'
 import { BESLISHULP_HOST_FORM_ID, riskLevelFor, type BeslishulpRun } from '../utils/beslishulp'
 import {
@@ -501,7 +507,12 @@ export const useAssessmentStore = defineStore('assessment', {
       }
     },
 
-    deleteDossier(id: DossierId) {
+    /** Delete a dossier and everything under it. Owner-only; the server is the
+     *  authority, so a refusal (403) throws and the dossier stays put — removing
+     *  it locally would only make it reappear on the next sync. A network
+     *  failure still deletes locally: offline the server cascade catches up via
+     *  the same call on the next attempt. */
+    async deleteDossier(id: DossierId) {
       const dossier = this.dossiers[id]
       if (!dossier) return
       const timer = pushTimers.get(id)
@@ -509,9 +520,22 @@ export const useAssessmentStore = defineStore('assessment', {
         clearTimeout(timer)
         pushTimers.delete(id)
       }
-      // Best-effort server-side cleanup: the dossier record cascade also
-      // removes the documents, images and vector chunks.
-      deleteDossierOnServer(id).catch(() => {})
+      try {
+        // The dossier record cascade removes the documents, images, vector
+        // chunks and collaboration state on the server too.
+        await deleteDossierOnServer(id)
+      } catch (e) {
+        if (e instanceof DossierApiError) {
+          // Re-arm nothing: the dossier is untouched, the caller reports why.
+          throw e
+        }
+        // Offline/unreachable — fall through and clean up locally.
+      }
+      // Drop the live connection and the offline CRDT copy, otherwise the
+      // dossier's answers stay readable in IndexedDB after "verwijderen".
+      void purgeDossierLocalState(id)
+      dossierDocs.get(id)?.destroy()
+      dossierDocs.delete(id)
       delete this.dossiers[id]
       this.dossierOrder = this.dossierOrder.filter((x) => x !== id)
       if (this.activeDossierId === id) {

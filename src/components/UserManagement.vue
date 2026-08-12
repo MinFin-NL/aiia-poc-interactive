@@ -9,8 +9,12 @@
         </p>
       </div>
 
-      <div v-if="error" class="rvo-alert rvo-alert--error rvo-alert--padding-md">
+      <div v-if="error" class="rvo-alert rvo-alert--error rvo-alert--padding-md" role="alert">
         <div class="rvo-alert__container">{{ error }}</div>
+      </div>
+
+      <div v-if="notice" class="rvo-alert rvo-alert--success rvo-alert--padding-md" role="status">
+        <div class="rvo-alert__container">{{ notice }}</div>
       </div>
 
       <!-- Eénmalig getoond tijdelijk wachtwoord -->
@@ -134,13 +138,37 @@
 
   <ConfirmDialog
     ref="deleteDialog"
-    title="Gebruiker verwijderen?"
-    :message="`${pendingDelete?.firstName ?? ''} ${pendingDelete?.lastName ?? ''} (${pendingDelete?.email ?? ''}) wordt definitief uit Keycloak verwijderd.`"
-    confirm-label="Verwijderen"
+    title="Gebruiker definitief verwijderen"
+    :message="`${pendingDelete?.firstName ?? ''} ${pendingDelete?.lastName ?? ''} wordt uit Keycloak verwijderd en verliest direct toegang tot de applicatie.`"
+    :confirm-phrase="pendingDelete?.email ?? pendingDelete?.username ?? undefined"
+    confirm-label="Gebruiker verwijderen"
     cancel-label="Annuleren"
     variant="warning"
     @confirm="deleteUser"
-  />
+  >
+    <template #danger>
+      <p v-if="impactLoading" class="rvo-text">Bezig met bepalen welke dossiers meegaan…</p>
+      <ul v-else class="rvo-item-list">
+        <li class="rvo-item-list__item">Het account zelf, inclusief inloggegevens en rollen.</li>
+        <li class="rvo-item-list__item">
+          <template v-if="impact?.dossiersToDelete.length">
+            {{ impact.dossiersToDelete.length }}
+            {{ impact.dossiersToDelete.length === 1 ? 'dossier waarvan deze gebruiker de enige eigenaar is' : 'dossiers waarvan deze gebruiker de enige eigenaar is' }},
+            met alle brondocumenten en antwoorden:
+            <strong>{{ impact.dossiersToDelete.join(', ') }}</strong>
+          </template>
+          <template v-else>
+            Geen dossiers: deze gebruiker is nergens de enige eigenaar.
+          </template>
+        </li>
+        <li v-if="impact?.dossiersToUnshare" class="rvo-item-list__item">
+          {{ impact.dossiersToUnshare }}
+          gedeeld{{ impact.dossiersToUnshare === 1 ? ' dossier blijft' : 'e dossiers blijven' }}
+          bestaan; alleen de toegang van deze gebruiker vervalt.
+        </li>
+      </ul>
+    </template>
+  </ConfirmDialog>
 </template>
 
 <script setup lang="ts">
@@ -167,6 +195,17 @@ const copied = ref(false)
 const form = ref({ firstName: '', lastName: '', email: '', isAdmin: false })
 const deleteDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
 const pendingDelete = ref<ManagedUser | null>(null)
+
+/** Welke dossiers een verwijdering meesleept — opgehaald vóór de bevestiging,
+ *  zodat de beheerder weet wat er verdwijnt in plaats van het achteraf te
+ *  ontdekken. */
+interface DeleteImpact {
+  dossiersToDelete: string[]
+  dossiersToUnshare: number
+}
+const impact = ref<DeleteImpact | null>(null)
+const impactLoading = ref(false)
+const notice = ref<string | null>(null)
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api/admin/users${path}`, {
@@ -201,6 +240,7 @@ onMounted(refresh)
 async function run(fn: () => Promise<void>) {
   busy.value = true
   error.value = null
+  notice.value = null
   try {
     await fn()
     await refresh()
@@ -240,15 +280,34 @@ function toggleEnabled(u: ManagedUser) {
   run(() => api(`/${u.id}`, { method: 'PUT', body: JSON.stringify({ enabled: !u.enabled }) }))
 }
 
-function askDelete(u: ManagedUser) {
+async function askDelete(u: ManagedUser) {
   pendingDelete.value = u
+  impact.value = null
+  impactLoading.value = true
   deleteDialog.value?.open()
+  try {
+    impact.value = await api<DeleteImpact>(`/${u.id}/impact`)
+  } catch {
+    // Onbekende impact mag de dialoog niet blokkeren; de opsomming valt terug
+    // op "geen dossiers" noch een aantal — de bevestiging blijft verplicht.
+    impact.value = { dossiersToDelete: [], dossiersToUnshare: 0 }
+  } finally {
+    impactLoading.value = false
+  }
 }
 
 function deleteUser() {
   const u = pendingDelete.value
   if (!u) return
-  run(() => api(`/${u.id}`, { method: 'DELETE' }))
+  run(async () => {
+    const res = await api<{ deletedDossiers: number; revokedGrants: number }>(`/${u.id}`, {
+      method: 'DELETE',
+    })
+    const naam = [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email || 'De gebruiker'
+    notice.value = res?.deletedDossiers
+      ? `${naam} is verwijderd, samen met ${res.deletedDossiers} ${res.deletedDossiers === 1 ? 'dossier' : 'dossiers'}.`
+      : `${naam} is verwijderd.`
+  })
 }
 
 async function copyTempPassword() {

@@ -69,10 +69,17 @@ class _Persister:
         self.doc = doc
         self._path = path
         self._dirty = False
+        self._closed = False
         self._task: asyncio.Task | None = None
         self._sub = doc.observe(self._on_update)
 
+    @property
+    def path(self) -> str:
+        return self._path
+
     def _on_update(self, event) -> None:
+        if self._closed:
+            return
         self._dirty = True
         if self._task is None or self._task.done():
             self._task = asyncio.get_running_loop().create_task(self._debounced_flush())
@@ -82,11 +89,30 @@ class _Persister:
         await self.flush()
 
     async def flush(self) -> None:
-        if not self._dirty:
+        if self._closed or not self._dirty:
             return
         self._dirty = False
         data = self.doc.get_update()
         await asyncio.to_thread(_atomic_write, self._path, data)
+
+    def close(self) -> None:
+        """Stop persisting this doc (its dossier was deleted).
+
+        Unobserving on the event-loop thread is deliberate: the subscription is
+        a pyo3-unsendable object, so letting the GC free it on an arbitrary
+        worker thread later is the RuntimeError this module already avoids by
+        never auto-cleaning rooms. Any in-flight debounced flush is cancelled so
+        it cannot recreate the file we are about to remove.
+        """
+        self._closed = True
+        self._dirty = False
+        if self._task is not None and not self._task.done():
+            self._task.cancel()
+        self._task = None
+        try:
+            self.doc.unobserve(self._sub)
+        except Exception:  # already dropped / API drift — nothing left to do
+            pass
 
 
 _persisters: dict[str, _Persister] = {}
@@ -140,6 +166,17 @@ class _PersistentServer(WebsocketServer):
             await self.start_room(room)
         return room
 
+    async def drop_room(self, name: str) -> None:
+        """Stop and forget a room (its dossier was deleted).
+
+        Takes the same lock as get_room so a client connecting at that instant
+        either gets the old room before it is stopped, or misses it entirely and
+        builds a fresh (empty) one — never a half-stopped room.
+        """
+        async with self._get_room_lock:
+            if name in self.rooms:
+                await self.delete_room(name=name)
+
 
 # One server for the whole app; started/stopped by the FastAPI lifespan.
 # exception_logger: without a handler, one client's socket dying mid-send
@@ -157,6 +194,30 @@ async def flush_all() -> None:
     """Persist every dossier's latest state — called on shutdown so the last
     edits within the debounce window aren't lost."""
     await asyncio.gather(*(p.flush() for p in _persisters.values()), return_exceptions=True)
+
+
+async def purge_dossier(dossier_id: str) -> None:
+    """Erase a deleted dossier's collaboration state: stop persisting it, drop
+    the in-memory doc and room, and remove the .ybin file.
+
+    Without this the CRDT keeps a full copy of every answer of a "deleted"
+    dossier — on disk and in memory — and, worse, stays reachable: once the
+    dossier record is gone, `_authorize` falls through to its grace path for
+    unmigrated dossiers and would let any logged-in user join that room.
+    """
+    persister = _persisters.pop(dossier_id, None)
+    path = persister.path if persister else os.path.join(COLLAB_PATH, f"{_safe(dossier_id)}.g2.ybin")
+    if persister is not None:
+        persister.close()
+    await ws_server.drop_room(dossier_id)
+
+    def _remove() -> None:
+        try:
+            os.remove(path)
+        except OSError:
+            pass  # never written (nobody collaborated) or already gone
+
+    await asyncio.to_thread(_remove)
 
 
 class _StarletteChannel(Channel):
