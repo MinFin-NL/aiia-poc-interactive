@@ -23,7 +23,7 @@
     "@tiptap/pm": "~3.22.3",
     "@tiptap/starter-kit": "~3.22.3",
     "@tiptap/vue-3": "~3.22.3",
-    "@types/diff": "^7.0.2",
+    "@types/diff": "^8.0.0",
     "diff": "^9.0.0",
     "docx": "^9.7.1",
     "file-saver": "^2.0.5",
