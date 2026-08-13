@@ -37,6 +37,68 @@
   --rvo-icon-vinkje: url('@nl-rvo/assets/icons/functioneel/vinkje.svg');
 }
 
+/* ── Motion ──────────────────────────────────────────────────────────────── */
+/* RVO ships geen motion-tokens (@nl-rvo/design-tokens bevat geen duration,
+   easing of timing), dus deze schaal is van ons. Op :root en niet op
+   .rvo-theme: anders dan de kleuraliassen verwijzen ze naar niets dat RVO
+   scoped, en de reduced-motion-override moet ook elementen buiten .rvo-theme
+   bereiken.
+
+   Kies een duur op rol, niet op gevoel:
+     instant      indrukken, hover-state die omklapt
+     fast         de standaard voor hover, focus en open/dicht
+     normal       kleur- of maatverandering die je mag zien gebeuren
+     slow         een element dat echt beweegt of van maat verandert
+     slower       voortgangsbalk die volloopt
+     deliberate   een markering die terugzakt naar rust
+     highlight    eenmalige puls op een net gewijzigd element
+
+   De loops zijn decoratief (AI-Modus-huisstijl: gradiënt, gloed, ademen).
+   WCAG 2.2.2 eist dat niet-essentiële beweging van langer dan 5s te stoppen
+   is, dus elk gebruik van --invulhulp-loop-* hoort samen met een
+   @media (prefers-reduced-motion: reduce) { animation: none } in de eigen
+   component — de stijlen zijn scoped, dus dat kan hier niet centraal.
+   Uitzondering: --invulhulp-loop-spin en --invulhulp-loop-blink zijn
+   voortgangsindicatoren. Die beweging is 'essential' onder 2.2.2 en blijft aan,
+   want een bevroren spinner leest als een vastgelopen scherm.
+
+   Transitions hoeven geen eigen media query: de duur-tokens vallen hieronder
+   zelf terug op 1ms. Niet op 0s, zodat transitionend blijft vuren en Vue's
+   <Transition> zijn klassen netjes opruimt. */
+:root {
+  --invulhulp-duration-instant: 120ms;
+  --invulhulp-duration-fast: 150ms;
+  --invulhulp-duration-normal: 200ms;
+  --invulhulp-duration-slow: 300ms;
+  --invulhulp-duration-slower: 400ms;
+  --invulhulp-duration-deliberate: 600ms;
+  --invulhulp-duration-highlight: 1200ms;
+
+  --invulhulp-loop-spin: 1.8s;
+  --invulhulp-loop-blink: 1s;
+  --invulhulp-loop-glow: 2.4s;
+  --invulhulp-loop-breathe: 3s;
+  --invulhulp-loop-sheen: 6s;
+  --invulhulp-loop-ambient: 16s;
+
+  --invulhulp-ease: ease;
+  --invulhulp-ease-out: ease-out;
+  --invulhulp-ease-in-out: ease-in-out;
+  --invulhulp-ease-linear: linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --invulhulp-duration-instant: 1ms;
+    --invulhulp-duration-fast: 1ms;
+    --invulhulp-duration-normal: 1ms;
+    --invulhulp-duration-slow: 1ms;
+    --invulhulp-duration-slower: 1ms;
+    --invulhulp-duration-deliberate: 1ms;
+    --invulhulp-duration-highlight: 1ms;
+  }
+}
+
 /* Starting value for the first paint only. AppHeader measures the real header
    and overwrites this as an inline style on :root, which outranks this rule.
    Declared on :root and NOT on .rvo-theme on purpose — a .rvo-theme
@@ -104,7 +166,7 @@ body {
 .invulhulp-progress::-webkit-progress-value {
   background-color: var(--rvo-color-lintblauw);
   border-radius: var(--rvo-border-radius-md);
-  transition: inline-size 0.3s ease;
+  transition: inline-size var(--invulhulp-duration-slow) var(--invulhulp-ease);
 }
 .invulhulp-progress::-moz-progress-bar {
   background-color: var(--rvo-color-lintblauw);
@@ -139,7 +201,7 @@ body {
   border: 1px solid var(--invulhulp-color-border-strong);
   border-radius: var(--rvo-border-radius-sm) var(--rvo-border-radius-sm) 0 0;
   background: var(--rvo-color-wit);
-  transition: border-color 0.2s;
+  transition: border-color var(--invulhulp-duration-normal);
 }
 
 .tiptap-editor:focus-within {

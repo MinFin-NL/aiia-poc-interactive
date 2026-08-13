@@ -149,7 +149,7 @@ onMounted(async () => {
     radial-gradient(50% 60% at 55% 80%, rgba(14, 165, 233, 0.35), transparent 70%);
   filter: blur(8px);
   opacity: 0.85;
-  animation: findocs-aurora 16s ease-in-out infinite alternate;
+  animation: findocs-aurora var(--invulhulp-loop-ambient) var(--invulhulp-ease-in-out) infinite alternate;
   pointer-events: none;
 }
 
@@ -210,7 +210,7 @@ onMounted(async () => {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  animation: findocs-shine 6s linear infinite;
+  animation: findocs-shine var(--invulhulp-loop-sheen) var(--invulhulp-ease-linear) infinite;
 }
 
 @keyframes findocs-shine {
@@ -288,7 +288,7 @@ onMounted(async () => {
   border-radius: var(--rvo-border-radius-md);
   padding: var(--rvo-space-xl) var(--rvo-space-lg);
   box-shadow: 0 1px 3px rgb(21 66 115 / 0.06), 0 10px 24px rgb(21 66 115 / 0.08);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform var(--invulhulp-duration-fast), box-shadow var(--invulhulp-duration-fast);
 }
 
 .findocs-feature:hover {

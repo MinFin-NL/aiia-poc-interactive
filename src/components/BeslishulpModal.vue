@@ -627,7 +627,7 @@ defineExpose({ open })
   border: 1px solid var(--invulhulp-color-border);
   border-radius: var(--rvo-border-radius-md);
   color: var(--rvo-color-zwart);
-  transition: border-color 0.12s, background 0.12s, transform 0.12s;
+  transition: border-color var(--invulhulp-duration-instant), background var(--invulhulp-duration-instant), transform var(--invulhulp-duration-instant);
 }
 
 .beslishulp__answer:hover {

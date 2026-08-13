@@ -451,7 +451,7 @@ defineExpose({ open })
 .scan__progress-bar {
   block-size: 100%;
   background: var(--rvo-color-hemelblauw);
-  transition: inline-size 0.2s ease-out;
+  transition: inline-size var(--invulhulp-duration-normal) var(--invulhulp-ease-out);
 }
 
 /* --- Body --- */

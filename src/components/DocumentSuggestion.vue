@@ -423,7 +423,7 @@ function rejectSuggestion() {
   display: inline-block;
   margin-inline-start: 2px;
   color: var(--rvo-color-grijs-500);
-  animation: invulhulp-blink 1s steps(2, start) infinite;
+  animation: invulhulp-blink var(--invulhulp-loop-blink) steps(2, start) infinite;
 }
 
 .doc-diff__add {

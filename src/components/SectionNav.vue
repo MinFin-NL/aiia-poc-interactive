@@ -235,7 +235,7 @@ function navigate(id: string) {
   top: var(--invulhulp-sticky-offset, 173px);
   /* The banner animates with a transform, so its layout height lands in one
      step; match its 0.3s so the sidebar slides with it instead of snapping. */
-  transition: top 0.3s ease, block-size 0.3s ease;
+  transition: top var(--invulhulp-duration-slow) var(--invulhulp-ease), block-size var(--invulhulp-duration-slow) var(--invulhulp-ease);
 }
 
 /* The sidebar scrolls on its own (its content is taller than the viewport once
@@ -296,7 +296,7 @@ function navigate(id: string) {
   font-size: var(--rvo-font-size-sm);
   padding: var(--rvo-space-2xs) var(--rvo-space-xs);
   border-radius: var(--rvo-border-radius-sm);
-  transition: background 0.15s;
+  transition: background var(--invulhulp-duration-fast);
 }
 .invulhulp-nav__link:hover {
   background: var(--rvo-color-grijs-100);

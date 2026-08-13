@@ -238,7 +238,7 @@ function openResetDialog() {
   padding: var(--rvo-space-3xs) var(--rvo-space-xs);
   border-radius: var(--rvo-radius-md, 4px);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background var(--invulhulp-duration-fast), color var(--invulhulp-duration-fast);
 }
 
 .invulhulp-header__ghost-btn:hover {
@@ -329,7 +329,7 @@ function openResetDialog() {
   font-size: var(--rvo-font-size-sm);
   font-weight: var(--rvo-font-weight-semibold);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background var(--invulhulp-duration-fast), color var(--invulhulp-duration-fast);
 }
 
 .invulhulp-header__crumb--link:hover {

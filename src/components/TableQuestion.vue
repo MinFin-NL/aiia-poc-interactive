@@ -373,7 +373,7 @@ function removeRow(rowIndex: number) {
   border-radius: var(--rvo-border-radius-md, 8px);
   box-shadow: 0 1px 4px rgb(21 66 115 / 0.18);
   cursor: pointer;
-  transition: background-color 0.1s, color 0.1s;
+  transition: background-color var(--invulhulp-duration-instant), color var(--invulhulp-duration-instant);
 }
 .invulhulp-table-question__scroll-btn:hover {
   background: var(--rvo-color-hemelblauw, #007bc7);

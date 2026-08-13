@@ -1292,7 +1292,7 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
   border-radius: var(--rvo-border-radius-md);
   background: var(--rvo-color-lichtblauw-150);
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color var(--invulhulp-duration-fast), background var(--invulhulp-duration-fast);
 }
 
 .first-run__dropzone:hover,
@@ -1431,7 +1431,7 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
   block-size: 100%;
   border-radius: var(--rvo-border-radius-sm);
   background: linear-gradient(90deg, #0f2d5c, #5b21b6, #0ea5e9);
-  transition: inline-size 0.3s ease;
+  transition: inline-size var(--invulhulp-duration-slow) var(--invulhulp-ease);
 }
 
 .bulk-ai__btn {
@@ -1576,7 +1576,7 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
   background: var(--rvo-color-grijs-100);
   border: 1px solid var(--invulhulp-color-border);
   border-radius: var(--rvo-border-radius-sm);
-  transition: background 0.6s ease, border-color 0.6s ease;
+  transition: background var(--invulhulp-duration-deliberate) var(--invulhulp-ease), border-color var(--invulhulp-duration-deliberate) var(--invulhulp-ease);
 }
 
 .docs-item__row {
@@ -1594,7 +1594,7 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
 .docs-item--new {
   background: var(--rvo-color-groen-150);
   border-color: var(--rvo-color-groen);
-  animation: doc-pulse 1.2s ease-out;
+  animation: doc-pulse var(--invulhulp-duration-highlight) var(--invulhulp-ease-out);
 }
 
 @keyframes doc-pulse {
@@ -1751,7 +1751,7 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
   box-sizing: border-box;
   border: 2px solid var(--track-line);
   color: var(--rvo-color-lintblauw);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color var(--invulhulp-duration-fast), box-shadow var(--invulhulp-duration-fast);
   background:
     linear-gradient(
       to top,

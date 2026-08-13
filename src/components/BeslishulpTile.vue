@@ -170,7 +170,7 @@ const completedOn = computed(() =>
   background: var(--rvo-color-wit);
   border: 0;
   border-radius: var(--rvo-border-radius-md);
-  transition: transform 0.12s, box-shadow 0.12s;
+  transition: transform var(--invulhulp-duration-instant), box-shadow var(--invulhulp-duration-instant);
 }
 
 .beslishulp-tile__btn:hover {

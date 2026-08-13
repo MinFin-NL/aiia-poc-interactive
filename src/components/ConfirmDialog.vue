@@ -186,11 +186,11 @@ defineExpose({ open })
 
 .invulhulp-modal::backdrop {
   background: rgb(0 0 0 / 50%);
-  animation: invulhulp-modal-fade-in 150ms ease;
+  animation: invulhulp-modal-fade-in var(--invulhulp-duration-fast) var(--invulhulp-ease);
 }
 
 .invulhulp-modal[open] {
-  animation: invulhulp-modal-zoom-in 150ms ease;
+  animation: invulhulp-modal-zoom-in var(--invulhulp-duration-fast) var(--invulhulp-ease);
 }
 
 @keyframes invulhulp-modal-fade-in {

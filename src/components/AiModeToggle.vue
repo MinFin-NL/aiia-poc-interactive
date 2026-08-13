@@ -154,7 +154,7 @@ defineEmits<{
   font-weight: var(--rvo-font-weight-semibold);
   cursor: pointer;
   letter-spacing: 0.01em;
-  transition: box-shadow 0.2s, background-position 0.6s ease;
+  transition: box-shadow var(--invulhulp-duration-normal), background-position var(--invulhulp-duration-deliberate) var(--invulhulp-ease);
 }
 
 .ai-mode-btn:hover:not(:disabled) {
@@ -175,7 +175,7 @@ defineEmits<{
 .ai-mode-btn__icon {
   display: inline-flex;
   align-items: center;
-  animation: ai-star-pulse 3s ease-in-out infinite;
+  animation: ai-star-pulse var(--invulhulp-loop-breathe) var(--invulhulp-ease-in-out) infinite;
 }
 
 /* ── Active / scanning state ─────────────────────────────────────────────── */
@@ -197,7 +197,7 @@ defineEmits<{
 .ai-mode-active__spinner {
   display: inline-flex;
   align-items: center;
-  animation: ai-spin 1.8s linear infinite;
+  animation: ai-spin var(--invulhulp-loop-spin) var(--invulhulp-ease-linear) infinite;
   flex-shrink: 0;
   flex-grow: 0;
 }
@@ -306,7 +306,7 @@ defineEmits<{
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background var(--invulhulp-duration-fast), color var(--invulhulp-duration-fast);
 }
 
 .ai-mode-done__close:hover {
@@ -377,5 +377,15 @@ defineEmits<{
 @keyframes ai-star-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.75; transform: scale(1.2); }
+}
+
+/* Het pulserende sterretje is versiering en mag stoppen. De spinner niet: die
+   is de enige voortgangsindicatie tijdens een scan, en zulke beweging is
+   'essential' onder WCAG 2.2.2 — stilgezet leest hij als een vastgelopen
+   scherm. */
+@media (prefers-reduced-motion: reduce) {
+  .ai-mode-btn__icon {
+    animation: none;
+  }
 }
 </style>

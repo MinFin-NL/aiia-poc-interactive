@@ -469,7 +469,7 @@ function rejectSuggestion() {
 }
 
 .tiptap-diff__cursor {
-  animation: invulhulp-blink 0.9s step-end infinite;
+  animation: invulhulp-blink var(--invulhulp-loop-blink) step-end infinite;
   margin-inline-start: 1px;
   color: var(--rvo-color-lintblauw);
 }

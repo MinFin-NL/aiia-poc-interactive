@@ -458,7 +458,8 @@ function onDecisionNext(go: boolean) {
   background-size: 200% 100%;
   color: #fff;
   box-shadow: 0 2px 16px rgba(91, 33, 182, 0.45);
-  animation: ai-banner-shift 8s linear infinite, ai-banner-glow 2.4s ease-in-out infinite;
+  animation: ai-banner-shift var(--invulhulp-loop-sheen) var(--invulhulp-ease-linear) infinite,
+    ai-banner-glow var(--invulhulp-loop-glow) var(--invulhulp-ease-in-out) infinite;
 }
 
 .ai-banner__inner {
@@ -472,7 +473,7 @@ function onDecisionNext(go: boolean) {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  animation: ai-banner-spin 1.8s linear infinite;
+  animation: ai-banner-spin var(--invulhulp-loop-spin) var(--invulhulp-ease-linear) infinite;
 }
 
 .ai-banner__body {
@@ -511,7 +512,7 @@ function onDecisionNext(go: boolean) {
   block-size: 100%;
   border-radius: 999px;
   background: #fff;
-  transition: width 0.4s ease;
+  transition: width var(--invulhulp-duration-slower) var(--invulhulp-ease);
 }
 
 .ai-banner__stop {
@@ -525,7 +526,7 @@ function onDecisionNext(go: boolean) {
   font-size: var(--rvo-font-size-sm);
   font-weight: var(--rvo-font-weight-bold);
   cursor: pointer;
-  transition: box-shadow 0.15s, transform 0.1s;
+  transition: box-shadow var(--invulhulp-duration-fast), transform var(--invulhulp-duration-instant);
 }
 .ai-banner__stop:hover {
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
@@ -548,7 +549,7 @@ function onDecisionNext(go: boolean) {
   inset: 0;
   pointer-events: none;
   box-shadow: inset 0 0 0 2px rgba(91, 33, 182, 0.25);
-  animation: ai-main-glow 2.4s ease-in-out infinite;
+  animation: ai-main-glow var(--invulhulp-loop-glow) var(--invulhulp-ease-in-out) infinite;
 }
 
 @keyframes ai-banner-shift {
@@ -571,7 +572,7 @@ function onDecisionNext(go: boolean) {
 /* Banner enter/leave transition */
 .ai-banner-enter-active,
 .ai-banner-leave-active {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform var(--invulhulp-duration-slow) var(--invulhulp-ease), opacity var(--invulhulp-duration-slow) var(--invulhulp-ease);
 }
 .ai-banner-enter-from,
 .ai-banner-leave-to {
@@ -579,9 +580,11 @@ function onDecisionNext(go: boolean) {
   opacity: 0;
 }
 
+/* Schuivende gradiënt en gloed zijn versiering; de voortgang staat er als tekst
+   en als balk naast. De spinner draait wél door — die is voortgangsindicatie en
+   daarmee 'essential' onder WCAG 2.2.2, net als in AiModeToggle. */
 @media (prefers-reduced-motion: reduce) {
   .ai-banner,
-  .ai-banner__spinner,
   .assessment-shell--ai-active .assessment-shell__main::before {
     animation: none;
   }

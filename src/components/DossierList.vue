@@ -209,7 +209,7 @@ function onCreateConfirmed(name: string) {
   cursor: pointer;
   font: inherit;
   text-align: start;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition: box-shadow var(--invulhulp-duration-fast), border-color var(--invulhulp-duration-fast);
 }
 
 .dossier-card:hover {
