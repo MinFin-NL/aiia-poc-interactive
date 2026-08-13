@@ -1827,7 +1827,9 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
    niet concurreren met de fasen eronder — hij gaat eraan vooraf. */
 .prelude {
   margin-block-end: var(--rvo-space-2xl);
-  padding: var(--rvo-space-md) var(--rvo-space-lg);
+  /* Same inline padding as .portal-card, .bulk-ai en de toepassingsscan-tegel:
+     alle koppen op deze pagina beginnen op dezelfde verticale lijn. */
+  padding: var(--rvo-space-lg) var(--rvo-space-xl);
   background: var(--rvo-color-wit);
   border: 1px solid var(--rvo-color-lichtblauw-300);
   border-radius: var(--rvo-border-radius-md);

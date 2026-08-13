@@ -115,7 +115,7 @@
 
           <div
             v-if="!hasBeslishulp && kenmerken.algoritme_of_ai !== false"
-            class="rvo-alert rvo-alert--info rvo-alert--padding-sm scan__alert"
+            class="rvo-alert rvo-alert--info rvo-alert--padding-md scan__alert"
           >
             <div class="rvo-alert__container">
               Er is sprake van (mogelijk) een algoritme. Of de AI-verordening geldt, bepaalt de
@@ -139,7 +139,7 @@
             </p>
           </section>
 
-          <div class="rvo-alert rvo-alert--warning rvo-alert--padding-sm scan__alert" role="note">
+          <div class="rvo-alert rvo-alert--warning rvo-alert--padding-md scan__alert" role="note">
             <div class="rvo-alert__container">
               Dit is geen juridisch oordeel. Op basis van je antwoorden lijken bovenstaande onderdelen
               wel of niet van toepassing — leg een "niet van toepassing" altijd voor aan de FG,
@@ -379,12 +379,15 @@ defineExpose({ open })
 }
 
 /* --- Header --- */
+/* Ruimer dan het corpus: dit is een gekleurd vlak, en tekst die tot aan de rand
+   van een gekleurd vlak loopt oogt geknepen. Inline gelijk aan .scan__body en
+   .scan__footer, zodat titel, vraag en knoppen op één lijn beginnen. */
 .scan__header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--rvo-space-sm);
-  padding: var(--rvo-space-lg) var(--rvo-space-lg) var(--rvo-space-md);
+  gap: var(--rvo-space-md);
+  padding: var(--rvo-space-xl);
   background: var(--rvo-color-lintblauw);
   color: var(--rvo-color-wit);
 }
@@ -392,10 +395,17 @@ defineExpose({ open })
 .scan__brand {
   display: flex;
   align-items: flex-start;
-  gap: var(--rvo-space-sm);
+  gap: var(--rvo-space-md);
 }
 
+/* .rvo-icon zet alleen een min-inline-size — zonder expliciete box heeft het
+   masker geen hoogte om in te tekenen: een onzichtbaar icoon dat wél breedte
+   inneemt. Zelfde patroon als de andere hergekleurde iconen in de app. */
 .scan__brand-icon {
+  display: inline-block;
+  inline-size: var(--rvo-size-xl);
+  block-size: var(--rvo-size-xl);
+  margin-block-start: var(--rvo-space-3xs);
   flex-shrink: 0;
   background-color: currentColor;
   /* Static stylesheet url() — a runtime url() renders as a white square in the
@@ -410,8 +420,9 @@ defineExpose({ open })
 }
 
 .scan__subtitle {
-  margin: var(--rvo-space-2xs) 0 0;
+  margin: var(--rvo-space-xs) 0 0;
   max-inline-size: 56ch;
+  line-height: var(--rvo-line-height-md);
   /* Solid tint rather than an opacity, so the contrast ratio is knowable. */
   color: var(--rvo-color-lintblauw-150);
 }
@@ -441,14 +452,21 @@ defineExpose({ open })
 
 /* --- Body --- */
 .scan__body {
-  padding: var(--rvo-space-lg);
+  padding: var(--rvo-space-xl);
   overflow-y: auto;
 }
 
+/* Grijze vlak van .rvo-form-fieldset eraf, net als in QuestionItem.vue — dat
+   vlak kan een vraag niet netjes omsluiten: een native <legend> valt buiten de
+   padding-box (Chrome legt de bovenrand van de fieldset op halve legend-hoogte),
+   dus de kicker staat erboven en de vraag klemt tegen de bovenrand. De vraag
+   staat hier op het witte corpus, met de ruimte van .scan__body eromheen. */
 .scan__fieldset {
+  background: transparent;
   border: 0;
   margin: 0;
   padding: 0;
+  min-inline-size: 0;
 }
 
 .scan__legend {
@@ -456,6 +474,7 @@ defineExpose({ open })
   flex-direction: column;
   gap: var(--rvo-space-3xs);
   padding: 0;
+  margin: 0 0 var(--rvo-space-sm);
 }
 
 .scan__kicker {
@@ -527,7 +546,14 @@ defineExpose({ open })
 }
 
 .scan__alert {
-  margin-block-start: var(--rvo-space-md);
+  margin-block-start: var(--rvo-space-lg);
+}
+
+/* Lopende tekst in een gekleurd vlak heeft lucht nodig: padding-md in plaats
+   van -sm op het vlak zelf, en een ruimere regelafstand erbinnen. */
+.scan__alert .rvo-alert__container {
+  line-height: var(--rvo-line-height-md);
+  max-inline-size: 72ch;
 }
 
 .scan__saved {
@@ -542,7 +568,7 @@ defineExpose({ open })
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--rvo-space-sm);
-  padding: var(--rvo-space-md) var(--rvo-space-lg);
+  padding: var(--rvo-space-md) var(--rvo-space-xl);
   border-block-start: 1px solid var(--rvo-color-grijs-300);
   background: var(--rvo-color-grijs-100);
 }

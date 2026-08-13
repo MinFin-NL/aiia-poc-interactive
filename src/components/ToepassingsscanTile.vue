@@ -6,44 +6,49 @@
 
        Stock NLDS: an outlined rvo-card like the form cards, rvo-tag pills for
        the kenmerken, rvo-button for the action. No colours of its own — see
-       the NL Design System rule in CLAUDE.md. -->
+       the NL Design System rule in CLAUDE.md.
+
+       Padding--xl and no left gutter: the title has to start on the same
+       vertical line as "Vul dit dossier in met AI" and "Vooraf" around it, so
+       the icon rides along in the kicker line instead of in a column of its
+       own. -->
   <section
-    class="rvo-card rvo-card--outline rvo-card--padding--md scan-tile"
+    class="rvo-card rvo-card--outline rvo-card--padding--xl scan-tile"
     aria-labelledby="scan-tile-title"
   >
-    <div class="scan-tile__main">
-      <span class="rvo-icon rvo-icon--lg scan-tile__icon" aria-hidden="true" />
-      <div class="scan-tile__body">
-        <p class="rvo-text rvo-text--sm rvo-text--bold scan-tile__kicker">Toepassingsscan</p>
-        <h2 id="scan-tile-title" class="rvo-heading rvo-heading--lg scan-tile__title">
-          {{ run ? 'Kenmerken van dit dossier' : 'Welke formulieren gelden hier eigenlijk?' }}
-        </h2>
+    <div class="scan-tile__body">
+      <p class="rvo-text rvo-text--sm rvo-text--bold scan-tile__kicker">
+        <span class="rvo-icon rvo-icon--md scan-tile__icon" aria-hidden="true" />
+        Toepassingsscan
+      </p>
+      <h2 id="scan-tile-title" class="rvo-heading rvo-heading--lg scan-tile__title">
+        {{ run ? 'Kenmerken van dit dossier' : 'Welke formulieren gelden hier eigenlijk?' }}
+      </h2>
 
-        <template v-if="run">
-          <ul v-if="tags.length > 0" class="scan-tile__tags">
-            <li v-for="k in tags" :key="k">
-              <span class="rvo-tag rvo-tag--pill">{{ KENMERK_LABEL[k] }}</span>
-            </li>
-          </ul>
-          <p v-else class="rvo-text rvo-text--sm rvo-text--subtle scan-tile__line">
-            De scan stelde geen van de kenmerken vast.
-          </p>
-          <p class="rvo-text rvo-text--sm rvo-text--subtle scan-tile__line">
-            {{ counts.verplicht }} van toepassing · {{ counts.mogelijk }} mogelijk relevant ·
-            {{ counts.nvt }} niet van toepassing ·
-            gescand op {{ completedOn }}<template v-if="run.completedBy"> door {{ run.completedBy }}</template>
-          </p>
-          <p v-if="unknowns.length > 0" class="rvo-text rvo-text--sm rvo-text--subtle scan-tile__line">
-            Nog onbekend: {{ unknowns.map((k) => KENMERK_LABEL[k]).join(', ') }}.
-          </p>
-        </template>
-
-        <p v-else class="rvo-text rvo-text--sm scan-tile__line scan-tile__intro">
-          Beantwoord acht vragen over wat dit project doet en oplevert. Daarna staat per formulier
-          of het van toepassing is — en waarom niet, als het niet van toepassing is. Zolang de scan
-          niet is gedaan, blijven alle formulieren gewoon zichtbaar.
+      <template v-if="run">
+        <ul v-if="tags.length > 0" class="scan-tile__tags">
+          <li v-for="k in tags" :key="k">
+            <span class="rvo-tag rvo-tag--pill">{{ KENMERK_LABEL[k] }}</span>
+          </li>
+        </ul>
+        <p v-else class="rvo-text rvo-text--sm rvo-text--subtle scan-tile__line">
+          De scan stelde geen van de kenmerken vast.
         </p>
-      </div>
+        <p class="rvo-text rvo-text--sm rvo-text--subtle scan-tile__line">
+          {{ counts.verplicht }} van toepassing · {{ counts.mogelijk }} mogelijk relevant ·
+          {{ counts.nvt }} niet van toepassing ·
+          gescand op {{ completedOn }}<template v-if="run.completedBy"> door {{ run.completedBy }}</template>
+        </p>
+        <p v-if="unknowns.length > 0" class="rvo-text rvo-text--sm rvo-text--subtle scan-tile__line">
+          Nog onbekend: {{ unknowns.map((k) => KENMERK_LABEL[k]).join(', ') }}.
+        </p>
+      </template>
+
+      <p v-else class="rvo-text rvo-text--sm scan-tile__line scan-tile__intro">
+        Beantwoord acht vragen over wat dit project doet en oplevert. Daarna staat per formulier
+        of het van toepassing is — en waarom niet, als het niet van toepassing is. Zolang de scan
+        niet is gedaan, blijven alle formulieren gewoon zichtbaar.
+      </p>
     </div>
 
     <div class="scan-tile__actions">
@@ -91,24 +96,27 @@ const completedOn = computed(() =>
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--rvo-space-md);
-  margin-block-end: var(--rvo-space-xl);
-  /* The one accent: marks the tile as the dossier-level control above the
-     phase timeline, in the same lintblauw the beslishulp tile uses. */
-  border-inline-start: var(--rvo-space-3xs) solid var(--rvo-color-lintblauw);
+  margin-block-end: var(--rvo-space-2xl);
+  /* Same frame as the bands above and below it (bulk-ai, Vooraf), so the four
+     dossier-level blocks read as one column instead of four stray boxes. */
+  --rvo-card-outline-border-color: var(--rvo-color-lichtblauw-300);
+  border-radius: var(--rvo-border-radius-md);
 }
 
-.scan-tile__main {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--rvo-space-md);
+.scan-tile__body {
   flex: 1 1 28rem;
 }
 
+/* .rvo-icon only sets a min-inline-size — without an explicit box the mask has
+   no height to paint in, which leaves an invisible icon that still takes up
+   its width. Sized here like every other recoloured icon in the app. */
 .scan-tile__icon {
+  display: inline-block;
+  inline-size: var(--rvo-size-md);
+  block-size: var(--rvo-size-md);
   flex-shrink: 0;
-  margin-block-start: var(--rvo-space-2xs);
-  color: var(--rvo-color-lintblauw);
-  background-color: currentColor;
+  margin-inline-end: var(--rvo-space-2xs);
+  background-color: var(--rvo-color-lintblauw);
   /* Static stylesheet url() — a runtime url() renders as a white square in the
      production build (see the icon-mask note in DossierDetail.vue). */
   -webkit-mask: url('@nl-rvo/assets/icons/functioneel/zoek.svg') center / contain no-repeat;
@@ -116,6 +124,8 @@ const completedOn = computed(() =>
 }
 
 .scan-tile__kicker {
+  display: flex;
+  align-items: center;
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -124,10 +134,12 @@ const completedOn = computed(() =>
 
 .scan-tile__title {
   margin: 0 0 var(--rvo-space-2xs);
+  color: var(--rvo-color-lintblauw);
 }
 
 .scan-tile__line {
   margin: 0;
+  line-height: var(--rvo-line-height-md);
 }
 
 .scan-tile__intro {
