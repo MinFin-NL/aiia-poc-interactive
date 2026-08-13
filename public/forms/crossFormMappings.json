@@ -2327,5 +2327,122 @@
       "d5.C"
     ],
     "synthesisHint": "Herschrijf de restrisico’s en hun acceptatie uit het IAMA als gedetailleerde beschrijving van het zwaarste restrisico."
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_a.naam_project",
+    "sourceFormId": "aanbiedingsformulier",
+    "sourceQuestionIds": [
+      "aa_a.naam_project"
+    ],
+    "synthesisHint": "Neem de projectnaam letterlijk over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_a.topdesk",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.topdesk_nummer"
+    ],
+    "synthesisHint": "Neem het Topdesk-meldingsnummer letterlijk over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_a.opdrachtgever",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.naam_opdrachtgever"
+    ],
+    "synthesisHint": "Neem de naam van de opdrachtgever letterlijk over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_a.projectleider",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.contactpersoon"
+    ],
+    "synthesisHint": "Neem de naam van de contactpersoon letterlijk over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_a.processen",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.omschrijving"
+    ],
+    "synthesisHint": "Leid uit de omschrijving van het IV-verzoek af binnen welk(e) bedrijfsproces(sen) de applicatie of het systeem wordt ingezet. Benoem de processen, niet de techniek, en verwijs waar mogelijk naar een proces uit de Selectielijst van het ministerie van Financiën."
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_a.processen",
+    "sourceFormId": "psa",
+    "sourceQuestionIds": [
+      "psa_c.processen"
+    ],
+    "synthesisHint": "Vat de in de PSA beschreven processen samen als antwoord op de vraag binnen welke processen de applicatie of het systeem wordt ingezet, met een verwijzing naar de Selectielijst waar dat kan."
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_a.bewaartermijn",
+    "sourceFormId": "dpia",
+    "sourceQuestionIds": [
+      "d10.2"
+    ],
+    "synthesisHint": "Vertaal de bewaartermijnen uit de DPIA naar een antwoord in archieftermen: hoe lang de overheidsinformatie bewaard moet blijven, en of die permanent te bewaren dan wel op termijn te vernietigen is volgens de selectielijst."
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_a.gerubriceerd",
+    "sourceFormId": "quickscan",
+    "sourceQuestionIds": [
+      "qs_b.vertrouwelijkheid"
+    ],
+    "synthesisHint": "Het vertrouwelijkheidsniveau uit de BIO-quickscan geeft aan of er gerubriceerde overheidsinformatie in het systeem terechtkomt.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_b.17",
+    "sourceFormId": "psa",
+    "sourceQuestionIds": [
+      "psa_e.informatiebeveiliging"
+    ],
+    "synthesisHint": "De in de PSA beschreven autorisatie- en toegangsmaatregelen onderbouwen het antwoord op deze vraag.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_b.18",
+    "sourceFormId": "psa",
+    "sourceQuestionIds": [
+      "psa_e.logging_monitoring"
+    ],
+    "synthesisHint": "De in de PSA beschreven logging en monitoring onderbouwen het antwoord op deze vraag.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "datasetregistratie",
+    "targetQuestionId": "ds_c.bewaartermijn",
+    "sourceFormId": "ihhtoets",
+    "sourceQuestionIds": [
+      "ihh_a.bewaartermijn",
+      "ihh_a.archiveringslocatie"
+    ],
+    "synthesisHint": "Combineer de bewaartermijn en de archiveringslocatie uit de IHH-toets tot een antwoord op wat de bewaartermijn is en wat er daarna met de dataset gebeurt (vernietiging of overbrenging)."
+  },
+  {
+    "targetFormId": "verwerkingsregister",
+    "targetQuestionId": "vr_d.maatregelen",
+    "sourceFormId": "ihhtoets",
+    "sourceQuestionIds": [
+      "ihh_b.17",
+      "ihh_b.18"
+    ],
+    "synthesisHint": "Vertaal de autorisatie-, toegangs- en loggingmaatregelen uit de IHH-toets naar een algemene beschrijving van de technische en organisatorische beveiligingsmaatregelen zoals artikel 30 AVG die vraagt."
   }
 ]

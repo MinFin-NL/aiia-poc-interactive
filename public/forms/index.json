@@ -200,6 +200,7 @@
     {
       "id": "ihhtoets",
       "urn": "urn:nl:minfin:tr:ihhtoets:0.1",
+      "file": "ihhtoets.json",
       "title": "IHH-toets",
       "track": "initiatie",
       "order": 10,
@@ -207,8 +208,7 @@
         "data",
         "project"
       ],
-      "placeholder": "gepland",
-      "shortDescription": "Toets wat het project betekent voor de informatiehuishouding: archivering, vindbaarheid en openbaarmaking (Archiefwet en Woo)."
+      "shortDescription": "Breng in beeld wat de applicatie of het systeem betekent voor duurzaam toegankelijke overheidsinformatie: afspraken, metadata, bewaren, migreren, vernietigen en toegang (Archiefwet en DUTO)."
     },
     {
       "id": "cloudtoets",

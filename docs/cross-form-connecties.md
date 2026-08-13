@@ -11,12 +11,13 @@ Een koppeling heeft een **modus**:
 
 Een `copy`-koppeling naar een keuzevraag waarvan het bronantwoord geen geldige optie is (of een tabel met andere kolommen) vult niets in — dan toont het paneel alleen het bronantwoord ter informatie.
 
-**Totaal: 244 koppelingen** verdeeld over 46 formulierparen, waarvan 29 in `copy`-modus.
+**Totaal: 256 koppelingen** verdeeld over 53 formulierparen, waarvan 36 in `copy`-modus.
 
 > De per-paar secties hieronder beschrijven de oorspronkelijke koppelingen; de tellingen erin zijn
 > niet allemaal bijgewerkt. De koppelingen van de zeven formulieren die in juli 2026 zijn
 > toegevoegd staan gebundeld in [§ Nieuwe formulieren](#nieuwe-formulieren-juli-2026) onderaan;
-> de IAMA-koppelingen staan in [§ IAMA](#iama-augustus-2026).
+> de IAMA-koppelingen staan in [§ IAMA](#iama-augustus-2026) en die van de IHH-toets in
+> [§ IHH-toets](#ihh-toets-augustus-2026).
 > `public/forms/crossFormMappings.json` is de bron van waarheid.
 
 ---
@@ -276,3 +277,34 @@ en de DPIA moeten daarheen worden herschreven en kunnen niet letterlijk worden o
 | AIIA | 3 | Grondrechtenimpact, proportionaliteit, human in the loop |
 | DPIA | 2 | Subsidiariteit en proportionaliteit |
 | AI-systeemregistratie (Model Card) | 2 | Bekende beperkingen en bias-risico's |
+
+---
+
+## IHH-toets (augustus 2026)
+
+De Informatiehuishoudingstoets bij IV-verzoeken hangt met **12 koppelingen** aan de rest van het
+dossier. Het zwaartepunt ligt in deel A: de algemene gegevens en de bewaarcontext staan elders al,
+en de achttien toetsvragen zelf gaan over functionaliteit van de beoogde applicatie — die kan geen
+ander formulier beantwoorden.
+
+**IHH-toets als doelformulier (10 koppelingen)**
+
+| Bronformulier | Koppelingen | Zwaartepunt |
+|---|---|---|
+| Intake | 4 | Topdesk-nummer, opdrachtgever en contactpersoon (`copy`); omschrijving IV-verzoek → de betrokken processen |
+| PSA | 3 | Processen → de betrokken processen; informatiebeveiliging en logging/monitoring als onderbouwing bij vraag 17 en 18 |
+| Aanbiedingsformulier | 1 | Projectnaam (`copy`) |
+| DPIA | 1 | Bewaartermijnen → hoe lang de overheidsinformatie te bewaren is |
+| Quick scan BIO | 1 | Vereist niveau voor vertrouwelijkheid → rubricering |
+
+**IHH-toets als bronformulier (2 koppelingen)**
+
+| Doelformulier | Koppelingen | Zwaartepunt |
+|---|---|---|
+| Dataset-registratie | 1 | Bewaartermijn en archiveringslocatie → bewaartermijn en wat er daarna gebeurt |
+| Verwerkingsregister | 1 | Autorisatie-, toegangs- en loggingmaatregelen → beveiligingsmaatregelen (art. 30/32 AVG) |
+
+De koppelingen naar de keuzevragen (rubricering, vraag 17 en 18) staan in `copy`-modus zonder dat
+de bronwaarde een geldige optie is: het paneel toont het bronantwoord dan ter informatie naast de
+vraag, wat hier precies de bedoeling is — de IHH-professional leest de PSA-tekst mee bij het
+beantwoorden, maar de keuze blijft aan de invuller.
