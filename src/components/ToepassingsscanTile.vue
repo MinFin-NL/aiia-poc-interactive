@@ -44,10 +44,11 @@
         </p>
       </template>
 
+      <!-- Question count from the scan itself: a hardcoded "acht vragen" drifts
+           the moment a question is added or dropped. -->
       <p v-else class="rvo-text rvo-text--sm scan-tile__line scan-tile__intro">
-        Beantwoord acht vragen over wat dit project doet en oplevert. Daarna staat per formulier
-        of het van toepassing is — en waarom niet, als het niet van toepassing is. Zolang de scan
-        niet is gedaan, blijven alle formulieren gewoon zichtbaar.
+        {{ SCAN_QUESTIONS.length }} vragen over wat dit project doet en oplevert. Daarna staat per
+        formulier of het geldt — en zo niet, waarom niet.
       </p>
     </div>
 
@@ -63,6 +64,7 @@
 import { computed } from 'vue'
 import {
   KENMERK_LABEL,
+  SCAN_QUESTIONS,
   activeKenmerken,
   unknownKenmerken,
   type Kenmerken,

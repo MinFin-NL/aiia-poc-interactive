@@ -8,9 +8,7 @@ import {
   deriveKenmerken,
   evaluateApplicability,
   unknownKenmerken,
-  visibleQuestions,
   type ApplicabilityRule,
-  type KenmerkId,
   type Kenmerken,
   type ScanAnswers,
 } from './toepassingsscan'
@@ -70,12 +68,11 @@ describe('scan definition', () => {
     }
   })
 
-  it('gates only on a kenmerk an earlier question decides', () => {
-    const decided = new Set<KenmerkId>()
-    for (const q of SCAN_QUESTIONS) {
-      if (q.alleenAls) expect(decided, `${q.id} gates on a later kenmerk`).toContain(q.alleenAls)
-      for (const k of q.bepaalt) decided.add(k)
-    }
+  it('asks nothing that steers no form — every kenmerk is tested by index.json', () => {
+    // The reason the scan is six questions and not eight: a kenmerk no rule
+    // reads is a question nobody has to answer (docs §7.2).
+    const tested = new Set(index.forms.flatMap((f) => f.applicability?.allOf.flat() ?? []))
+    expect([...KENMERK_IDS].filter((k) => !tested.has(k))).toEqual([])
   })
 
   it('leaves every kenmerk except ai_verordening_in_scope derivable from the scan', () => {
@@ -104,22 +101,11 @@ describe('deriveKenmerken', () => {
     expect(deriveKenmerken({ oplevering: ['api', 'infra'] }).gebruikersinterface).toBe(false)
   })
 
-  it('rules out gated kenmerken when the gate is false', () => {
-    const result = deriveKenmerken({ pg: ['nee'] })
-    expect(result.persoonsgegevens).toBe(false)
-    expect(result.bijzondere_persoonsgegevens).toBe(false)
-    expect(result.grootschalig).toBe(false)
-  })
-
-  it('leaves gated kenmerken unknown when the gate is unknown', () => {
-    const result = deriveKenmerken({ pg: ['onbekend'], bijzonder: ['gezondheid'] })
-    expect(result.bijzondere_persoonsgegevens).toBe('onbekend')
-  })
-
-  it('ignores an answer to a question the gate hid', () => {
-    // Stale answers from before the gate flipped must not resurrect a kenmerk.
-    const answers: ScanAnswers = { pg: ['nee'], bijzonder: ['gezondheid'] }
-    expect(deriveKenmerken(answers).bijzondere_persoonsgegevens).toBe(false)
+  it('ignores answers to questions that no longer exist', () => {
+    // A run stored under SCAN_VERSION 1 still carries `bijzonder` and `schaal`.
+    const answers: ScanAnswers = { pg: ['ja'], bijzonder: ['gezondheid'], schaal: ['groot'] }
+    expect(deriveKenmerken(answers).persoonsgegevens).toBe(true)
+    expect(activeKenmerken(deriveKenmerken(answers))).toEqual(['persoonsgegevens'])
   })
 
   it('rules out the AI-verordening when there is no algorithm at all', () => {
@@ -134,24 +120,8 @@ describe('deriveKenmerken', () => {
   })
 
   it('reports only the kenmerken that hold as tags', () => {
-    const result = deriveKenmerken({ pg: ['ja'], bijzonder: ['geen'], gedrag: ['geen'] })
+    const result = deriveKenmerken({ pg: ['ja'], gedrag: ['geen'] })
     expect(activeKenmerken(result)).toEqual(['persoonsgegevens'])
-  })
-})
-
-describe('visibleQuestions', () => {
-  it('hides the persoonsgegevens follow-ups once the answer is "nee"', () => {
-    const ids = visibleQuestions({ pg: ['nee'] }).map((q) => q.id)
-    expect(ids).not.toContain('bijzonder')
-    expect(ids).not.toContain('schaal')
-  })
-
-  it('shows them again on "ja"', () => {
-    expect(visibleQuestions({ pg: ['ja'] }).map((q) => q.id)).toContain('bijzonder')
-  })
-
-  it('keeps them visible while the gate is unanswered — nothing is ruled out yet', () => {
-    expect(visibleQuestions({}).map((q) => q.id)).toContain('bijzonder')
   })
 })
 
@@ -246,8 +216,6 @@ describe('the matrix in docs §5.4', () => {
   it('persoonsgegevens without AI is the mirror image', () => {
     const s = statuses({
       pg: ['ja'],
-      bijzonder: ['geen'],
-      schaal: ['middel'],
       gedrag: ['geen'],
       besluit: ['nee'],
       dataset: ['nee'],

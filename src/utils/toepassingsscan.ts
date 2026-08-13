@@ -19,6 +19,12 @@
  * Three-valued on purpose: a kenmerk is true, false, or `onbekend`, and
  * `onbekend` is NOT false. "We don't know yet" must surface as *mogelijk
  * relevant*, never as "niet van toepassing" — see the liability note in §5.7.
+ *
+ * Every kenmerk here earns its place by steering at least one form. Two
+ * earlier ones (`bijzondere_persoonsgegevens`, `grootschalig`) did not: they
+ * cost two of the eight questions — the only two gated ones — and produced
+ * nothing but a tag. They were dropped in SCAN_VERSION 2 (docs §7.2); the
+ * prescan and the DPIA ask for that detail where it actually does work.
  */
 import type { BeslishulpRun } from './beslishulp'
 import { isOutOfScope } from './beslishulp'
@@ -31,8 +37,6 @@ import { isOutOfScope } from './beslishulp'
  *  derives them) and index.json (which tests them). */
 export type KenmerkId =
   | 'persoonsgegevens'
-  | 'bijzondere_persoonsgegevens'
-  | 'grootschalig'
   | 'besluit_over_personen'
   | 'algoritme_of_ai'
   | 'ai_verordening_in_scope'
@@ -48,8 +52,6 @@ export type Kenmerken = Record<KenmerkId, KenmerkValue>
 /** How a kenmerk reads as a tag on the dossier page. */
 export const KENMERK_LABEL: Record<KenmerkId, string> = {
   persoonsgegevens: 'persoonsgegevens',
-  bijzondere_persoonsgegevens: 'bijzondere persoonsgegevens',
-  grootschalig: 'grootschalige verwerking',
   besluit_over_personen: 'besluit over personen',
   algoritme_of_ai: 'algoritme of AI',
   ai_verordening_in_scope: 'AI-verordening van toepassing',
@@ -65,8 +67,6 @@ export const KENMERK_IDS = Object.keys(KENMERK_LABEL) as KenmerkId[]
  *  the scan summary so nobody mistakes the first for the second. */
 export const KENMERK_SOURCE: Record<KenmerkId, 'scan' | 'beslishulp'> = {
   persoonsgegevens: 'scan',
-  bijzondere_persoonsgegevens: 'scan',
-  grootschalig: 'scan',
   besluit_over_personen: 'scan',
   algoritme_of_ai: 'scan',
   ai_verordening_in_scope: 'beslishulp',
@@ -109,16 +109,13 @@ export interface ScanQuestion {
   /** The kenmerken this question decides. Answering it without picking a
    *  setter concludes `false` for all of them. */
   bepaalt: KenmerkId[]
-  /** Ask this question only when the named kenmerk is true so far. When it is
-   *  false the question's kenmerken are false by implication; when it is
-   *  `onbekend` they stay `onbekend`. */
-  alleenAls?: KenmerkId
   opties: ScanOption[]
 }
 
 /** Bumped when the questions change meaning, so a stored run can say which
- *  wording it was answered against. */
-export const SCAN_VERSION = '1'
+ *  wording it was answered against. 2 = the six-question scan; version 1 had
+ *  two extra questions whose answers no longer mean anything. */
+export const SCAN_VERSION = '2'
 
 /**
  * The questions.
@@ -127,6 +124,10 @@ export const SCAN_VERSION = '1'
  * recognises their Excel scoring rule or a vendor's "smart suggestions" as AI,
  * and the incentive here runs the wrong way — a "nee" saves you six forms. So
  * we ask what the system *does*, and let the engine draw the conclusion.
+ *
+ * Six questions, none conditional on another, which is why they fit on one
+ * page instead of in a wizard. Keep it that way: a question that has to be
+ * gated is usually a question the receiving form should be asking itself.
  *
  * In code rather than in public/ on purpose: every `sets` entry has to be a
  * real KenmerkId, and a typo in a JSON asset would silently disable a rule.
@@ -138,7 +139,7 @@ export const SCAN_QUESTIONS: ScanQuestion[] = [
     id: 'pg',
     vraag: 'Komen er in dit project gegevens voor die — ook indirect — naar een persoon te herleiden zijn?',
     toelichting:
-      'Denk breed: namen en e-mailadressen, maar ook personeelsnummers, dossiernummers, IP-adressen, logging en pseudoniemen. Gegevens over eigen medewerkers tellen net zo goed mee, en gegevens uit een basisregistratie ook.',
+      'Denk breed: ook personeelsnummers, IP-adressen, logging en pseudoniemen tellen mee, net als gegevens over eigen medewerkers.',
     type: 'single',
     bepaalt: ['persoonsgegevens'],
     opties: [
@@ -148,51 +149,10 @@ export const SCAN_QUESTIONS: ScanQuestion[] = [
     ],
   },
   {
-    id: 'bijzonder',
-    vraag: 'Gaat het (ook) om een van deze categorieën gegevens?',
-    toelichting:
-      'Deze categorieën maken een verwerking zwaarder: bijzondere persoonsgegevens (AVG art. 9), strafrechtelijke gegevens (art. 10) en het BSN (art. 46 UAVG).',
-    type: 'multi',
-    bepaalt: ['bijzondere_persoonsgegevens'],
-    alleenAls: 'persoonsgegevens',
-    opties: [
-      { id: 'gezondheid', label: 'Gezondheid', sets: ['bijzondere_persoonsgegevens'] },
-      { id: 'herkomst', label: 'Ras of etnische afkomst', sets: ['bijzondere_persoonsgegevens'] },
-      { id: 'overtuiging', label: 'Politieke opvatting, religie of levensovertuiging', sets: ['bijzondere_persoonsgegevens'] },
-      { id: 'vakbond', label: 'Lidmaatschap van een vakbond', sets: ['bijzondere_persoonsgegevens'] },
-      { id: 'biometrie', label: 'Biometrische of genetische gegevens', sets: ['bijzondere_persoonsgegevens'] },
-      { id: 'seksueel', label: 'Seksueel gedrag of gerichtheid', sets: ['bijzondere_persoonsgegevens'] },
-      { id: 'strafrecht', label: 'Strafrechtelijke gegevens', sets: ['bijzondere_persoonsgegevens'] },
-      { id: 'bsn', label: 'Burgerservicenummer (BSN)', sets: ['bijzondere_persoonsgegevens'] },
-      { id: 'geen', label: 'Nee, geen van deze', exclusief: true },
-    ],
-  },
-  {
-    id: 'schaal',
-    vraag: 'Over hoeveel personen gaat het, ruw geschat?',
-    toelichting:
-      'Grootschaligheid gaat niet alleen over aantallen: ook de duur, het gebied en de mate waarin het (bijna) iedereen in een doelgroep raakt, tellen mee (EDPB-richtsnoeren).',
-    type: 'single',
-    bepaalt: ['grootschalig'],
-    alleenAls: 'persoonsgegevens',
-    opties: [
-      { id: 'klein', label: 'Minder dan 100 personen' },
-      { id: 'middel', label: '100 tot 10.000 personen' },
-      { id: 'groot', label: 'Meer dan 10.000 personen', sets: ['grootschalig'] },
-      {
-        id: 'doelgroep',
-        label: '(Bijna) iedereen binnen een doelgroep, ongeacht het aantal',
-        hint: 'Bijvoorbeeld alle medewerkers van het ministerie of alle aanvragers van een regeling.',
-        sets: ['grootschalig'],
-      },
-      { id: 'onbekend', label: 'Weet ik niet', onbekend: true },
-    ],
-  },
-  {
     id: 'gedrag',
     vraag: 'Wat doet het systeem? Kruis alles aan wat van toepassing is.',
     toelichting:
-      'Vraag jezelf niet af of iets "AI" heet. Een scoringsregel in een spreadsheet en de "slimme suggesties" van een leverancier vallen hier net zo goed onder als een taalmodel.',
+      'Niet: heet het "AI"? Een scoringsregel in een spreadsheet telt hier net zo goed mee als een taalmodel.',
     type: 'multi',
     bepaalt: ['algoritme_of_ai'],
     opties: [
@@ -213,7 +173,7 @@ export const SCAN_QUESTIONS: ScanQuestion[] = [
     id: 'besluit',
     vraag: 'Ondersteunt of vervangt het systeem een besluit of beoordeling over een persoon?',
     toelichting:
-      'Bijvoorbeeld toekennen of afwijzen van een aanvraag, selecteren voor controle, een risico-inschatting, roosteren, of het beoordelen van medewerkers.',
+      'Bijvoorbeeld een aanvraag toekennen of afwijzen, selecteren voor controle, een risico-inschatting of het beoordelen van medewerkers.',
     type: 'single',
     bepaalt: ['besluit_over_personen'],
     opties: [
@@ -227,7 +187,7 @@ export const SCAN_QUESTIONS: ScanQuestion[] = [
     id: 'oplevering',
     vraag: 'Wat levert dit project op, of wat gaat het ministerie hiermee aanbieden?',
     toelichting:
-      'Het gaat om wat er wordt aangeboden, niet om wie het bouwt: ook bij ingekochte software rust de verplichting op de organisatie die de voorziening publiceert of aanbiedt.',
+      'Het gaat om wat er wordt aangeboden, niet om wie het bouwt: ook bij ingekochte software ligt de verplichting bij de organisatie die het aanbiedt.',
     type: 'multi',
     bepaalt: ['gebruikersinterface'],
     opties: [
@@ -245,7 +205,7 @@ export const SCAN_QUESTIONS: ScanQuestion[] = [
     id: 'dataset',
     vraag: 'Beheert dit project een eigen dataset, of levert het zelf gegevens aan anderen?',
     toelichting:
-      'Standaardsoftware waarin alleen gegevens van een ander systeem worden getoond telt niet mee; een eigen bestand, koppelbestand, datawarehouse of trainingsset wel.',
+      'Alleen gegevens van een ander systeem tonen telt niet mee; een eigen bestand, datawarehouse of trainingsset wel.',
     type: 'single',
     bepaalt: ['eigen_dataset'],
     opties: [
@@ -258,7 +218,7 @@ export const SCAN_QUESTIONS: ScanQuestion[] = [
     id: 'doelgroep',
     vraag: 'Wie merkt straks iets van de werking van dit systeem?',
     toelichting:
-      'Werking buiten de eigen organisatie bepaalt onder meer of publicatie in het Algoritmeregister aan de orde is.',
+      'Werking buiten de eigen organisatie bepaalt onder meer of publicatie in het Algoritmeregister speelt.',
     type: 'multi',
     bepaalt: ['raakt_burgers'],
     opties: [
@@ -306,12 +266,6 @@ export interface ToepassingsscanRun {
 // Derivation: answers → kenmerken
 // ---------------------------------------------------------------------------
 
-/** Whether a question is asked at all, given what we know so far. */
-export function questionApplies(question: ScanQuestion, sofar: Kenmerken): KenmerkValue {
-  if (!question.alleenAls) return true
-  return sofar[question.alleenAls]
-}
-
 /**
  * Derive the dossier's kenmerken from the scan answers plus the beslishulp run.
  *
@@ -323,17 +277,8 @@ export function questionApplies(question: ScanQuestion, sofar: Kenmerken): Kenme
 export function deriveKenmerken(answers: ScanAnswers, beslishulp?: BeslishulpRun | null): Kenmerken {
   const kenmerken = allUnknown()
 
-  // Questions are evaluated in order: `alleenAls` may only depend on a kenmerk
-  // an earlier question has already decided.
   for (const question of SCAN_QUESTIONS) {
-    const gate = questionApplies(question, kenmerken)
-    if (gate === false) {
-      // The gate ruled it out ("geen persoonsgegevens" ⇒ ook geen bijzondere).
-      for (const k of question.bepaalt) kenmerken[k] = false
-      continue
-    }
-    if (gate === 'onbekend') continue
-
+    // Unanswered stays `onbekend`: a question nobody got to is not a "nee".
     const chosen = answers[question.id] ?? []
     if (chosen.length === 0) continue
 
@@ -356,13 +301,6 @@ export function deriveKenmerken(answers: ScanAnswers, beslishulp?: BeslishulpRun
   }
 
   return kenmerken
-}
-
-/** The questions actually put to the user, given the answers so far. Recomputed
- *  after every answer so a gated question appears or disappears immediately. */
-export function visibleQuestions(answers: ScanAnswers): ScanQuestion[] {
-  const kenmerken = deriveKenmerken(answers)
-  return SCAN_QUESTIONS.filter((q) => questionApplies(q, kenmerken) !== false)
 }
 
 /** Kenmerken that hold, for the tag row on the dossier page. Only `true` ones:

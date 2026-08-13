@@ -33,7 +33,7 @@ describe('toepassingsscan components render', () => {
   })
 
   it('tile with a run', async () => {
-    const answers = { pg: ['ja'], bijzonder: ['bsn'], schaal: ['groot'], gedrag: ['geen'] }
+    const answers = { pg: ['ja'], gedrag: ['geen'] }
     const html = await render(ToepassingsscanTile, {
       run: { scanVersion: SCAN_VERSION, answers, kenmerken: deriveKenmerken(answers), completedAt: Date.now() },
       kenmerken: deriveKenmerken(answers),
@@ -66,7 +66,7 @@ describe('NL Design System conformance', () => {
     expect(html).toContain('rvo-button')
   })
 
-  it('asks the first question with RVO fieldset + radio markup', async () => {
+  it('asks the questions with RVO fieldset + radio markup', async () => {
     const html = await render(ToepassingsscanModal)
     expect(html).toContain('rvo-form-fieldset')
     expect(html).toContain('rvo-form-fieldset__legend')

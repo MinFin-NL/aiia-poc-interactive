@@ -13,8 +13,7 @@
           <div>
             <h2 id="scan-title" class="rvo-heading rvo-heading--xl scan__title">Toepassingsscan</h2>
             <p class="rvo-text rvo-text--sm scan__subtitle">
-              Een paar vragen over wat dit project doet en oplevert. Daarmee bepalen we welke
-              formulieren in dit dossier van toepassing zijn — en welke aantoonbaar niet.
+              Wat doet en levert dit project? Daarmee bepalen we welke formulieren hier gelden.
             </p>
           </div>
         </div>
@@ -25,93 +24,87 @@
         </button>
       </header>
 
-      <div class="scan__progress" aria-hidden="true">
-        <div class="scan__progress-bar" :style="{ inlineSize: `${progressPct}%` }" />
-      </div>
-
       <div class="scan__body">
 
-        <!-- ---------------- Question ----------------
-             fieldset/legend for the group semantics and native inputs with the
-             RVO classes, exactly as QuestionItem renders a form question. The
-             legend carries the question, so there is no second heading. -->
-        <fieldset v-if="question" class="rvo-form-fieldset scan__fieldset">
-          <legend class="rvo-form-fieldset__legend scan__legend">
-            <span class="rvo-text rvo-text--sm rvo-text--subtle scan__kicker">
-              Vraag {{ stepIndex + 1 }} van {{ questions.length }}
-            </span>
-            <span class="scan__question">{{ question.vraag }}</span>
-          </legend>
-          <p v-if="question.toelichting" class="rvo-text rvo-text--sm scan__explanation">
-            {{ question.toelichting }}
+        <!-- Six independent questions, so they go on one page: a wizard would
+             add eight screens of chrome around forty words of question. Each is
+             a fieldset/legend with native inputs and the RVO classes, exactly as
+             QuestionItem renders a form question. -->
+        <ol class="scan__questions">
+          <li v-for="question in SCAN_QUESTIONS" :key="question.id">
+            <fieldset class="rvo-form-fieldset scan__fieldset">
+              <legend class="rvo-form-fieldset__legend scan__legend">
+                <span class="scan__question">{{ question.vraag }}</span>
+              </legend>
+              <p v-if="question.toelichting" class="rvo-text rvo-text--sm scan__explanation">
+                {{ question.toelichting }}
+              </p>
+
+              <div v-if="question.type === 'single'" class="rvo-radio-button__group">
+                <label v-for="option in question.opties" :key="option.id" class="rvo-radio-button">
+                  <input
+                    type="radio"
+                    class="utrecht-radio-button utrecht-radio-button--html-input"
+                    :name="question.id"
+                    :value="option.id"
+                    :checked="isChosen(question.id, option.id)"
+                    @change="chooseSingle(question.id, option.id)"
+                  />
+                  <span class="rvo-radio-button__label">
+                    {{ option.label }}
+                    <span v-if="option.hint" class="rvo-text rvo-text--sm rvo-text--subtle scan__hint">
+                      {{ option.hint }}
+                    </span>
+                  </span>
+                </label>
+              </div>
+
+              <div v-else class="rvo-checkbox__group">
+                <label v-for="option in question.opties" :key="option.id" class="rvo-checkbox">
+                  <input
+                    type="checkbox"
+                    class="rvo-checkbox__input"
+                    :name="question.id"
+                    :value="option.id"
+                    :checked="isChosen(question.id, option.id)"
+                    @change="toggleMulti(question.id, option.id)"
+                  />
+                  <span class="rvo-checkbox__label">
+                    {{ option.label }}
+                    <span v-if="option.hint" class="rvo-text rvo-text--sm rvo-text--subtle scan__hint">
+                      {{ option.hint }}
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+          </li>
+        </ol>
+
+        <!-- The consequence list, live: answering a question moves a form in it
+             immediately, which is the whole argument for asking. -->
+        <section class="scan__result" aria-labelledby="scan-result-title">
+          <h3 id="scan-result-title" class="rvo-heading rvo-heading--md scan__result-title">
+            Wat dit betekent voor de formulieren
+          </h3>
+
+          <!-- The list updates on every answer. Announcing all ten rows each
+               time would drown a screenreader, so the live region carries the
+               tally and the list itself stays quiet. -->
+          <p class="invulhulp-visually-hidden" role="status">{{ tally }}</p>
+
+          <p v-if="consequences.length === 0" class="rvo-text rvo-text--sm rvo-text--subtle">
+            Beantwoord de vragen hierboven — hier verschijnt meteen per formulier of het geldt.
           </p>
-
-          <div v-if="question.type === 'single'" class="rvo-radio-button__group">
-            <label v-for="option in question.opties" :key="option.id" class="rvo-radio-button">
-              <input
-                type="radio"
-                class="utrecht-radio-button utrecht-radio-button--html-input"
-                :name="question.id"
-                :value="option.id"
-                :checked="isChosen(option.id)"
-                @change="chooseSingle(option.id)"
-              />
-              <span class="rvo-radio-button__label">
-                {{ option.label }}
-                <span v-if="option.hint" class="rvo-text rvo-text--sm rvo-text--subtle scan__hint">
-                  {{ option.hint }}
-                </span>
+          <ul v-else class="rvo-item-list scan__consequences">
+            <li v-for="row in consequences" :key="row.id" class="rvo-item-list__item scan__consequence">
+              <span class="scan__consequence-title">{{ row.title }}</span>
+              <span class="rvo-tag rvo-tag--pill" :class="tagModifier(row.status)">
+                {{ applicabilityLabel(row.status) }}
               </span>
-            </label>
-          </div>
-
-          <div v-else class="rvo-checkbox__group">
-            <label v-for="option in question.opties" :key="option.id" class="rvo-checkbox">
-              <input
-                type="checkbox"
-                class="rvo-checkbox__input"
-                :name="question.id"
-                :value="option.id"
-                :checked="isChosen(option.id)"
-                @change="toggleMulti(option.id)"
-              />
-              <span class="rvo-checkbox__label">
-                {{ option.label }}
-                <span v-if="option.hint" class="rvo-text rvo-text--sm rvo-text--subtle scan__hint">
-                  {{ option.hint }}
-                </span>
-              </span>
-            </label>
-          </div>
-
-          <p v-if="question.type === 'multi' && multiEmpty" class="rvo-text rvo-text--sm rvo-text--subtle scan__note">
-            Niets aangekruist? Dan slaan we deze vraag over en blijft het kenmerk onbekend —
-            de betrokken formulieren blijven dan als "mogelijk relevant" staan.
-          </p>
-        </fieldset>
-
-        <!-- ---------------- Summary ---------------- -->
-        <template v-else>
-          <p class="rvo-text rvo-text--sm rvo-text--subtle scan__kicker">Uitkomst</p>
-          <h3 class="rvo-heading rvo-heading--lg scan__heading">Dit weten we nu over dit dossier</h3>
-
-          <section>
-            <h4 class="rvo-heading rvo-heading--md scan__section-title">Kenmerken</h4>
-            <ul v-if="tags.length > 0" class="scan__tags">
-              <li v-for="k in tags" :key="k">
-                <span class="rvo-tag rvo-tag--pill">
-                  {{ KENMERK_LABEL[k] }}<template v-if="KENMERK_SOURCE[k] === 'beslishulp'"> · uit de beslishulp</template>
-                </span>
-              </li>
-            </ul>
-            <p v-else class="rvo-text rvo-text--sm rvo-text--subtle">
-              Geen van de kenmerken is vastgesteld.
-            </p>
-            <p v-if="unknowns.length > 0" class="rvo-text rvo-text--sm rvo-text--subtle scan__note">
-              Nog onbekend: {{ unknowns.map((k) => KENMERK_LABEL[k]).join(', ') }}.
-              Formulieren die daarvan afhangen blijven als "mogelijk relevant" staan.
-            </p>
-          </section>
+              <span class="rvo-text rvo-text--sm rvo-text--subtle scan__consequence-reason">{{ row.reason }}</span>
+            </li>
+          </ul>
 
           <div
             v-if="!hasBeslishulp && kenmerken.algoritme_of_ai !== false"
@@ -121,80 +114,38 @@
                  in a row, so a bare <strong> would sit beside the text. -->
             <div class="rvo-alert__container">
               <div>
-                Er is sprake van (mogelijk) een algoritme. Of de AI-verordening geldt, bepaalt de
-                <strong>Beslishulp AI-verordening</strong> — die staat op de dossierpagina bij de EU AI Act-kaart.
+                Of de AI-verordening geldt, bepaalt de <strong>Beslishulp AI-verordening</strong> —
+                op de dossierpagina bij de EU AI Act-kaart.
               </div>
             </div>
           </div>
 
-          <section>
-            <h4 class="rvo-heading rvo-heading--md scan__section-title">Wat dit betekent voor de formulieren</h4>
-            <ul v-if="consequences.length > 0" class="rvo-item-list scan__consequences">
-              <li v-for="row in consequences" :key="row.id" class="rvo-item-list__item scan__consequence">
-                <span class="scan__consequence-title">{{ row.title }}</span>
-                <span class="rvo-tag rvo-tag--pill" :class="tagModifier(row.status)">
-                  {{ applicabilityLabel(row.status) }}
-                </span>
-                <span class="rvo-text rvo-text--sm rvo-text--subtle scan__consequence-reason">{{ row.reason }}</span>
-              </li>
-            </ul>
-            <p v-else class="rvo-text rvo-text--sm rvo-text--subtle">
-              Geen enkel formulier is op grond van deze antwoorden uitgesloten of aangemerkt.
-            </p>
-          </section>
-
-          <div class="rvo-alert rvo-alert--warning rvo-alert--padding-md scan__alert" role="note">
-            <div class="rvo-alert__container">
-              Dit is geen juridisch oordeel. Op basis van je antwoorden lijken bovenstaande onderdelen
-              wel of niet van toepassing — leg een "niet van toepassing" altijd voor aan de FG,
-              privacy officer of CISO en noteer de motivatie in het betreffende formulier.
-            </div>
-          </div>
-
-          <p v-if="savedNotice" class="rvo-text rvo-text--bold scan__saved" role="status">{{ savedNotice }}</p>
-        </template>
+          <p class="rvo-text rvo-text--sm rvo-text--subtle scan__note">
+            Advies, geen juridisch oordeel: leg een "niet van toepassing" voor aan de FG, privacy
+            officer of CISO.
+          </p>
+        </section>
       </div>
 
       <footer class="scan__footer">
         <div class="rvo-action-group scan__footer-actions">
           <button
-            v-if="stepIndex > 0"
-            type="button"
-            class="rvo-button rvo-button--tertiary rvo-button--size-sm"
-            @click="back"
-          >
-            ← Vorige
-          </button>
-          <button
-            v-if="question"
             type="button"
             class="rvo-button rvo-button--primary rvo-button--size-sm"
-            @click="next"
+            :disabled="!store.canEdit"
+            @click="save"
           >
-            {{ stepIndex === questions.length - 1 ? 'Naar de uitkomst →' : 'Volgende →' }}
+            Opslaan in dossier
           </button>
-          <template v-else>
-            <button
-              type="button"
-              class="rvo-button rvo-button--primary rvo-button--size-sm"
-              :disabled="!store.canEdit"
-              @click="save"
-            >
-              {{ savedNotice ? 'Opgeslagen' : 'Opslaan in dossier' }}
-            </button>
-            <button
-              type="button"
-              class="rvo-button rvo-button--tertiary rvo-button--size-sm"
-              @click="restart"
-            >
-              Opnieuw beginnen
-            </button>
-          </template>
+          <button
+            type="button"
+            class="rvo-button rvo-button--tertiary rvo-button--size-sm"
+            @click="restart"
+          >
+            Opnieuw beginnen
+          </button>
         </div>
-        <p class="rvo-text rvo-text--sm rvo-text--subtle scan__credit">
-          De scan adviseert, jij beslist. Reeds ingevulde antwoorden gaan nooit verloren wanneer
-          een formulier n.v.t. wordt.
-        </p>
+        <p v-if="savedNotice" class="rvo-text rvo-text--sm scan__saved" role="status">{{ savedNotice }}</p>
       </footer>
     </div>
   </dialog>
@@ -206,15 +157,11 @@ import { loadAvailableForms, type FormIndexEntry } from '../services/formLoader'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { useAuthStore } from '../stores/authStore'
 import {
-  KENMERK_LABEL,
-  KENMERK_SOURCE,
+  SCAN_QUESTIONS,
   SCAN_VERSION,
-  activeKenmerken,
   applicabilityLabel,
   deriveKenmerken,
   evaluateApplicability,
-  unknownKenmerken,
-  visibleQuestions,
   type ApplicabilityStatus,
   type ScanAnswers,
 } from '../utils/toepassingsscan'
@@ -227,28 +174,14 @@ const auth = useAuthStore()
 const dialogEl = ref<HTMLDialogElement | null>(null)
 const forms = ref<FormIndexEntry[]>([])
 const answers = ref<ScanAnswers>({})
-const stepIndex = ref(0)
 const savedNotice = ref('')
 
 onMounted(async () => {
   forms.value = await loadAvailableForms()
 })
 
-// The question list is recomputed from the answers, so a gated question
-// (bijzondere pg) appears or disappears the moment its gate is answered.
-const questions = computed(() => visibleQuestions(answers.value))
-const question = computed(() => questions.value[stepIndex.value] ?? null)
-
-const progressPct = computed(() =>
-  Math.round((Math.min(stepIndex.value, questions.value.length) / questions.value.length) * 100),
-)
-
 const kenmerken = computed(() => deriveKenmerken(answers.value, store.beslishulpRun))
-const tags = computed(() => activeKenmerken(kenmerken.value))
-const unknowns = computed(() => unknownKenmerken(kenmerken.value))
 const hasBeslishulp = computed(() => store.beslishulpRun !== null)
-
-const multiEmpty = computed(() => (answers.value[question.value?.id ?? '']?.length ?? 0) === 0)
 
 const ORDER: Record<ApplicabilityStatus, number> = {
   verplicht: 0, mogelijk: 1, nvt: 2, altijd: 3, onbepaald: 4,
@@ -262,6 +195,14 @@ const consequences = computed(() =>
     .sort((a, b) => ORDER[a.status] - ORDER[b.status]),
 )
 
+/** What the live region says: the tally, not the ten rows behind it. */
+const tally = computed(() => {
+  if (consequences.value.length === 0) return ''
+  const count = (status: ApplicabilityStatus) =>
+    consequences.value.filter((row) => row.status === status).length
+  return `${count('verplicht')} van toepassing, ${count('mogelijk')} mogelijk relevant, ${count('nvt')} niet van toepassing.`
+})
+
 /** Stock rvo-tag modifiers, so the scan introduces no colours of its own.
  *  "Van toepassing" stays the neutral default — it is the ordinary case; the
  *  two states worth noticing get the warning and subtle treatments. */
@@ -272,20 +213,17 @@ function tagModifier(status: ApplicabilityStatus): string {
 }
 
 // ---- Answering ------------------------------------------------------------
-function isChosen(optionId: string): boolean {
-  return (answers.value[question.value?.id ?? ''] ?? []).includes(optionId)
+function isChosen(questionId: string, optionId: string): boolean {
+  return (answers.value[questionId] ?? []).includes(optionId)
 }
 
-/** Radios do not advance by themselves: with a keyboard, arrow keys move the
- *  selection, and auto-advancing on that makes the last option unreachable. */
-function chooseSingle(optionId: string) {
-  if (!question.value) return
-  answers.value = { ...answers.value, [question.value.id]: [optionId] }
+function chooseSingle(questionId: string, optionId: string) {
+  answers.value = { ...answers.value, [questionId]: [optionId] }
   savedNotice.value = ''
 }
 
-function toggleMulti(optionId: string) {
-  const q = question.value
+function toggleMulti(questionId: string, optionId: string) {
+  const q = SCAN_QUESTIONS.find((question) => question.id === questionId)
   if (!q) return
   const current = answers.value[q.id] ?? []
   const isExclusive = (id: string) => q.opties.find((o) => o.id === id)?.exclusief === true
@@ -300,24 +238,13 @@ function toggleMulti(optionId: string) {
   savedNotice.value = ''
 }
 
-function next() {
-  // Clamp to one past the last question: that slot is the summary.
-  stepIndex.value = Math.min(stepIndex.value + 1, questions.value.length)
-}
-
-function back() {
-  stepIndex.value = Math.max(stepIndex.value - 1, 0)
-  savedNotice.value = ''
-}
-
 function restart() {
   answers.value = {}
-  stepIndex.value = 0
   savedNotice.value = ''
 }
 
-/** Saved only on request: unlike the beslishulp, answering the last question is
- *  not itself a conclusion — the summary is where the user reviews it. */
+/** Saved only on request: unlike the beslishulp, a filled-in question is not
+ *  itself a conclusion — the consequence list is what the user reviews. */
 function save() {
   if (!store.canEdit) {
     savedNotice.value = 'Niet opgeslagen — u heeft leesrechten op dit dossier.'
@@ -442,18 +369,6 @@ defineExpose({ open })
   border: 0;
 }
 
-/* --- Progress --- */
-.scan__progress {
-  block-size: var(--rvo-space-3xs);
-  background: var(--rvo-color-grijs-200);
-}
-
-.scan__progress-bar {
-  block-size: 100%;
-  background: var(--rvo-color-hemelblauw);
-  transition: inline-size var(--invulhulp-duration-normal) var(--invulhulp-ease-out);
-}
-
 /* --- Body --- */
 .scan__body {
   padding: var(--rvo-space-xl);
@@ -473,17 +388,20 @@ defineExpose({ open })
   min-inline-size: 0;
 }
 
-.scan__legend {
+/* One question after another, so the separation has to come from spacing
+   rather than from a screen change. */
+.scan__questions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--rvo-space-3xs);
-  padding: 0;
-  margin: 0 0 var(--rvo-space-sm);
+  gap: var(--rvo-space-xl);
 }
 
-.scan__kicker {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.scan__legend {
+  padding: 0;
+  margin: 0 0 var(--rvo-space-2xs);
 }
 
 .scan__question {
@@ -492,13 +410,20 @@ defineExpose({ open })
   line-height: var(--rvo-line-height-sm);
 }
 
-.scan__heading {
-  margin: 0 0 var(--rvo-space-md);
+.scan__explanation {
+  margin: 0 0 var(--rvo-space-sm);
+  max-inline-size: 68ch;
 }
 
-.scan__explanation {
-  margin: var(--rvo-space-sm) 0 var(--rvo-space-md);
-  max-inline-size: 68ch;
+/* --- Result --- */
+.scan__result {
+  margin-block-start: var(--rvo-space-xl);
+  padding-block-start: var(--rvo-space-lg);
+  border-block-start: 1px solid var(--rvo-color-grijs-300);
+}
+
+.scan__result-title {
+  margin: 0 0 var(--rvo-space-sm);
 }
 
 /* The hint under an option label: a block inside the RVO label span, so the
@@ -508,21 +433,8 @@ defineExpose({ open })
 }
 
 .scan__note {
-  margin: var(--rvo-space-sm) 0 0;
+  margin: var(--rvo-space-md) 0 0;
   max-inline-size: 68ch;
-}
-
-.scan__section-title {
-  margin: var(--rvo-space-lg) 0 var(--rvo-space-2xs);
-}
-
-.scan__tags {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--rvo-space-2xs);
-  margin: 0;
-  padding: 0;
 }
 
 .scan__consequences {
@@ -550,7 +462,7 @@ defineExpose({ open })
 }
 
 .scan__alert {
-  margin-block-start: var(--rvo-space-lg);
+  margin-block-start: var(--rvo-space-md);
 }
 
 /* Lopende tekst in een gekleurd vlak heeft lucht nodig: padding-md in plaats
@@ -561,7 +473,7 @@ defineExpose({ open })
 }
 
 .scan__saved {
-  margin: var(--rvo-space-md) 0 0;
+  margin: 0;
   color: var(--rvo-color-groen);
 }
 
@@ -581,10 +493,5 @@ defineExpose({ open })
   display: flex;
   gap: var(--rvo-space-2xs);
   flex-wrap: wrap;
-}
-
-.scan__credit {
-  margin: 0;
-  max-inline-size: 44ch;
 }
 </style>

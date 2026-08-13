@@ -150,7 +150,7 @@ De beslishulp doet nu al precies dit soort werk op dossierniveau en levert het b
 | Beslishulp vandaag | Toepassingsscan |
 |---|---|
 | `BeslishulpTile.vue` op de dossierpagina, gefuseerd met de EU AI Act-kaart | eigen tegel bovenaan de dossierpagina, boven de spoorgroepen |
-| `BeslishulpModal.vue` als wizard | zelfde wizard-patroon, ~8–12 vragen |
+| `BeslishulpModal.vue` als wizard | zelfde modal, maar één pagina — zie §7.2 |
 | Uitkomst één keer per dossier opgeslagen, gelezen via een store-getter | idem |
 | `labels` + `conclusionId` → `verdictSummary()` → badge met kleur | afgeleide **kenmerken** → zichtbare tags op de dossierpagina |
 
@@ -312,7 +312,7 @@ waar het antwoord niets aanstuurt.
 |---|---|
 | Kenmerken, scanvragen, afleiding, drie-waardige toepasselijkheidsregels | `src/utils/toepassingsscan.ts` |
 | Regels per formulier (data) | `applicability` in `public/forms/index.json` |
-| Wizard | `src/components/ToepassingsscanModal.vue` |
+| Vragenformulier (één pagina) | `src/components/ToepassingsscanModal.vue` |
 | Dossiertegel met kenmerktags | `src/components/ToepassingsscanTile.vue` |
 | Kaarttoestanden + ingeklapte n.v.t.-groep per fase | `src/components/DossierDetail.vue` |
 | Opslag + sync | `FormState.toepassingsscan`, `assessmentStore.setToepassingsscanRun`, `DossierDoc.setToepassingsscan`, codec |
@@ -336,7 +336,33 @@ waar het antwoord niets aanstuurt.
   relevant" op ook als de conditie klopt. Dat is precies het DPIA-geval uit §5.3: alleen de
   prescan maakt een DPIA verplicht, persoonsgegevens op zichzelf niet.
 
-### 7.2 Wat nog niet is gebouwd
+### 7.2 Vereenvoudiging (SCAN_VERSION 2)
+
+De eerste versie stelde acht vragen in een wizard van negen schermen. Bij review bleek de
+helft van dat gewicht niets te sturen:
+
+- **Twee kenmerken zonder afnemer.** Geen enkele regel in `index.json` testte
+  `bijzondere_persoonsgegevens` of `grootschalig` — ze leverden alleen een tag op. De twee
+  vragen die ze bepaalden (`bijzonder`, 9 opties; `schaal`, 5 opties) zijn vervallen. De
+  prescan en de DPIA vragen die details wél op de plek waar ze werk doen. Een test bewaakt
+  nu de omgekeerde richting: elk kenmerk in `KENMERK_IDS` moet door minstens één regel in
+  `index.json` gelezen worden.
+- **De gate-machinerie is daarmee weg** (`alleenAls`, `questionApplies`, `visibleQuestions`).
+  Dat ruimde ook een inconsistentie op: `visibleQuestions` toonde een gated vraag zolang de
+  gate `onbekend` was, terwijl `deriveKenmerken` de antwoorden dan juist weggooide — wie
+  "Weet ik niet" antwoordde op persoonsgegevens kreeg twee schermen te zien die niets deden.
+  En de voortgangsteller sprong ("vraag 2 van 6" werd "vraag 2 van 8" zodra de gate opende).
+- **Zes onafhankelijke vragen passen op één pagina.** Geen stappen, geen voortgangsbalk, geen
+  Vorige/Volgende. De gevolgenlijst staat eronder en werkt live mee: een antwoord verplaatst
+  meteen een formulier in die lijst, wat het hele argument is om de vraag te stellen.
+- **De disclaimer stond er drie keer** (samenvatting, n.v.t.-groep in `DossierDetail`, footer),
+  in drie formuleringen. Nu één zin op elk van de twee plekken waar iemand hem nodig heeft.
+
+Oude runs blijven geldig: `answers` is een blob, `deriveKenmerken` negeert antwoorden op
+vragen die niet meer bestaan, en de kenmerken worden live herleid — niet uit de opgeslagen
+snapshot.
+
+### 7.3 Wat nog niet is gebouwd
 
 - **Stap 4:** overrides in beide richtingen, driftdetectie ("scope gewijzigd: IAMA is nu van
   toepassing") en de n.v.t.-bijlage in de dossier-PDF (§5.7).

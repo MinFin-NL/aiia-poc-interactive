@@ -488,9 +488,8 @@
                 </li>
               </ul>
               <p class="rvo-text rvo-text--sm rvo-text--subtle nvt-note">
-                Op basis van de toepassingsscan lijken deze onderdelen niet te gelden. Dat is geen
-                juridisch oordeel: leg het voor aan de FG, privacy officer of CISO. Al ingevulde
-                antwoorden blijven bewaard.
+                Advies van de toepassingsscan, geen juridisch oordeel. Al ingevulde antwoorden
+                blijven bewaard.
               </p>
             </div>
           </details>
