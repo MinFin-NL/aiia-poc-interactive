@@ -1,6 +1,7 @@
 {
   "id": "algoritmeregister",
   "version": "1.0",
+  "urn": "urn:nl:minfin:tr:algoritmeregister:1.0",
   "title": "Algoritmeregister-publicatie",
   "aiContext": "Dit is de voorbereiding van een publicatie in het Algoritmeregister van de Nederlandse overheid voor het Ministerie van Financiën. Het legt per algoritme of AI-systeem de publicatiegegevens vast: algemene informatie en doel, juridische grondslag en uitgevoerde toetsen, werking en gebruikte data, menselijke tussenkomst en toezicht, en de publicatiestatus. De tekst is bestemd voor een openbaar register en wordt gelezen door burgers, journalisten en volksvertegenwoordigers. Schrijf daarom in begrijpelijk Nederlands op B1-niveau: korte zinnen, geen jargon, geen afkortingen zonder uitleg, en beschrijf wat het algoritme voor mensen betekent in plaats van hoe het technisch werkt.",
   "source": {

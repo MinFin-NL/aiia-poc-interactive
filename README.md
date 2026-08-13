@@ -8,7 +8,7 @@ A web application that helps Dutch government employees fill in AI-related compl
 
 ## Features
 
-- **18 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quick scan BIO, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier, Restrisico-acceptatie) → *Ontwerpen* (PPM Projectplan, PSA, Datakwaliteit-assessment, Dataset-registratie) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist, Data-ethiektoets) → *In gebruik nemen* (AI-systeemregistratie/Model Card, Algoritmeregister-publicatie, Verwerkingsregister, Toegankelijkheidsverklaring) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Every form records where it comes from and how faithfully — see [Form lineage](#form-lineage).
+- **18 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quick scan BIO, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier, Restrisico-acceptatie) → *Ontwerpen* (PPM Projectplan, PSA, Datakwaliteit-assessment, Dataset-registratie) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist, Data-ethiektoets) → *In gebruik nemen* (AI-systeemregistratie/Model Card, Algoritmeregister-publicatie, Verwerkingsregister, Toegankelijkheidsverklaring) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Every form records where it comes from and how faithfully — see [Form lineage](#form-lineage) — and carries a stable identifier in the shape the MinBZK task-registry uses for its instruments (`urn:nl:minfin:tr:dpia:3.0`), see [Form URNs](#form-urns).
 - **Beslishulp AI-verordening (MinBZK)** — The official [ai-verordening-beslishulp](https://github.com/MinBZK/ai-verordening-beslishulp) decision tree runs inside the app as a modal, launched from a tile fused to the EU AI Act card on the dossier page. It determines whether the AI-verordening applies, which role you hold (aanbieder, gebruiksverantwoordelijke, importeur, distributeur) and which risk group the system falls in, with the upstream explanations, sources and obligations intact. The outcome is stored on the dossier and supplies the risk classification (Bijlage 1) of the AI Impact Assessment. The decision tree is vendored (`vendor/ai-verordening-beslishulp/`, EUPL-1.2) and built into a runtime asset with `npm run beslishulp:build`.
 - **Login via Keycloak (SSO)** — The backend acts as an OpenID Connect backend-for-frontend: users log in through Keycloak, and a signed session cookie gates every API call. A `--dev` flag (backend) and `VITE_AUTH_BYPASS` (frontend) bypass the login for local development.
 - **User management** — Beheerders (admins) can create, edit, reset passwords for, and delete users straight from the app via the Keycloak Admin API.
@@ -29,7 +29,7 @@ A web application that helps Dutch government employees fill in AI-related compl
 - **Decision gates** — Certain forms (e.g. Prescan DPIA) route users to the full DPIA only when the screening outcome requires it.
 - **Section navigation & progress tracking** — A persistent sidebar shows the full form structure, a progress indicator, and lets you jump to any section; per-form completion percentage is shown in the header and sidebar.
 - **Required vs. supplementary fields** — Questions are colour-coded: blue = required, green = supplementary.
-- **Word and JSON export** — Download a completed form as a styled Word report (with a legacy "original template" export for the Intakeformulier), or import a previously saved JSON file to continue where you left off.
+- **Word and JSON export** — Download a completed form as a styled Word report (with a legacy "original template" export for the Intakeformulier), or import a previously saved JSON file to continue where you left off. Every export names the form definition it came from by URN, so a printed report stays traceable to the exact instrument and version.
 - **Streaming LLM inference** — AI features stream their output over Server-Sent Events for immediate feedback.
 - **Pluggable LLM backend** — Runs against a locally hosted Ollama instance by default (no data leaves the machine); automatically switches to Azure OpenAI when `AZURE_OPENAI_ENDPOINT` is configured.
 
@@ -90,6 +90,61 @@ Twee relevante voorbeelden:
 Een typische workflow zou zijn: gebruik eerst een **beslishulp** om vast te stellen welke assessments verplicht zijn, en gebruik daarna **findocs** (of par-dpia-form) om die assessments in te vullen.
 
 Die eerste stap zit inmiddels in findocs zelf: de **AI-Verordening Beslishulp** van MinBZK is geïntegreerd als modal (zie [Features](#features)). De beslisboom wordt als gepinde kopie meegeleverd onder `vendor/ai-verordening-beslishulp/` en blijft daarmee herleidbaar tot de upstream bron; inhoudelijke vragen over de beslisboom horen bij MinBZK (ai-verordening@minbzk.nl), niet bij findocs.
+
+## Form URNs
+
+Every form carries a stable identifier in the shape the [MinBZK task-registry](https://github.com/MinBZK/task-registry) uses for its instruments:
+
+```
+urn:nl:<authority>:<registry>:<instrument>:<major>.<minor>
+```
+
+Upstream, `schemas/schema_instruments.json` pins instrument URNs to `^urn:nl:aivt:tr:[a-z]+:[0-9]+\.[0-9]+` — authority `aivt`, registry `tr` (e.g. `urn:nl:aivt:tr:iama:1.0`). This tool mints in the authority of the issuing organisation, `minfin`, keeping the registry segment `tr`, so the identifiers have the same shape and can sit side by side without writing into someone else's namespace:
+
+```
+urn:nl:minfin:tr:dpia:3.0
+```
+
+The instrument segment is the form id, the version segment the form's `version`. Announced forms that have no JSON yet (the placeholders in `index.json`) are pinned at `0.1`.
+
+Two fields, deliberately distinct:
+
+| Field | Names | Present on |
+|---|---|---|
+| `urn` | *our* form definition | every form, incl. placeholders |
+| `registryUrn` | the upstream task-registry instrument the form implements | only forms with a real counterpart there |
+
+The URN lives in both `public/forms/index.json` and the form JSON itself; `src/utils/formUrn.ts` owns the convention (`buildFormUrn`, `parseFormUrn`, `FORM_URN_PATTERN`) and `src/utils/formUrn.test.ts` fails the build if the two drift apart, a URN is missing, or a version segment no longer matches the form's `version`. It shows up on the form card and the form intro page, and travels along in the Word cover metadata, the Markdown header and the JSON export (`formUrn` / `formRegistryUrn`).
+
+For the three **generated** forms (DPIA, Prescan DPIA, IAMA) the URN lives in `scripts/form-overlays/<name>.overlay.json` under `form`, so `npm run forms:build` keeps emitting it.
+
+| Form | URN | Task-registry instrument |
+|---|---|---|
+| Intakeformulier | `urn:nl:minfin:tr:intake:2.0` | — |
+| Projectaanbiedingsformulier | `urn:nl:minfin:tr:aanbiedingsformulier:2.0` | — |
+| PPM Projectplan | `urn:nl:minfin:tr:ppm:1.0` | — |
+| PSA | `urn:nl:minfin:tr:psa:1.0` | — |
+| Quick scan BIO | `urn:nl:minfin:tr:quickscan:1.0` | — |
+| Prescan DPIA | `urn:nl:minfin:tr:prescandpia:2.0` | — |
+| DPIA | `urn:nl:minfin:tr:dpia:3.0` | — |
+| AI Impact Assessment | `urn:nl:minfin:tr:aiia:2.0` | `urn:nl:aivt:tr:aiia:1.0` |
+| IAMA | `urn:nl:minfin:tr:iama:2.0` | `urn:nl:aivt:tr:iama:1.0` |
+| EU AI Act Compliance Checklist | `urn:nl:minfin:tr:euaiact:0.1` | `urn:nl:aivt:tr:ca:1.0` |
+| Data-ethiektoets | `urn:nl:minfin:tr:dataethiek:1.0` | — |
+| IHH-toets *(placeholder)* | `urn:nl:minfin:tr:ihhtoets:0.1` | — |
+| Cloudtoets *(placeholder)* | `urn:nl:minfin:tr:cloudtoets:0.1` | — |
+| BIA *(placeholder)* | `urn:nl:minfin:tr:bia:0.1` | — |
+| Datakwaliteit-assessment | `urn:nl:minfin:tr:datakwaliteit:1.0` | — |
+| Dataset-registratie (datasheet) | `urn:nl:minfin:tr:datasetregistratie:1.0` | — |
+| AI-systeemregistratie (Model Card) | `urn:nl:minfin:tr:modelcard:0.1` | — |
+| Algoritmeregister-publicatie | `urn:nl:minfin:tr:algoritmeregister:1.0` | — |
+| Verwerkingsregister (AVG art. 30) | `urn:nl:minfin:tr:verwerkingsregister:1.0` | — |
+| Toegankelijkheidsverklaring | `urn:nl:minfin:tr:toegankelijkheid:1.0` | — |
+| Restrisico-acceptatie | `urn:nl:minfin:tr:restrisico:1.0` | — |
+| Projectvoortgangsrapportage *(placeholder)* | `urn:nl:minfin:tr:voortgangsrapportage:0.1` | — |
+| Projectafwijkingsformulier *(placeholder)* | `urn:nl:minfin:tr:afwijkingsformulier:0.1` | — |
+| Evaluatieformulier *(placeholder)* | `urn:nl:minfin:tr:evaluatie:0.1` | — |
+| Risico-impactformulier *(placeholder)* | `urn:nl:minfin:tr:risicoimpact:0.1` | — |
 
 ## Form lineage
 

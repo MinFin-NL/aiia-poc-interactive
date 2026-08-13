@@ -414,6 +414,26 @@ export async function exportToWord(
       ],
     }),
   )
+  // The URN of the form definition this document was produced from, so a
+  // printed report stays traceable to the exact instrument and version.
+  if (formConfig.urn) {
+    children.push(
+      new Paragraph({
+        spacing: { after: 40 },
+        children: [
+          new TextRun({ text: 'Formulier: ', size: SIZE.meta, color: RVO.grijs500 }),
+          new TextRun({ text: formConfig.urn, size: SIZE.meta, color: RVO.grijs700 }),
+          ...(formConfig.registryUrn
+            ? [
+                new TextRun({ text: '      ·      ', size: SIZE.meta, color: RVO.grijs200 }),
+                new TextRun({ text: 'Instrument: ', size: SIZE.meta, color: RVO.grijs500 }),
+                new TextRun({ text: formConfig.registryUrn, size: SIZE.meta, color: RVO.grijs700 }),
+              ]
+            : []),
+        ],
+      }),
+    )
+  }
   if (systemName) {
     children.push(
       new Paragraph({

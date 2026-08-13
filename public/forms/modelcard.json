@@ -1,6 +1,7 @@
 {
   "id": "modelcard",
   "version": "0.1",
+  "urn": "urn:nl:minfin:tr:modelcard:0.1",
   "title": "AI-systeemregistratie (Model Card)",
   "source": {
     "instrument": "AI Body of Knowledge (AI-BOK) — Template 2: AI System Registration / Model Card",

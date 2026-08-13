@@ -1,6 +1,7 @@
 {
   "id": "prescandpia",
   "version": "2.0",
+  "urn": "urn:nl:minfin:tr:prescandpia:2.0",
   "title": "Pre-scan DPIA",
   "source": {
     "instrument": "Pre-scan DPIA (urn:nl:prescan)",

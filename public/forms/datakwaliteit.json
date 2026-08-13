@@ -1,6 +1,7 @@
 {
   "id": "datakwaliteit",
   "version": "1.0",
+  "urn": "urn:nl:minfin:tr:datakwaliteit:1.0",
   "title": "Datakwaliteit-assessment",
   "aiContext": "Dit is een datakwaliteit-assessment (DQA) voor het Ministerie van Financiën, afgeleid van DAMA-DMBOK2 hoofdstuk 13 (Data Quality) en uitgelijnd met ISO/IEC 25012 en de DAMA-NL DDQ-dimensies. Het beoordeelt per dataset of gegevensverwerking de kwaliteit langs de kerndimensies volledigheid, uniciteit, tijdigheid, validiteit, juistheid en consistentie, en legt datakwaliteitsregels, meetmethoden, bevindingen en verbeterafspraken vast. Schrijf in feitelijke, meetbare data-managementtermen: noem waar mogelijk aantallen, percentages, meetfrequenties en normen in plaats van kwalitatieve uitspraken.",
   "source": {

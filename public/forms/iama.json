@@ -1,6 +1,8 @@
 {
   "id": "iama",
   "version": "2.0",
+  "urn": "urn:nl:minfin:tr:iama:2.0",
+  "registryUrn": "urn:nl:aivt:tr:iama:1.0",
   "title": "Impact Assessment Mensenrechten en Algoritmes (IAMA)",
   "source": {
     "instrument": "Impact Assessment Mensenrechten en Algoritmes (IAMA, urn:nl:iama)",

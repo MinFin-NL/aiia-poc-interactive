@@ -1,6 +1,7 @@
 {
   "id": "datasetregistratie",
   "version": "1.0",
+  "urn": "urn:nl:minfin:tr:datasetregistratie:1.0",
   "title": "Dataset-registratie (datasheet)",
   "aiContext": "Dit is een dataset-registratie ofwel datasheet voor het Ministerie van Financiën, afgeleid van DAMA-DMBOK2 hoofdstuk 12 (Metadata Management) en het patroon 'Datasheets for Datasets' (Gebru et al.), uitgelijnd met DCAT-AP-NL en MIM 1.2. Het legt per dataset de identificatie, herkomst, inhoud, juridische grondslag, kwaliteit en gebruiksvoorwaarden vast. Dit is de datakant van de AI Model Card. Schrijf feitelijk en beschrijvend in metadata-termen; vermijd waardeoordelen en houd velden kort en eenduidig zodat ze als metadata herbruikbaar zijn.",
   "source": {

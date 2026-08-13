@@ -1,6 +1,8 @@
 {
   "id": "aiia",
   "version": "2.0",
+  "urn": "urn:nl:minfin:tr:aiia:2.0",
+  "registryUrn": "urn:nl:aivt:tr:aiia:1.0",
   "title": "AI Impact Assessment",
   "source": {
     "instrument": "AI Impact Assessment (AIIA)",

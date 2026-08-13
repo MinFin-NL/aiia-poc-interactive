@@ -1,6 +1,7 @@
 {
   "id": "ppm",
   "version": "1.0",
+  "urn": "urn:nl:minfin:tr:ppm:1.0",
   "title": "PPM Projectplan",
   "source": {
     "instrument": "PPM-projectplan",

@@ -1,6 +1,8 @@
 {
   "id": "euaiact",
   "version": "0.1",
+  "urn": "urn:nl:minfin:tr:euaiact:0.1",
+  "registryUrn": "urn:nl:aivt:tr:ca:1.0",
   "title": "EU AI Act Compliance Checklist",
   "source": {
     "instrument": "AI Body of Knowledge (AI-BOK) — Template 3: EU AI Act Compliance Checklist",

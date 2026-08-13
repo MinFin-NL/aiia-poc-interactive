@@ -35,6 +35,13 @@ export type FormPlaceholder = 'gepland' | 'onzeker'
 
 export interface FormIndexEntry {
   id: string
+  // Stable identifier of the form, in task-registry shape — see
+  // src/utils/formUrn.ts. Placeholders carry one too (version 0.1) so an
+  // announced instrument already has a name to refer to.
+  urn?: string
+  // The official MinBZK task-registry URN of the instrument this form
+  // implements, when it exists there.
+  registryUrn?: string
   title: string
   track?: string
   order?: number
@@ -54,7 +61,7 @@ export async function loadFormRegistry(): Promise<FormIndexEntry[]> {
   const res = await fetch('/forms/index.json', REVALIDATE)
   if (!res.ok) throw new Error('Could not load form index')
   const raw = await res.json() as { forms: FormIndexEntry[] }
-  return raw.forms.map((f) => ({ id: f.id, title: f.title ?? f.id, track: f.track, order: f.order, domains: f.domains, shortDescription: f.shortDescription, placeholder: f.placeholder, applicability: f.applicability }))
+  return raw.forms.map((f) => ({ id: f.id, urn: f.urn, registryUrn: f.registryUrn, title: f.title ?? f.id, track: f.track, order: f.order, domains: f.domains, shortDescription: f.shortDescription, placeholder: f.placeholder, applicability: f.applicability }))
 }
 
 /** The forms that actually exist and can be opened. Placeholders are left out:

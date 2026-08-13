@@ -1,6 +1,7 @@
 {
   "id": "intake",
   "version": "2.0",
+  "urn": "urn:nl:minfin:tr:intake:2.0",
   "title": "Intakeformulier nieuwe IV-verzoeken",
   "source": {
     "instrument": "Intakeformulier IV-verzoek",

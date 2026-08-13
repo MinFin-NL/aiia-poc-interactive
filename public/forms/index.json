@@ -2,6 +2,7 @@
   "forms": [
     {
       "id": "intake",
+      "urn": "urn:nl:minfin:tr:intake:2.0",
       "file": "intake.json",
       "title": "Intakeformulier",
       "track": "intake",
@@ -13,6 +14,7 @@
     },
     {
       "id": "aanbiedingsformulier",
+      "urn": "urn:nl:minfin:tr:aanbiedingsformulier:2.0",
       "file": "aanbiedingsformulier.json",
       "title": "Projectaanbiedingsformulier",
       "track": "aanbieding",
@@ -24,6 +26,7 @@
     },
     {
       "id": "ppm",
+      "urn": "urn:nl:minfin:tr:ppm:1.0",
       "file": "ppm.json",
       "title": "PPM Projectplan",
       "track": "initiatie",
@@ -35,6 +38,7 @@
     },
     {
       "id": "psa",
+      "urn": "urn:nl:minfin:tr:psa:1.0",
       "file": "psa.json",
       "title": "PSA",
       "track": "initiatie",
@@ -48,6 +52,7 @@
     },
     {
       "id": "quickscan",
+      "urn": "urn:nl:minfin:tr:quickscan:1.0",
       "file": "quickscan.json",
       "title": "Quick scan BIO",
       "track": "initiatie",
@@ -59,6 +64,7 @@
     },
     {
       "id": "prescandpia",
+      "urn": "urn:nl:minfin:tr:prescandpia:2.0",
       "file": "prescandpia.json",
       "title": "Prescan DPIA",
       "track": "initiatie",
@@ -78,6 +84,7 @@
     },
     {
       "id": "dpia",
+      "urn": "urn:nl:minfin:tr:dpia:3.0",
       "file": "dpia.json",
       "title": "DPIA",
       "track": "initiatie",
@@ -98,6 +105,8 @@
     },
     {
       "id": "aiia",
+      "urn": "urn:nl:minfin:tr:aiia:2.0",
+      "registryUrn": "urn:nl:aivt:tr:aiia:1.0",
       "file": "aiia.json",
       "title": "AI Impact Assessment",
       "track": "initiatie",
@@ -123,6 +132,8 @@
     },
     {
       "id": "iama",
+      "urn": "urn:nl:minfin:tr:iama:2.0",
+      "registryUrn": "urn:nl:aivt:tr:iama:1.0",
       "file": "iama.json",
       "title": "IAMA",
       "track": "initiatie",
@@ -145,6 +156,8 @@
     },
     {
       "id": "euaiact",
+      "urn": "urn:nl:minfin:tr:euaiact:0.1",
+      "registryUrn": "urn:nl:aivt:tr:ca:1.0",
       "file": "euaiact.json",
       "title": "EU AI Act Compliance Checklist",
       "track": "initiatie",
@@ -164,6 +177,7 @@
     },
     {
       "id": "dataethiek",
+      "urn": "urn:nl:minfin:tr:dataethiek:1.0",
       "file": "dataethiek.json",
       "title": "Data-ethiektoets",
       "track": "initiatie",
@@ -185,6 +199,7 @@
     },
     {
       "id": "ihhtoets",
+      "urn": "urn:nl:minfin:tr:ihhtoets:0.1",
       "title": "IHH-toets",
       "track": "initiatie",
       "order": 10,
@@ -197,6 +212,7 @@
     },
     {
       "id": "cloudtoets",
+      "urn": "urn:nl:minfin:tr:cloudtoets:0.1",
       "title": "Cloudtoets",
       "track": "initiatie",
       "order": 11,
@@ -209,6 +225,7 @@
     },
     {
       "id": "bia",
+      "urn": "urn:nl:minfin:tr:bia:0.1",
       "title": "BIA",
       "track": "initiatie",
       "order": 12,
@@ -221,6 +238,7 @@
     },
     {
       "id": "datakwaliteit",
+      "urn": "urn:nl:minfin:tr:datakwaliteit:1.0",
       "file": "datakwaliteit.json",
       "title": "Datakwaliteit-assessment",
       "track": "uitvoering",
@@ -240,6 +258,7 @@
     },
     {
       "id": "datasetregistratie",
+      "urn": "urn:nl:minfin:tr:datasetregistratie:1.0",
       "file": "datasetregistratie.json",
       "title": "Dataset-registratie (datasheet)",
       "track": "uitvoering",
@@ -260,6 +279,7 @@
     },
     {
       "id": "modelcard",
+      "urn": "urn:nl:minfin:tr:modelcard:0.1",
       "file": "modelcard.json",
       "title": "AI-systeemregistratie (Model Card)",
       "track": "uitvoering",
@@ -280,6 +300,7 @@
     },
     {
       "id": "algoritmeregister",
+      "urn": "urn:nl:minfin:tr:algoritmeregister:1.0",
       "file": "algoritmeregister.json",
       "title": "Algoritmeregister-publicatie",
       "track": "uitvoering",
@@ -302,6 +323,7 @@
     },
     {
       "id": "verwerkingsregister",
+      "urn": "urn:nl:minfin:tr:verwerkingsregister:1.0",
       "file": "verwerkingsregister.json",
       "title": "Verwerkingsregister (AVG art. 30)",
       "track": "uitvoering",
@@ -322,6 +344,7 @@
     },
     {
       "id": "toegankelijkheid",
+      "urn": "urn:nl:minfin:tr:toegankelijkheid:1.0",
       "file": "toegankelijkheid.json",
       "title": "Toegankelijkheidsverklaring",
       "track": "uitvoering",
@@ -341,6 +364,7 @@
     },
     {
       "id": "restrisico",
+      "urn": "urn:nl:minfin:tr:restrisico:1.0",
       "file": "restrisico.json",
       "title": "Restrisico-acceptatie",
       "track": "uitvoering",
@@ -354,6 +378,7 @@
     },
     {
       "id": "voortgangsrapportage",
+      "urn": "urn:nl:minfin:tr:voortgangsrapportage:0.1",
       "title": "Projectvoortgangsrapportage",
       "track": "uitvoering",
       "order": 8,
@@ -365,6 +390,7 @@
     },
     {
       "id": "afwijkingsformulier",
+      "urn": "urn:nl:minfin:tr:afwijkingsformulier:0.1",
       "title": "Projectafwijkingsformulier",
       "track": "uitvoering",
       "order": 9,
@@ -376,6 +402,7 @@
     },
     {
       "id": "evaluatie",
+      "urn": "urn:nl:minfin:tr:evaluatie:0.1",
       "title": "Evaluatieformulier",
       "track": "afronding",
       "order": 1,
@@ -387,6 +414,7 @@
     },
     {
       "id": "risicoimpact",
+      "urn": "urn:nl:minfin:tr:risicoimpact:0.1",
       "title": "Risico-impactformulier",
       "track": "afronding",
       "order": 2,

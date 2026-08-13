@@ -1,6 +1,7 @@
 {
   "id": "psa",
   "version": "1.0",
+  "urn": "urn:nl:minfin:tr:psa:1.0",
   "title": "Project Start Architectuur (PSA)",
   "source": {
     "instrument": "Project Start Architectuur (PSA)",

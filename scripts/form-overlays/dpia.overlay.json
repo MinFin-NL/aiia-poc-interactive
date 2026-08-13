@@ -3,6 +3,7 @@
   "form": {
     "id": "dpia",
     "version": "3.0",
+    "urn": "urn:nl:minfin:tr:dpia:3.0",
     "title": "Data Protection Impact Assessment",
     "source": {
       "instrument": "Model DPIA Rijksdienst (urn:nl:dpia)",

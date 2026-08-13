@@ -1,6 +1,7 @@
 {
   "id": "toegankelijkheid",
   "version": "1.0",
+  "urn": "urn:nl:minfin:tr:toegankelijkheid:1.0",
   "title": "Toegankelijkheidsverklaring",
   "aiContext": "Dit is de voorbereiding van een toegankelijkheidsverklaring voor een website of mobiele app van het Ministerie van Financiën, op grond van het Tijdelijk besluit digitale toegankelijkheid overheid en de norm EN 301 549 (die WCAG 2.1 niveau AA overneemt). Het legt vast welke digitale voorziening het betreft, welk onderzoek is uitgevoerd, welke onderdelen niet toegankelijk zijn en waarom, welke verbetermaatregelen lopen en hoe gebruikers een probleem kunnen melden. Schrijf feitelijk en concreet, en beschrijf niet-toegankelijke onderdelen vanuit het gevolg voor de gebruiker (wat kan iemand niet doen) in plaats van uitsluitend in technische succescriteria.",
   "source": {

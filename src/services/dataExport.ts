@@ -6,6 +6,11 @@ export interface ExportData {
   version: '1'
   exportedAt: string
   formId: FormId
+  // URN of the form definition this export came from, and — when the form
+  // implements a MinBZK task-registry instrument — that instrument's URN. Both
+  // optional: older exports predate them. See src/utils/formUrn.ts.
+  formUrn?: string
+  formRegistryUrn?: string
   systemName: string
   answers: Answers
   riskLevel: RiskLevelValue
@@ -40,11 +45,14 @@ export function exportToJson(
   completedSections: string[],
   systemName: string,
   attachments: Record<string, QuestionAttachment[]> = {},
+  formConfig?: Pick<FormConfig, 'urn' | 'registryUrn'>,
 ): void {
   const data: ExportData = {
     version: '1',
     exportedAt: new Date().toISOString(),
     formId,
+    formUrn: formConfig?.urn,
+    formRegistryUrn: formConfig?.registryUrn,
     systemName,
     answers,
     riskLevel,
@@ -133,6 +141,8 @@ export function exportToMarkdown(
   const lines: string[] = []
   lines.push(`# ${formConfig.meta.docTitle}`)
   lines.push(`**Ministerie van Financiën** | ${today}`)
+  if (formConfig.urn) lines.push(`**Formulier:** \`${formConfig.urn}\``)
+  if (formConfig.registryUrn) lines.push(`**Instrument (task-registry):** \`${formConfig.registryUrn}\``)
   if (systemName) lines.push(`**Systeem/project:** ${systemName}`)
   if (hasConditionalPartB && riskLevel) lines.push(`**Risicoclassificatie:** ${riskLevel}`)
   if (hasConditionalPartB && goDecision !== null) lines.push(`**Go-beslissing:** ${goDecision ? 'Ja' : 'Nee'}`)

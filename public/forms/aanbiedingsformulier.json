@@ -1,6 +1,7 @@
 {
   "id": "aanbiedingsformulier",
   "version": "2.0",
+  "urn": "urn:nl:minfin:tr:aanbiedingsformulier:2.0",
   "title": "PPM Aanbiedingsformulier (Outline Businesscase)",
   "source": {
     "instrument": "PPM-aanbiedingsformulier (outline business case)",

@@ -1,6 +1,7 @@
 {
   "id": "quickscan",
   "version": "1.0",
+  "urn": "urn:nl:minfin:tr:quickscan:1.0",
   "title": "Quick scan BIO Baselinetoets",
   "source": {
     "instrument": "Baseline Informatiebeveiliging Overheid (BIO) — baselinetoets BBN",

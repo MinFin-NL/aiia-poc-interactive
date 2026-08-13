@@ -23,6 +23,18 @@
         <ul v-if="content.steps.length > 0" class="rvo-ul">
           <li v-for="step in content.steps" :key="step">{{ step }}</li>
         </ul>
+
+        <!-- Stable identifier of this form definition, in the shape the MinBZK
+             task-registry uses. Shown so a filled-in form can be referred to
+             unambiguously in registers, audits and correspondence. -->
+        <dl v-if="formConfig.urn" class="rvo-data-list form-intro__urn">
+          <dt>Identificatie van dit formulier</dt>
+          <dd><code class="form-intro__urn-value">{{ formConfig.urn }}</code></dd>
+          <template v-if="formConfig.registryUrn">
+            <dt>Instrument in het task-registry (MinBZK)</dt>
+            <dd><code class="form-intro__urn-value">{{ formConfig.registryUrn }}</code></dd>
+          </template>
+        </dl>
       </section>
 
       <section class="rvo-layout-column rvo-layout-gap--sm">
@@ -113,6 +125,22 @@ const { aiModeActive, aiModeProgress, aiModeDone, aiModeTotal, aiModePhase, read
 
 .form-intro__section-title {
   color: var(--rvo-color-lintblauw);
+}
+
+/* rvo-data-list levert de dt/dd-opmaak; alleen de omlijsting en de
+   monospace-weergave van de URN zelf zijn van ons. */
+.form-intro__urn {
+  padding: var(--rvo-space-md) var(--rvo-space-lg);
+  background: var(--rvo-color-wit);
+  border: 1px solid var(--invulhulp-color-border);
+  border-radius: var(--rvo-border-radius-md);
+}
+
+.form-intro__urn-value {
+  font-family: monospace;
+  font-size: var(--rvo-font-size-sm);
+  color: var(--rvo-color-zwart);
+  overflow-wrap: anywhere;
 }
 
 .form-intro__legend {

@@ -1,6 +1,7 @@
 {
   "id": "verwerkingsregister",
   "version": "1.0",
+  "urn": "urn:nl:minfin:tr:verwerkingsregister:1.0",
   "title": "Verwerkingsregister (AVG art. 30)",
   "aiContext": "Dit is een registratie voor het verwerkingsregister van het Ministerie van Financiën op grond van artikel 30 AVG. Het legt per verwerking de verplichte registratie-elementen vast: verwerkingsverantwoordelijke en FG, doeleinden, categorieën betrokkenen en persoonsgegevens, ontvangers, doorgiften buiten de EER, bewaartermijnen en een algemene beschrijving van de beveiligingsmaatregelen (art. 32 lid 1). Schrijf beknopt, juridisch nauwkeurig en in AVG-terminologie: het register is een verantwoordingsdocument dat aan de Autoriteit Persoonsgegevens getoond moet kunnen worden, geen beleidstekst. Formuleer per veld feitelijk en volledig, zonder toelichtende betogen.",
   "source": {

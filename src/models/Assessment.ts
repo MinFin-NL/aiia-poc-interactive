@@ -237,6 +237,14 @@ export interface FormSource {
 export interface FormConfig {
   id: string
   version: string
+  // Stable identifier of this form definition, in the shape the MinBZK
+  // task-registry uses for its instruments — see FORM_URN_PATTERN in
+  // src/utils/formUrn.ts.
+  urn?: string
+  // The official task-registry URN of the instrument this form implements,
+  // when it has one (AIIA, IAMA, EU-conformiteitsverklaring). Distinct from
+  // `urn`: that one names *our* form, this one names the upstream instrument.
+  registryUrn?: string
   title: string
   // Where this form comes from — see FormSource and the README lineage table.
   source?: FormSource
