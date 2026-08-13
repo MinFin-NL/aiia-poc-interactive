@@ -40,6 +40,18 @@ const aiModePreSmooth = ref<Record<string, { dossierId: string; originals: Recor
 // write back through v-model, which would otherwise read as a user edit and
 // clear the marker the moment it appears.
 const aiModeSmoothed = ref<Record<string, Record<string, string>>>({})
+// A dossier-wide run: the same per-form machinery above, driven over a queue of
+// forms instead of one. Null when no such run is going. The per-form state stays
+// authoritative — this only records where in the queue we are, so the dossier
+// page can show "formulier 3 van 7" while the form's own progress counts fields.
+const dossierAiRun = ref<{
+  dossierId: string
+  formIds: string[]
+  /** Index in formIds of the form being filled. */
+  current: number
+  formId: string | null
+} | null>(null)
+let dossierAiCancelled = false
 
 // Answers with markup beyond plain paragraphs (lists, bold, …) are usually
 // user-authored; smoothing works on plaintext and would flatten them.
@@ -149,6 +161,49 @@ export function useAiMode() {
       }
     }
     delete aiModeCancelled[formId]
+  }
+
+  /**
+   * Fill a whole queue of forms in one go — the dossier page's "vul dit dossier
+   * in". Sequential on purpose: each form's run is itself a sequential loop over
+   * its questions, and the backend is the bottleneck, so overlapping runs would
+   * only make the progress unreadable without making it faster.
+   *
+   * Callers pass the queue (the dossier page passes the empty, applicable
+   * forms). AI Modus overwrites whatever is in a field, so a bulk action must
+   * never be handed a form somebody already worked in.
+   */
+  async function startDossierAiMode(formIds: string[]) {
+    if (dossierAiRun.value || formIds.length === 0) return
+    if (readyDocIds.value.length === 0) return
+    const dossierId = store.activeDossierId
+    if (!dossierId) return
+
+    dossierAiCancelled = false
+    dossierAiRun.value = { dossierId, formIds, current: 0, formId: null }
+    try {
+      for (const [index, formId] of formIds.entries()) {
+        if (dossierAiCancelled) break
+        // Each form's own run pins the dossier it started in, but queueing more
+        // work into a dossier the user has since left is not what they asked
+        // for. Stop at the boundary instead.
+        if (store.activeDossierId !== dossierId) break
+        dossierAiRun.value = { dossierId, formIds, current: index, formId }
+        await startAiMode(formId)
+        // The documents are gone from the index: every remaining form would
+        // fail the same pre-flight, so stop and let the one dialog explain it.
+        if (aiModeError.value[formId]) break
+      }
+    } finally {
+      dossierAiRun.value = null
+      dossierAiCancelled = false
+    }
+  }
+
+  function cancelDossierAiMode() {
+    dossierAiCancelled = true
+    const formId = dossierAiRun.value?.formId
+    if (formId) cancelAiMode(formId)
   }
 
   /** Attach the figures behind an answer's retrieved chunks to that question.
@@ -378,6 +433,9 @@ export function useAiMode() {
     readyDocIds,
     startAiMode,
     cancelAiMode,
+    dossierAiRun,
+    startDossierAiMode,
+    cancelDossierAiMode,
     dismissAiModeDone,
     dismissAiModeError,
     isAiUnanswered,

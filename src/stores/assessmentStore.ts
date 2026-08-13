@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Answers, AnswerSourceMeta, QuestionAttachment, RiskLevelValue } from '../models/Assessment'
 import {
@@ -139,6 +140,20 @@ function newDossier(name: string): Dossier {
 // purpose: timers must never end up in the persisted state.
 const pushTimers = new Map<DossierId, ReturnType<typeof setTimeout>>()
 const PUSH_DEBOUNCE_MS = 1500
+
+/**
+ * Whether the user's work has reached the server. Module scope for the same
+ * reason as pushTimers: this is live session state and must never be persisted
+ * — a restored "bezig met opslaan" would be a lie about a request that died
+ * with the previous tab.
+ *
+ * One status for the app, not one per dossier: only the dossier the user is
+ * editing pushes, so a per-dossier map would carry a distinction nothing can
+ * observe. 'pending' covers the debounce window, 'saving' the request itself.
+ */
+export type SaveStatus = 'idle' | 'pending' | 'saving' | 'saved' | 'error'
+export const saveStatus = ref<SaveStatus>('idle')
+export const lastSavedAt = ref<number | null>(null)
 
 // One live CRDT doc per dossier — the source of truth for a dossier's shared
 // CONTENT (answers, sources, attachments, risk/go/sections) while it's in
@@ -346,12 +361,14 @@ export const useAssessmentStore = defineStore('assessment', {
       if (!dossier || dossier.myRole === 'viewer') return
       const existing = pushTimers.get(id)
       if (existing) clearTimeout(existing)
+      saveStatus.value = 'pending'
       pushTimers.set(
         id,
         setTimeout(() => {
           pushTimers.delete(id)
           const d = this.dossiers[id]
           if (!d) return
+          saveStatus.value = 'saving'
           saveDossier({
             id: d.id,
             name: d.name,
@@ -360,9 +377,19 @@ export const useAssessmentStore = defineStore('assessment', {
             sessionId: d.sessionId,
             activeFormId: d.activeFormId,
             forms: d.forms,
-          }).catch(() => {
-            // offline or denied — localStorage keeps the state, next edit retries
           })
+            .then(() => {
+              // A newer edit already re-armed the timer: don't overwrite its
+              // 'pending' with a 'saved' that describes the previous push.
+              if (pushTimers.has(id)) return
+              lastSavedAt.value = Date.now()
+              saveStatus.value = 'saved'
+            })
+            .catch(() => {
+              // offline or denied — localStorage keeps the state, next edit retries
+              if (pushTimers.has(id)) return
+              saveStatus.value = 'error'
+            })
         }, PUSH_DEBOUNCE_MS),
       )
     },

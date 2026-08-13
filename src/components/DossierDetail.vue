@@ -59,6 +59,101 @@
         </div>
       </section>
 
+      <!-- Eerste bezoek aan een leeg dossier: één scherm, één handeling. De
+           fasetijdlijn eronder is een prima overzicht, maar wie hier voor het
+           eerst komt heeft nog niets om te overzien — en las nergens waaróm hij
+           documenten zou uploaden. De belofte staat nu op de plek waar hij
+           wordt ingelost. -->
+      <section v-if="isFirstRun" class="first-run" aria-labelledby="first-run-title">
+        <p class="rvo-text rvo-text--sm first-run__eyebrow">Stap 1 van 2</p>
+        <h2 id="first-run-title" class="rvo-heading rvo-heading--xl first-run__title">
+          Begin met je brondocumenten
+        </h2>
+        <p class="rvo-text first-run__lead">
+          Upload wat er al ligt: notulen, een projectplan, een brainstorm of een architectuurschets.
+          FinDocs leest ze en vult daarna de formulieren van dit dossier voor je in — elk antwoord met
+          een verwijzing naar de passage waar het vandaan komt. Jij controleert, past aan en stelt vast.
+        </p>
+
+        <label
+          class="first-run__dropzone"
+          :class="{
+            'first-run__dropzone--over': isDragOver,
+            'first-run__dropzone--busy': isUploading,
+          }"
+          @dragover="onDragOver"
+          @dragleave="onDragLeave"
+          @drop="onDrop"
+        >
+          <input
+            type="file"
+            :accept="UPLOAD_ACCEPT"
+            multiple
+            :disabled="isUploading"
+            class="invulhulp-visually-hidden"
+            @change="onFilesSelected"
+          />
+          <span class="first-run__dropzone-icon" aria-hidden="true" />
+          <span class="rvo-heading rvo-heading--md first-run__dropzone-title">
+            {{ isUploading ? 'Bezig met inlezen…' : 'Sleep je documenten hierheen' }}
+          </span>
+          <span class="rvo-text rvo-text--sm first-run__dropzone-hint">
+            of klik om ze te kiezen — .docx, .pdf, .xlsx, .pptx, .txt of .md
+          </span>
+        </label>
+
+        <!-- Alleen de statussen die hier kunnen voorkomen: zodra er één document
+             staat is dit scherm weg, dus de succesmelding hoort in de gewone
+             documentenkaart. -->
+        <div class="docs-alerts" role="status" aria-live="polite">
+          <div v-if="isUploading" class="rvo-alert rvo-alert--info rvo-alert--padding-sm">
+            <div class="rvo-alert__container">{{ uploadingLabel }}</div>
+          </div>
+          <div v-if="uploadError" class="rvo-alert rvo-alert--error rvo-alert--padding-sm">
+            <div class="rvo-alert__container">{{ uploadError }}</div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="rvo-link first-run__skip"
+          @click="showFullDossier = true"
+        >
+          Ik heb geen documenten — laat me de formulieren zelf invullen
+        </button>
+      </section>
+
+      <template v-else>
+      <!-- Eén volgende stap, bovenaan. De pagina eronder is een compleet
+           overzicht van de hele levenscyclus — prima om te verkennen, maar wie
+           terugkomt wil doorwerken en moet daarvoor niet eerst vijf fasen
+           afspeuren naar de kaart met "Bezig". -->
+      <section v-if="nextStep" class="next-step" aria-labelledby="next-step-title">
+        <div class="next-step__body">
+          <p class="rvo-text rvo-text--sm next-step__eyebrow">{{ nextStep.eyebrow }}</p>
+          <h2 id="next-step-title" class="rvo-heading rvo-heading--md next-step__title">
+            {{ nextStep.form.title }}
+          </h2>
+          <p class="rvo-text rvo-text--sm next-step__reason">{{ nextStep.reason }}</p>
+        </div>
+        <button
+          type="button"
+          class="rvo-button next-step__btn"
+          :class="primaryAction === 'resume' ? 'rvo-button--primary' : 'rvo-button--secondary'"
+          @click="$emit('open', nextStep.form.id)"
+        >
+          {{ nextStep.cta }}
+        </button>
+      </section>
+
+      <!-- Alles wat van toepassing is, is af. Dat is een mijlpaal: benoem hem,
+           in plaats van de band stilletjes te laten verdwijnen. -->
+      <div v-else-if="allFormsDone" class="rvo-alert rvo-alert--success rvo-alert--padding-sm next-step__done">
+        <div class="rvo-alert__container">
+          Alle formulieren die voor dit dossier gelden zijn afgerond.
+        </div>
+      </div>
+
       <!-- Phase rail: the whole lifecycle in one row, as a table of contents
            for the timeline below. Each circle fills from the bottom with the
            share of that phase's forms that are afgerond. -->
@@ -124,14 +219,16 @@
 
         <div v-if="store.canEdit" class="docs-controls">
           <label
-            class="rvo-button rvo-button--primary docs-upload-btn"
-            :class="{ 'docs-upload-btn--busy': isUploading }"
+            class="rvo-button docs-upload-btn"
+            :class="[
+              primaryAction === 'upload' ? 'rvo-button--primary' : 'rvo-button--secondary',
+              { 'docs-upload-btn--busy': isUploading },
+            ]"
             :aria-disabled="isUploading"
           >
             <input
-              ref="fileInput"
               type="file"
-              accept=".txt,.md,.docx,.xlsx,.pptx,.pdf,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+              :accept="UPLOAD_ACCEPT"
               multiple
               :disabled="isUploading"
               class="invulhulp-visually-hidden"
@@ -215,6 +312,63 @@
           </li>
         </ul>
         <p v-else-if="!isUploading" class="docs-empty rvo-text rvo-text--sm">Nog geen documenten geüpload.</p>
+      </section>
+
+      <!-- Dossier-brede AI-vulling. Het hele punt van de tool is één knop, niet
+           twaalf losse toggles op twaalf kaarten. Alleen nog lege formulieren
+           komen in de rij: AI Modus overschrijft velden, dus werk dat er al
+           staat blijft hier buiten schot — daarvoor is de toggle op de kaart. -->
+      <section
+        v-if="store.canEdit && (dossierAiRun || bulkFillForms.length > 0)"
+        class="bulk-ai"
+        aria-labelledby="bulk-ai-title"
+      >
+        <div class="bulk-ai__body">
+          <h2 id="bulk-ai-title" class="rvo-heading rvo-heading--md bulk-ai__title">
+            Vul dit dossier in met AI
+          </h2>
+          <p class="rvo-text rvo-text--sm bulk-ai__desc" role="status" aria-live="polite">
+            <template v-if="dossierAiRun">
+              Formulier {{ dossierAiRun.current + 1 }} van {{ dossierAiRun.formIds.length }}: {{ runningFormTitle }}<template
+                v-if="runningProgress"
+              > · {{ runningProgress.filled }}/{{ runningProgress.total }} velden</template>
+            </template>
+            <template v-else-if="readyDocIds.length > 0">
+              {{ bulkFillForms.length }}
+              {{ bulkFillForms.length === 1 ? 'formulier is' : 'formulieren zijn' }} nog leeg.
+              AI Modus vult ze één voor één in op basis van je {{ readyDocIds.length }}
+              brondocument{{ readyDocIds.length === 1 ? '' : 'en' }}. Je controleert daarna elk antwoord —
+              met bronverwijzing per vraag.
+            </template>
+            <template v-else>
+              Upload eerst een brondocument hierboven; daarna kan AI Modus deze
+              {{ bulkFillForms.length }} lege
+              {{ bulkFillForms.length === 1 ? 'formulier' : 'formulieren' }} in één keer invullen.
+            </template>
+          </p>
+          <div v-if="dossierAiRun" class="bulk-ai__bar" aria-hidden="true">
+            <div class="bulk-ai__bar-fill" :style="{ inlineSize: `${bulkAiPct}%` }" />
+          </div>
+        </div>
+        <button
+          v-if="dossierAiRun"
+          type="button"
+          class="rvo-button rvo-button--secondary bulk-ai__btn"
+          @click="cancelDossierAiMode()"
+        >
+          Stop
+        </button>
+        <button
+          v-else
+          type="button"
+          class="rvo-button bulk-ai__btn"
+          :class="primaryAction === 'bulk-ai' ? 'rvo-button--primary' : 'rvo-button--secondary'"
+          :disabled="readyDocIds.length === 0"
+          @click="startDossierAiMode(bulkFillForms.map((f) => f.id))"
+        >
+          <span class="bulk-ai__spark" aria-hidden="true">✦</span>
+          {{ bulkFillForms.length === 1 ? 'Vul 1 formulier in' : `Vul ${bulkFillForms.length} formulieren in` }}
+        </button>
       </section>
 
       <!-- Toepassingsscan: which of the forms below actually apply here. -->
@@ -342,6 +496,7 @@
         </div>
       </li>
       </ol>
+      </template>
 
     </div>
 
@@ -416,8 +571,17 @@ defineEmits<{ open: [id: string] }>()
 
 const store = useAssessmentStore()
 const forms = ref<FormIndexEntry[]>([])
-const fileInput = ref<HTMLInputElement | null>(null)
+// Eén lijst voor beide upload-inputs (de eerste-keer-dropzone en de gewone
+// documentenkaart), zodat ze niet uit elkaar kunnen lopen.
+const UPLOAD_ACCEPT =
+  '.txt,.md,.docx,.xlsx,.pptx,.pdf,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation'
+
 const uploadError = ref('')
+const isDragOver = ref(false)
+// De ontsnappingsroute uit het eerste-keer-scherm: wie geen documenten heeft,
+// moet gewoon aan de formulieren kunnen. Sessiegebonden — zodra er een document
+// staat komt het scherm sowieso niet meer terug.
+const showFullDossier = ref(false)
 const successMessage = ref('')
 const isUploading = ref(false)
 const uploadingLabel = ref('')
@@ -425,7 +589,7 @@ const recentlyAddedIds = ref<Set<string>>(new Set())
 const showGraph = ref(false)
 const hasAnyOntology = computed(() => store.documents.some(d => !!d.ontology))
 
-const { aiModeActive, aiModeProgress, aiModeDone, aiModeTotal, aiModeError, aiModePhase, readyDocIds, startAiMode, cancelAiMode, dismissAiModeDone, dismissAiModeError, hasSmoothingUndo, undoSmoothing } = useAiMode()
+const { aiModeActive, aiModeProgress, aiModeDone, aiModeTotal, aiModeError, aiModePhase, readyDocIds, startAiMode, cancelAiMode, dismissAiModeDone, dismissAiModeError, hasSmoothingUndo, undoSmoothing, dossierAiRun, startDossierAiMode, cancelDossierAiMode } = useAiMode()
 const { progressFor, trackSummary } = useFormProgress()
 
 const renameDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
@@ -536,6 +700,137 @@ function onAiModeErrorDismissed() {
   }
 }
 
+// ---- Eerste keer ------------------------------------------------------------
+// Alleen een dossier waar nog niets in zit krijgt het onboardingscherm. Wie al
+// met de hand antwoorden heeft ingevuld werkt bewust zonder documenten — die
+// mag zijn tijdlijn niet kwijtraken. Lezers evenmin: zij kunnen niet uploaden.
+const dossierIsEmpty = computed(() =>
+  Object.values(store.activeDossier?.forms ?? {}).every((f) =>
+    Object.values(f.answers ?? {}).every((v) =>
+      Array.isArray(v) ? v.length === 0 : typeof v !== 'string' || v.trim() === '',
+    ),
+  ),
+)
+
+const isFirstRun = computed(
+  () =>
+    store.canEdit &&
+    !showFullDossier.value &&
+    store.documents.length === 0 &&
+    dossierIsEmpty.value,
+)
+
+// ---- Eén volgende stap ------------------------------------------------------
+// De formulieren die hier meetellen: gebouwd, en niet weggestreept door de
+// toepassingsscan. In registratievolgorde, wat de fasevolgorde van de tijdlijn
+// is — de "volgende" stap is dus ook echt de eerstvolgende in het proces.
+const liveForms = computed(() =>
+  forms.value.filter((f) => !f.placeholder && verdictFor(f.id).status !== 'nvt'),
+)
+
+const allFormsDone = computed(
+  () => liveForms.value.length > 0 && liveForms.value.every((f) => statusFor(f.id)?.status === 'afgerond'),
+)
+
+interface NextStep {
+  form: FormIndexEntry
+  /** 'start' betekent: er loopt nog niets, de gebruiker begint pas. */
+  kind: 'resume' | 'finish' | 'start'
+  eyebrow: string
+  reason: string
+  cta: string
+}
+
+/** Het ene formulier waar de gebruiker verder moet: eerst waar hij middenin
+ *  zit, dan wat is doorgeklikt maar niet ingevuld, dan het eerste verplichte
+ *  dat nog niet af is. Null zodra alles af is (of er niets te doen valt). */
+const nextStep = computed<NextStep | null>(() => {
+  const withStatus = liveForms.value.map((form) => ({ form, progress: statusFor(form.id) }))
+
+  const busy = withStatus.find((f) => f.progress?.status === 'bezig')
+  if (busy) {
+    return {
+      form: busy.form,
+      kind: 'resume',
+      eyebrow: 'Verder waar je gebleven bent',
+      reason: `${busy.progress!.completed} van ${busy.progress!.total} onderdelen doorlopen.`,
+      cta: 'Verder',
+    }
+  }
+
+  const incomplete = withStatus.find((f) => f.progress?.status === 'onvolledig')
+  if (incomplete) {
+    const open = incomplete.progress!.missingMandatory
+    return {
+      form: incomplete.form,
+      kind: 'finish',
+      eyebrow: 'Bijna klaar',
+      reason: `Helemaal doorlopen, maar er ${open === 1 ? 'staat nog 1 verplichte vraag' : `staan nog ${open} verplichte vragen`} open.`,
+      cta: 'Afmaken',
+    }
+  }
+
+  const notStarted = withStatus.filter((f) => f.progress?.status !== 'afgerond')
+  if (notStarted.length === 0) return null
+  // Verplicht volgens de toepassingsscan gaat voor; anders gewoon de eerste in
+  // de fasevolgorde.
+  const required = notStarted.find((f) => verdictFor(f.form.id).status === 'verplicht')
+  const target = required ?? notStarted[0]
+  return {
+    form: target.form,
+    kind: 'start',
+    eyebrow: 'Begin hier',
+    reason: verdictFor(target.form.id).reason || target.form.shortDescription || 'Nog niet gestart.',
+    cta: 'Openen',
+  }
+})
+
+/** Welke van de drie acties op deze pagina de primaire knop krijgt. Precies
+ *  één, altijd: zonder documenten is uploaden de enige zinvolle stap, met lege
+ *  formulieren is dat de AI-vulling, en zodra er werk loopt is dat doorwerken. */
+const primaryAction = computed<'upload' | 'bulk-ai' | 'resume'>(() => {
+  if (readyDocIds.value.length === 0) return 'upload'
+  const step = nextStep.value
+  if (step && step.kind !== 'start') return 'resume'
+  if (bulkFillForms.value.length > 0) return 'bulk-ai'
+  return 'resume'
+})
+
+// ---- Dossier-brede AI-vulling ---------------------------------------------
+// De rij: echte formulieren (geen placeholders), niet weggestreept door de
+// toepassingsscan, en nog helemaal leeg. Dat laatste is de veiligheidsgrens —
+// AI Modus overschrijft antwoorden, en een knop die twaalf formulieren tegelijk
+// raakt mag nooit werk overschrijven dat iemand al gedaan heeft.
+const bulkFillForms = computed(() =>
+  forms.value.filter(
+    (f) =>
+      !f.placeholder &&
+      verdictFor(f.id).status !== 'nvt' &&
+      statusFor(f.id)?.status === 'niet-gestart',
+  ),
+)
+
+const runningFormTitle = computed(() => {
+  const formId = dossierAiRun.value?.formId
+  if (!formId) return ''
+  return forms.value.find((f) => f.id === formId)?.title ?? formId
+})
+
+const runningProgress = computed(() => {
+  const formId = dossierAiRun.value?.formId
+  return formId ? aiModeProgress.value[formId] ?? null : null
+})
+
+// Voortgang over de hele rij: afgeronde formulieren plus het deel van het
+// formulier dat nu loopt, zodat de balk ook binnen één lang formulier beweegt.
+const bulkAiPct = computed(() => {
+  const run = dossierAiRun.value
+  if (!run || run.formIds.length === 0) return 0
+  const p = runningProgress.value
+  const within = p && p.total > 0 ? p.filled / p.total : 0
+  return Math.round(((run.current + within) / run.formIds.length) * 100)
+})
+
 function statusFor(formId: string): FormProgress | null {
   if (!store.activeDossierId) return null
   const dossier = store.dossiers[store.activeDossierId]
@@ -633,7 +928,30 @@ async function extractPptxText(file: File): Promise<string> {
 
 async function onFilesSelected(e: Event) {
   const target = e.target as HTMLInputElement
-  const files = target.files ? Array.from(target.files) : []
+  await ingestFiles(target.files ? Array.from(target.files) : [])
+  // Reset the input that fired, not the ref: the first-run dropzone and the
+  // documents card each have their own, and only one is mounted at a time.
+  target.value = ''
+}
+
+function onDragOver(e: DragEvent) {
+  if (!store.canEdit || isUploading.value) return
+  e.preventDefault()
+  isDragOver.value = true
+}
+
+function onDragLeave() {
+  isDragOver.value = false
+}
+
+async function onDrop(e: DragEvent) {
+  if (!store.canEdit || isUploading.value) return
+  e.preventDefault()
+  isDragOver.value = false
+  await ingestFiles(Array.from(e.dataTransfer?.files ?? []))
+}
+
+async function ingestFiles(files: File[]) {
   if (files.length === 0) return
 
   uploadError.value = ''
@@ -723,8 +1041,6 @@ async function onFilesSelected(e: Event) {
   if (errors.length > 0) {
     uploadError.value = errors.join(' ')
   }
-
-  if (fileInput.value) fileInput.value.value = ''
 }
 
 
@@ -934,6 +1250,195 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
   background: var(--rvo-color-lintblauw);
   border-start-start-radius: var(--rvo-border-radius-md);
   border-start-end-radius: var(--rvo-border-radius-md);
+}
+
+/* ===== Eerste keer: één scherm, één handeling ===== */
+.first-run {
+  margin-block-end: var(--rvo-space-2xl);
+  padding: var(--rvo-space-2xl) var(--rvo-space-xl);
+  background: var(--rvo-color-wit);
+  border: 1px solid var(--rvo-color-lichtblauw-300);
+  border-radius: var(--rvo-border-radius-md);
+  text-align: center;
+}
+
+.first-run__eyebrow {
+  color: var(--invulhulp-color-text-subtle);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: var(--rvo-font-size-xs);
+}
+
+.first-run__title {
+  color: var(--rvo-color-lintblauw);
+  margin: var(--rvo-space-2xs) 0 var(--rvo-space-sm);
+}
+
+.first-run__lead {
+  color: var(--invulhulp-color-text-subtle);
+  margin: 0 auto var(--rvo-space-xl);
+  max-inline-size: 40rem;
+}
+
+.first-run__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--rvo-space-2xs);
+  padding: var(--rvo-space-2xl) var(--rvo-space-lg);
+  border: 2px dashed var(--rvo-color-lichtblauw-300);
+  border-radius: var(--rvo-border-radius-md);
+  background: var(--rvo-color-lichtblauw-150);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.first-run__dropzone:hover,
+.first-run__dropzone--over {
+  border-color: var(--rvo-color-lintblauw);
+  background: var(--rvo-color-wit);
+}
+
+/* De input zit visueel verstopt in de label, dus de focusring hoort hier. */
+.first-run__dropzone:focus-within {
+  outline: 2px solid var(--rvo-color-lintblauw);
+  outline-offset: 2px;
+}
+
+.first-run__dropzone--busy {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+/* Statische mask-url zodat Vite het NLDS-icoon in de productiebuild oplost —
+   een runtime url()-binding wordt een wit vlak. */
+.first-run__dropzone-icon {
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  margin-block-end: var(--rvo-space-2xs);
+  background-color: var(--rvo-color-lintblauw);
+  -webkit-mask: url('@nl-rvo/assets/icons/functioneel/upload.svg') center / contain no-repeat;
+  mask: url('@nl-rvo/assets/icons/functioneel/upload.svg') center / contain no-repeat;
+}
+
+.first-run__dropzone-title {
+  color: var(--rvo-color-lintblauw);
+  margin: 0;
+}
+
+.first-run__dropzone-hint {
+  color: var(--invulhulp-color-text-subtle);
+}
+
+.first-run__skip {
+  margin-block-start: var(--rvo-space-lg);
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* De ene volgende stap. Neutraal wit met een lintblauwe rand aan de leeskant:
+   het moet opvallen zonder te concurreren met de AI-band eronder, die zijn
+   eigen (paarse) huisstijl heeft. */
+.next-step {
+  display: flex;
+  align-items: center;
+  gap: var(--rvo-space-lg);
+  flex-wrap: wrap;
+  margin-block-end: var(--rvo-space-xl);
+  padding: var(--rvo-space-md) var(--rvo-space-xl);
+  background: var(--rvo-color-wit);
+  border: 1px solid var(--rvo-color-lichtblauw-300);
+  border-inline-start: 4px solid var(--rvo-color-lintblauw);
+  border-radius: var(--rvo-border-radius-md);
+}
+
+.next-step__body {
+  flex: 1;
+  min-inline-size: 14rem;
+}
+
+.next-step__eyebrow {
+  color: var(--invulhulp-color-text-subtle);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: var(--rvo-font-size-xs);
+}
+
+.next-step__title {
+  color: var(--rvo-color-lintblauw);
+  margin: var(--rvo-space-3xs) 0 var(--rvo-space-3xs);
+}
+
+.next-step__reason {
+  color: var(--invulhulp-color-text-subtle);
+  margin: 0;
+  max-inline-size: 44rem;
+}
+
+.next-step__btn {
+  flex-shrink: 0;
+}
+
+.next-step__done {
+  margin-block-end: var(--rvo-space-xl);
+}
+
+/* Dossier-brede AI-vulling. Draagt bewust de AI-Modus-huisstijl (blauw/paars,
+   buiten het RVO-palet) die AiModeToggle en de bannier ook gebruiken — het is
+   dezelfde functie, dus dezelfde taal. Spacing en radii blijven tokens. */
+.bulk-ai {
+  display: flex;
+  align-items: center;
+  gap: var(--rvo-space-lg);
+  flex-wrap: wrap;
+  margin-block-end: var(--rvo-space-2xl);
+  padding: var(--rvo-space-lg) var(--rvo-space-xl);
+  background: linear-gradient(135deg, rgba(15, 45, 92, 0.04), rgba(91, 33, 182, 0.06));
+  border: 1px solid rgba(91, 33, 182, 0.2);
+  border-radius: var(--rvo-border-radius-md);
+}
+
+.bulk-ai__body {
+  flex: 1;
+  min-inline-size: 16rem;
+}
+
+.bulk-ai__title {
+  color: var(--rvo-color-lintblauw);
+  margin: 0 0 var(--rvo-space-2xs);
+}
+
+.bulk-ai__desc {
+  color: var(--invulhulp-color-text-subtle);
+  margin: 0;
+  max-inline-size: 44rem;
+}
+
+.bulk-ai__bar {
+  margin-block-start: var(--rvo-space-sm);
+  block-size: var(--rvo-space-2xs);
+  border-radius: var(--rvo-border-radius-sm);
+  background: rgba(15, 45, 92, 0.12);
+  overflow: hidden;
+}
+
+.bulk-ai__bar-fill {
+  block-size: 100%;
+  border-radius: var(--rvo-border-radius-sm);
+  background: linear-gradient(90deg, #0f2d5c, #5b21b6, #0ea5e9);
+  transition: inline-size 0.3s ease;
+}
+
+.bulk-ai__btn {
+  flex-shrink: 0;
+}
+
+.bulk-ai__spark {
+  margin-inline-end: var(--rvo-space-2xs);
 }
 
 .portal-card__header {

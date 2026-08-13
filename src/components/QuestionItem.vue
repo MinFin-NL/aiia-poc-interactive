@@ -5,7 +5,7 @@
       <div class="rvo-form-field">
         <label :for="question.id" class="rvo-form-field__label">
           <span class="invulhulp-question__label-text">{{ question.text }}</span>
-          <span v-if="question.importance === 'mandatory'" class="invulhulp-question__required" aria-hidden="true">*</span>
+          <span v-if="question.importance === 'mandatory'" class="invulhulp-question__required">(verplicht)</span>
           <span v-else class="invulhulp-question__optional">(aanvullend)</span>
         </label>
         <p v-if="question.guidance" class="rvo-text rvo-text--sm invulhulp-question__guidance">
@@ -28,7 +28,7 @@
     <fieldset v-else-if="question.type === 'radio'" class="rvo-form-fieldset invulhulp-question__fieldset">
       <legend class="rvo-form-fieldset__legend">
         <span class="invulhulp-question__label-text">{{ question.text }}</span>
-        <span v-if="question.importance === 'mandatory'" class="invulhulp-question__required" aria-hidden="true">*</span>
+        <span v-if="question.importance === 'mandatory'" class="invulhulp-question__required">(verplicht)</span>
         <span v-else class="invulhulp-question__optional">(aanvullend)</span>
       </legend>
       <p v-if="question.guidance" class="rvo-text rvo-text--sm invulhulp-question__guidance">
@@ -68,7 +68,7 @@
     <fieldset v-else-if="question.type === 'checkbox'" class="rvo-form-fieldset invulhulp-question__fieldset">
       <legend class="rvo-form-fieldset__legend">
         <span class="invulhulp-question__label-text">{{ question.text }}</span>
-        <span v-if="question.importance === 'mandatory'" class="invulhulp-question__required" aria-hidden="true">*</span>
+        <span v-if="question.importance === 'mandatory'" class="invulhulp-question__required">(verplicht)</span>
         <span v-else class="invulhulp-question__optional">(aanvullend)</span>
       </legend>
       <p v-if="question.guidance" class="rvo-text rvo-text--sm invulhulp-question__guidance">
@@ -98,7 +98,7 @@
     <fieldset v-else-if="question.type === 'table'" class="rvo-form-fieldset invulhulp-question__fieldset">
       <legend class="rvo-form-fieldset__legend">
         <span class="invulhulp-question__label-text">{{ question.text }}</span>
-        <span v-if="question.importance === 'mandatory'" class="invulhulp-question__required" aria-hidden="true">*</span>
+        <span v-if="question.importance === 'mandatory'" class="invulhulp-question__required">(verplicht)</span>
         <span v-else class="invulhulp-question__optional">(aanvullend)</span>
       </legend>
       <p v-if="question.guidance" class="rvo-text rvo-text--sm invulhulp-question__guidance">
@@ -435,7 +435,7 @@ function onCheckboxToggle(option: string) {
 }
 
 /* RVO ships rvo-form-field__label as a column flexbox, which would push the
-   asterisk / (aanvullend) marker onto its own line below the question. Use
+   (verplicht) / (aanvullend) marker onto its own line below the question. Use
    normal inline flow so the marker always trails the text, like the legend. */
 .invulhulp-question .rvo-form-field__label {
   display: block;
@@ -443,14 +443,20 @@ function onCheckboxToggle(option: string) {
 
 .invulhulp-question__label-text {
   /* The wrapper inherits the size/weight from its parent (label or legend),
-     so the text + asterisk render identically in both question types. */
+     so the text + marker render identically in both question types. */
   font-weight: inherit;
 }
 
+/* "(verplicht)" voluit, in dezelfde vorm als "(aanvullend)". Het was een rode
+   asterisk met aria-hidden, waarvan de uitleg in de legenda op de
+   introductiepagina stond — schermen terug, en voor een schermlezer nergens.
+   De kleurcodering op de vraag blijft, maar draagt de betekenis nu niet meer
+   alleen. */
 .invulhulp-question__required {
-  color: var(--rvo-color-rood);
-  margin-inline-start: 2px;
-  font-weight: inherit;
+  font-size: var(--rvo-font-size-xs);
+  color: var(--invulhulp-color-mandatory);
+  margin-inline-start: var(--rvo-space-2xs);
+  font-weight: var(--rvo-font-weight-normal);
 }
 
 .invulhulp-question__optional {

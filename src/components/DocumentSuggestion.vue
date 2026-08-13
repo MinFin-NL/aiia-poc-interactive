@@ -1,6 +1,14 @@
 <template>
-  <div v-if="documents.length > 0" class="doc-suggestion">
-    <div class="doc-suggestion__header">
+  <!-- In rust is dit één stille knop, geen paneel. Het stond als een geel kader
+       met kop onder ELKE vraag zodra er één document was; op een sectie met
+       dertig vragen waren de vragen daarmee in de minderheid. Het kader komt
+       terug zodra er echt iets te zien is. -->
+  <div
+    v-if="documents.length > 0"
+    class="doc-suggestion"
+    :class="{ 'doc-suggestion--active': isActive }"
+  >
+    <div v-if="isActive" class="doc-suggestion__header">
       <span class="doc-suggestion__label">
         Beschikbaar uit brondocumenten ({{ documents.length }})
       </span>
@@ -112,7 +120,8 @@
     <div v-if="canSuggest && suggestion === null && !streamingText" class="doc-suggestion__actions">
       <button
         type="button"
-        class="rvo-button rvo-button--primary rvo-button--size-sm"
+        class="rvo-button rvo-button--size-sm"
+        :class="isActive ? 'rvo-button--primary' : 'rvo-button--tertiary'"
         :disabled="isLoading"
         @click="requestExtraction"
       >
@@ -234,6 +243,11 @@ const streamingText = computed((): string => {
   return (beforeClose ? beforeClose[1] : content).trim()
 })
 
+/** Er is iets gaande of iets te zien: pas dan verdient dit een eigen kader. */
+const isActive = computed(
+  () => isLoading.value || !!streamingText.value || suggestion.value !== null || !!error.value,
+)
+
 const isInsufficient = computed(
   () => suggestion.value !== null && /onvoldoende informatie/i.test(suggestion.value),
 )
@@ -310,13 +324,23 @@ function rejectSuggestion() {
 </script>
 
 <style scoped>
+/* Rusttoestand: alleen de knop, geen kader. */
 .doc-suggestion {
+  margin-block-start: var(--rvo-space-2xs);
+  font-size: var(--rvo-font-size-sm);
+}
+
+.doc-suggestion--active {
   margin-block-start: var(--rvo-space-sm);
   border: 1px solid var(--rvo-color-donkergeel-300);
   border-radius: var(--rvo-border-radius-md);
   background: var(--rvo-color-donkergeel-150);
   padding: var(--rvo-space-sm) var(--rvo-space-md);
-  font-size: var(--rvo-font-size-sm);
+}
+
+/* De marge zit al op de container zolang die geen kader heeft. */
+.doc-suggestion:not(.doc-suggestion--active) .doc-suggestion__actions {
+  margin-block-start: 0;
 }
 
 .doc-suggestion__header {

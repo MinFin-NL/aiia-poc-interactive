@@ -41,7 +41,7 @@
               v-for="sub in getSubsections(step)"
               :key="sub.id"
               class="rvo-progress-tracker__step rvo-progress-tracker__step--substep-start invulhulp-nav__step"
-              :class="{ 'invulhulp-nav__step--completed': store.isSectionCompleted(sub.id) }"
+              :class="{ 'invulhulp-nav__step--completed': isSubsectionDone(sub.id) }"
             >
               <button
                 type="button"
@@ -50,8 +50,16 @@
                 :aria-current="store.currentView === sub.id ? 'page' : undefined"
                 @click="navigate(sub.id)"
               >
-                <svg v-if="store.isSectionCompleted(sub.id)" class="invulhulp-nav__check" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="m41.262 6.164c-1.133-.836-2.707-.676-3.641.367l-15.879 17.77-9.547-8.27a2.7 2.7 0 0 0 -3.516-.027 2.71 2.71 0 0 0 -.586 3.469l11.563 19.301a2.72 2.72 0 0 0 2.316 1.316c.957 0 1.836-.492 2.328-1.301l17.66-29.043c.727-1.195.426-2.75-.699-3.582zm0 0"/></svg>
+                <svg v-if="isSubsectionDone(sub.id)" class="invulhulp-nav__check" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="m41.262 6.164c-1.133-.836-2.707-.676-3.641.367l-15.879 17.77-9.547-8.27a2.7 2.7 0 0 0 -3.516-.027 2.71 2.71 0 0 0 -.586 3.469l11.563 19.301a2.72 2.72 0 0 0 2.316 1.316c.957 0 1.836-.492 2.328-1.301l17.66-29.043c.727-1.195.426-2.75-.699-3.582zm0 0"/></svg>
+                <!-- Doorgeklikt, maar er staan nog verplichte vragen open: geen
+                     vinkje, wel een teller. Anders leest de zijbalk het
+                     formulier af als klaar terwijl het leeg is. -->
+                <span v-else-if="openMandatory.get(sub.id) && store.isSectionCompleted(sub.id)" class="invulhulp-nav__open" aria-hidden="true" />
                 {{ sub.title }}
+                <span v-if="openMandatory.get(sub.id)" class="invulhulp-visually-hidden">
+                  — nog {{ openMandatory.get(sub.id) }} verplichte
+                  {{ openMandatory.get(sub.id) === 1 ? 'vraag' : 'vragen' }}
+                </span>
               </button>
             </li>
           </template>
@@ -138,6 +146,7 @@ import { computed } from 'vue'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { useAiMode } from '../composables/useAiMode'
 import type { FormConfig, NavStepSubsections, NavStepSpecialView, NavStep, Subsection } from '../models/Assessment'
+import { missingMandatoryBySubsection } from '../utils/formProgress'
 import AiModeToggle from './AiModeToggle.vue'
 
 const props = defineProps<{
@@ -182,7 +191,18 @@ function completionId(step: NavStepSpecialView): string {
   return step.completionSectionId ?? step.viewId
 }
 
-const completedCount = computed(() => store.completedSections.length)
+// Open verplichte vragen per subsectie. Een subsectie telt pas als afgerond
+// wanneer hij is doorlopen én er geen verplichte vraag meer leeg staat — het
+// vinkje in de zijbalk en de voortgangsteller gaan over hetzelfde.
+const openMandatory = computed(() => missingMandatoryBySubsection(props.formConfig, store.activeForm))
+
+function isSubsectionDone(subId: string): boolean {
+  return store.isSectionCompleted(subId) && !openMandatory.value.has(subId)
+}
+
+const completedCount = computed(
+  () => store.completedSections.filter((id) => !openMandatory.value.has(id)).length,
+)
 const totalCount = computed(() => props.navOrder.filter((v) => v !== 'home' && v !== 'summary').length)
 
 function navigate(id: string) {
@@ -298,6 +318,17 @@ function navigate(id: string) {
   block-size: 1em;
   flex-shrink: 0;
   color: var(--invulhulp-color-optional);
+}
+
+/* Doorlopen, maar nog niet ingevuld: een open ring op de plek van het vinkje,
+   zodat de rij niet verspringt. De telling zelf staat als verborgen tekst in
+   de knop — kleur draagt hier geen informatie alleen. */
+.invulhulp-nav__open {
+  inline-size: 1em;
+  block-size: 1em;
+  flex-shrink: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px var(--rvo-color-oranje);
 }
 
 .invulhulp-nav__tag {

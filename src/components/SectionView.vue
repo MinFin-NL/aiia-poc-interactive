@@ -4,13 +4,35 @@
 
       <!-- Section header -->
       <header>
-        <p class="rvo-text rvo-text--sm section-view__kicker">
-          {{ kicker }}
-        </p>
+        <div class="section-view__kicker-row">
+          <p class="rvo-text rvo-text--sm section-view__kicker">
+            {{ kicker }}
+          </p>
+          <!-- Opslagstatus. Antwoorden gaan meteen naar localStorage en
+               gedebounced naar de server; zonder deze regel krijgt iemand die
+               drie kwartier aan een DPIA werkt nooit te horen dat zijn werk
+               ergens staat. Bewust geen live region voor de normale statussen:
+               die wisselen bij elke toetsaanslag en zouden een schermlezer
+               onophoudelijk onderbreken. De foutmelding hieronder wél. -->
+          <p v-if="saveLabel" class="rvo-text rvo-text--sm section-view__save">
+            {{ saveLabel }}
+          </p>
+        </div>
         <h1 class="rvo-heading rvo-heading--xl section-view__title">
           {{ section.title }}
         </h1>
       </header>
+
+      <div
+        v-if="saveStatus === 'error'"
+        class="rvo-alert rvo-alert--warning rvo-alert--padding-sm"
+        role="alert"
+      >
+        <div class="rvo-alert__container">
+          Opslaan op de server lukt even niet. Je antwoorden staan wel op dit apparaat bewaard —
+          bij de volgende wijziging probeert de app het opnieuw.
+        </div>
+      </div>
 
       <!-- Sections another party fills in: say so, and say that AI Modus keeps
            its hands off, so nobody wonders where an answer came from. -->
@@ -66,7 +88,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Section } from '../models/Assessment'
-import { useAssessmentStore } from '../stores/assessmentStore'
+import { useAssessmentStore, saveStatus, lastSavedAt } from '../stores/assessmentStore'
 import { isQuestionVisible } from '../utils/answerRefs'
 import QuestionItem from './QuestionItem.vue'
 
@@ -91,6 +113,24 @@ const kicker = computed(
   () => props.section.kicker ?? (props.section.part === 'summary' ? 'Samenvatting' : `Deel ${props.section.part}`),
 )
 
+const timeFormat = new Intl.DateTimeFormat('nl-NL', { timeStyle: 'short' })
+
+// Leeg zolang er in deze sessie nog niets gewijzigd is: "Opgeslagen" bij een
+// formulier waar je nog niets aan gedaan hebt, zegt niets.
+const saveLabel = computed(() => {
+  switch (saveStatus.value) {
+    case 'pending':
+    case 'saving':
+      return 'Bezig met opslaan…'
+    case 'saved':
+      return lastSavedAt.value ? `Opgeslagen · ${timeFormat.format(lastSavedAt.value)}` : 'Opgeslagen'
+    case 'error':
+      return 'Alleen lokaal opgeslagen'
+    default:
+      return ''
+  }
+})
+
 function onNext() {
   store.markSectionCompleted(props.section.id)
   emit('next')
@@ -102,11 +142,26 @@ function onNext() {
   padding-block: var(--rvo-space-2xl) var(--rvo-space-3xl);
 }
 
+.section-view__kicker-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--rvo-space-md);
+  flex-wrap: wrap;
+  margin-block-end: var(--rvo-space-3xs);
+}
+
 .section-view__kicker {
   color: var(--invulhulp-color-text-subtle);
-  margin: 0 0 var(--rvo-space-3xs);
+  margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.section-view__save {
+  color: var(--invulhulp-color-text-subtle);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .section-view__title {

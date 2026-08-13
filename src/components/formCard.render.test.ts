@@ -32,6 +32,24 @@ describe('FormCard renders', () => {
     // "Verder" in plaats van "Openen" zodra er antwoorden staan.
     expect(html).toContain('Verder')
     expect(html).not.toContain('disabled')
+    // Secundair: de ene primaire actie van de dossierpagina staat in de
+    // "volgende stap"-band, niet op elk van de twaalf kaarten.
+    expect(html).toContain('rvo-button--secondary')
+    expect(html).not.toContain('rvo-button--primary')
+  })
+
+  it('an onvolledig form as an amber tag with the open-question count', async () => {
+    const html = await render({
+      form: { id: 'dpia', title: 'DPIA' },
+      status: { status: 'onvolledig', completed: 8, total: 8, missingMandatory: 3 },
+      verdict: ALWAYS,
+    })
+    // Doorgeklikt is niet afgerond — dat moet de kaart zeggen, niet alleen
+    // in de kleur maar in de tekst.
+    expect(html).not.toContain('Afgerond')
+    expect(html).toContain('Nog 3 verplichte vragen')
+    expect(html).toContain('rvo-tag--warning')
+    expect(html).toContain('Afmaken')
   })
 
   it('a placeholder as a visibly disabled card', async () => {

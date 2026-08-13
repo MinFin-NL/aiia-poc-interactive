@@ -17,7 +17,14 @@
         <div class="dossier-list__header">
           <div>
             <h2 id="dossiers-title" class="rvo-heading rvo-heading--xl dossier-list__title">Mijn dossiers</h2>
-            <p class="rvo-text dossier-list__desc">
+            <!-- ensureDossier() maakt altijd een dossier aan, dus de lege staat
+                 van deze lijst bestaat niet en er was nergens een eerste
+                 instructie. Bij één ongebruikt dossier staat die hier. -->
+            <p v-if="isFirstVisit" class="rvo-text dossier-list__desc">
+              Open je dossier en upload je eerste document — daarna vult FinDocs de formulieren
+              voor je in, met een bronverwijzing per antwoord.
+            </p>
+            <p v-else class="rvo-text dossier-list__desc">
               Een dossier groepeert brondocumenten en formulierantwoorden rond één project of systeem.
             </p>
           </div>
@@ -93,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useAssessmentStore, type Dossier } from '../stores/assessmentStore'
 import { useFormProgress } from '../composables/useFormProgress'
 import { TRACK_IDS, TRACK_META } from '../utils/tracks'
@@ -107,6 +114,13 @@ const roleLabels = { viewer: 'Lezen', editor: 'Bewerken', owner: 'Eigenaar' } as
 
 onMounted(() => {
   store.ensureDossier()
+})
+
+// Precies één dossier, zonder documenten en zonder afgeronde formulieren: dit
+// is iemands eerste keer.
+const isFirstVisit = computed(() => {
+  const list = store.dossierList
+  return list.length === 1 && list[0].documents.length === 0 && dossierSummary(list[0]).done === 0
 })
 
 function summaryFor(d: Dossier) {

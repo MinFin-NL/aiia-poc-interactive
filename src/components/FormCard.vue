@@ -80,16 +80,20 @@
           class="rvo-tag rvo-tag--pill form-card__status"
           :class="{
             'rvo-tag--info': status.status === 'bezig',
+            'rvo-tag--warning': status.status === 'onvolledig',
             'rvo-tag--success': status.status === 'afgerond',
           }"
         >
           {{ statusLabel(status) }}
         </span>
+        <!-- Secundair, bewust. Een fasetijdlijn met twaalf primaire knoppen
+             wijst nergens heen; de ene primaire actie van de dossierpagina
+             staat bovenaan in de "volgende stap"-band. -->
         <button
-          class="rvo-button rvo-button--primary rvo-button--size-sm form-card__btn"
+          class="rvo-button rvo-button--secondary rvo-button--size-sm form-card__btn"
           @click="emit('open', form.id)"
         >
-          {{ status?.status === 'bezig' ? 'Verder' : 'Openen' }}
+          {{ openLabel }}
         </button>
         <AiModeToggle
           v-if="canEdit"
@@ -113,6 +117,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import AiModeToggle from './AiModeToggle.vue'
 import type { FormIndexEntry, FormPlaceholder } from '../services/formLoader'
 import type { FormProgress } from '../utils/formProgress'
@@ -124,7 +129,7 @@ import { applicabilityLabel, type ApplicabilityVerdict } from '../utils/toepassi
  * hier alleen getoond, zodat dezelfde kaart in de fasetijdlijn én in de
  * "Vooraf"-band precies dezelfde affordances heeft.
  */
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   form: FormIndexEntry
   /** Voortgang, of null wanneer het formulier (nog) niet geladen is. */
   status?: FormProgress | null
@@ -184,9 +189,20 @@ function domainLabel(domain: string): string {
 
 function statusLabel(p: FormProgress): string {
   if (p.status === 'afgerond') return 'Afgerond'
+  // Doorgeklikt maar niet ingevuld: zeg hoeveel verplichte vragen nog open
+  // staan, zodat "afgerond" alleen op de kaart staat als het waar is.
+  if (p.status === 'onvolledig') {
+    return p.missingMandatory === 1 ? 'Nog 1 verplichte vraag' : `Nog ${p.missingMandatory} verplichte vragen`
+  }
   if (p.status === 'bezig') return `Bezig (${p.completed}/${p.total})`
   return 'Niet gestart'
 }
+
+const openLabel = computed(() => {
+  if (props.status?.status === 'onvolledig') return 'Afmaken'
+  if (props.status?.status === 'bezig') return 'Verder'
+  return 'Openen'
+})
 </script>
 
 <style scoped>
