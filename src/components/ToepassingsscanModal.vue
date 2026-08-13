@@ -117,9 +117,13 @@
             v-if="!hasBeslishulp && kenmerken.algoritme_of_ai !== false"
             class="rvo-alert rvo-alert--info rvo-alert--padding-md scan__alert"
           >
+            <!-- One element inside the container: rvo-alert lays its children out
+                 in a row, so a bare <strong> would sit beside the text. -->
             <div class="rvo-alert__container">
-              Er is sprake van (mogelijk) een algoritme. Of de AI-verordening geldt, bepaalt de
-              <strong>Beslishulp AI-verordening</strong> — die staat op de dossierpagina bij de EU AI Act-kaart.
+              <div>
+                Er is sprake van (mogelijk) een algoritme. Of de AI-verordening geldt, bepaalt de
+                <strong>Beslishulp AI-verordening</strong> — die staat op de dossierpagina bij de EU AI Act-kaart.
+              </div>
             </div>
           </div>
 

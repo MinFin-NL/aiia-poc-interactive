@@ -10,8 +10,9 @@
       </header>
 
       <div class="rvo-alert rvo-alert--info rvo-alert--padding-md">
+        <!-- One element inside the container: rvo-alert lays its children out in a row. -->
         <div class="rvo-alert__container">
-          <strong>Let op:</strong> {{ content.notice }}
+          <div><strong>Let op:</strong> {{ content.notice }}</div>
         </div>
       </div>
 

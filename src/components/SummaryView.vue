@@ -13,9 +13,12 @@
         class="rvo-alert rvo-alert--padding-md"
         :class="`rvo-alert--${alertType}`"
       >
+        <!-- One element inside the container: rvo-alert lays its children out in a row. -->
         <div class="rvo-alert__container">
-          <strong>Risicoclassificatie: {{ riskInfo?.label }}</strong><br />
-          {{ riskInfo?.description }}
+          <div>
+            <strong>Risicoclassificatie: {{ riskInfo?.label }}</strong><br />
+            {{ riskInfo?.description }}
+          </div>
         </div>
       </div>
 

@@ -262,8 +262,9 @@
             <div class="rvo-alert__container">{{ uploadingLabel }}</div>
           </div>
           <div v-if="successMessage" class="rvo-alert rvo-alert--success rvo-alert--padding-sm">
+            <!-- One element inside the container: rvo-alert lays its children out in a row. -->
             <div class="rvo-alert__container">
-              <strong>Toegevoegd:</strong> {{ successMessage }}
+              <div><strong>Toegevoegd:</strong> {{ successMessage }}</div>
             </div>
           </div>
           <div v-if="uploadError" class="rvo-alert rvo-alert--error rvo-alert--padding-sm">

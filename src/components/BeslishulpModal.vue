@@ -161,11 +161,14 @@
              Upstream writes no fallback redirect, so a combination of answers can
              in principle match no route. Say so plainly instead of freezing. -->
         <div v-else-if="position?.kind === 'deadEnd'" class="rvo-alert rvo-alert--warning rvo-alert--padding-md" role="alert">
+          <!-- One element inside the container: rvo-alert lays its children out in a row. -->
           <div class="rvo-alert__container">
-            <strong>Geen vervolgvraag gevonden.</strong><br />
-            Deze combinatie van antwoorden leidt in de beslisboom niet naar een vervolgvraag of conclusie.
-            Ga een stap terug en kies een ander antwoord, of raadpleeg
-            <a class="rvo-link" href="mailto:ai-verordening@minbzk.nl">ai-verordening@minbzk.nl</a>.
+            <div>
+              <strong>Geen vervolgvraag gevonden.</strong><br />
+              Deze combinatie van antwoorden leidt in de beslisboom niet naar een vervolgvraag of conclusie.
+              Ga een stap terug en kies een ander antwoord, of raadpleeg
+              <a class="rvo-link" href="mailto:ai-verordening@minbzk.nl">ai-verordening@minbzk.nl</a>.
+            </div>
           </div>
         </div>
       </div>
