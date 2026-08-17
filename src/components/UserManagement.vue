@@ -469,10 +469,26 @@ async function copyTempPassword() {
   mask-image: url('@nl-rvo/assets/icons/functioneel/vinkje.svg');
 }
 
+/* Zelfde ingreep als in QuestionItem.vue: rvo-form-fieldset brengt een grijze
+   achtergrond en eigen padding mee. Die hoort bij een fieldset die een heel
+   formulier omkadert, niet bij één keuzeveld tussen de andere velden — laat het
+   blok anders als een misplaatst grijs vlak over de volle breedte staan. */
 .user-mgmt__roles-fieldset {
+  background: transparent;
   border: 0;
   margin: 0;
   padding: 0;
+  min-inline-size: 0;
+}
+
+/* De legend is standaard 1,25rem/700 — een kop. Hier is het een veldlabel
+   tussen "Voornaam" en "E-mailadres", dus dezelfde tokens als .rvo-label. */
+.user-mgmt__roles-fieldset .rvo-form-fieldset__legend {
+  padding: 0;
+  margin: 0;
+  font-size: var(--rvo-label-font-size);
+  font-weight: var(--rvo-label-font-weight);
+  line-height: var(--rvo-line-height-md);
 }
 
 .user-mgmt__roles-fieldset .rvo-form-field__description {
