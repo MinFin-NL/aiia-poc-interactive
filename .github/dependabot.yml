@@ -13,6 +13,15 @@ updates:
     labels:
       - "dependencies"
       - "frontend"
+    ignore:
+      # TypeScript blijft bewust op 6.x. TypeScript 7 is de native (Go) compiler:
+      # die exporteert ./lib/tsc niet meer, waardoor `vue-tsc` in `npm run build`
+      # afbreekt met ERR_PACKAGE_PATH_NOT_EXPORTED. Er is nog geen vue-tsc-release
+      # (laatste: 3.3.10) die TypeScript 7 ondersteunt.
+      # Weer toestaan zodra vue-tsc TypeScript 7 aankan.
+      - dependency-name: "typescript"
+        update-types:
+          - "version-update:semver-major"
     groups:
       tiptap:
         patterns:

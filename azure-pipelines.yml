@@ -92,6 +92,12 @@ stages:
   - stage: Deploy
     displayName: Deploy to Container Apps
     dependsOn: Build
+    # Only main deploys. PR validation runs (Build.SourceBranch =
+    # refs/pull/<n>/merge) still build and push their images, but must not touch
+    # the Container Apps: a PR run and a main run that overlap both call
+    # `az containerapp update` on the same app, and the second one fails with
+    # ContainerAppOperationInProgress.
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     jobs:
       - job: Deploy
         displayName: Deploy backend and frontend
