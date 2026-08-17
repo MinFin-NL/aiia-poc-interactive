@@ -64,6 +64,14 @@ updates:
     labels:
       - "dependencies"
       - "docker"
+    ignore:
+      # De backend blijft bewust op Python 3.13; 3.14 wordt niet voorgesteld.
+      # Voor image-tags telt 3.13 -> 3.14 als een minor update, vandaar beide types.
+      # Patch-updates binnen 3.13 blijven toegestaan.
+      - dependency-name: "python"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
 
   # Images pinned in docker-compose.yml
   - package-ecosystem: "docker-compose"
