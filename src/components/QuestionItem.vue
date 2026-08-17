@@ -19,6 +19,7 @@
           :provider="collabProvider"
           :user="collabUser"
           :question-context="question.text"
+          :ai-busy-label="aiBusyLabel"
           :aria-required="question.importance === 'mandatory' ? 'true' : undefined"
         />
       </div>
@@ -193,6 +194,7 @@ import { answerPlainText } from '../utils/sourceMatching'
 import { mergedOptions, radioScalar } from '../utils/answerRefs'
 import { getCachedForm } from '../services/formLoader'
 import { useCollab } from '../collab/useCollab'
+import { useAiBusy } from '../collab/useAiBusy'
 
 const props = defineProps<{
   question: Question
@@ -209,6 +211,9 @@ const mappings = useCrossFormMappings()
 // Collaborative binding for the main rich-text answer (text questions only).
 const collabQuestionId = computed(() => (props.question.type === 'text' ? props.question.id : ''))
 const { fragment: collabFragment, provider: collabProvider, user: collabUser } = useCollab(collabQuestionId)
+// "AI is aan het nadenken…" for this field — shared over awareness, so a
+// collaborator's run shows here too.
+const { label: aiBusyLabel } = useAiBusy(computed(() => props.question.id))
 const { isAiUnanswered, clearAiUnanswered, isAiSmoothed, clearAiSmoothed, undoSmoothingFor } = useAiMode()
 
 // True while AI Mode flagged this question as unanswerable and the user hasn't

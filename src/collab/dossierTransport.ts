@@ -19,6 +19,17 @@ export interface PresentUser {
   isSelf: boolean
 }
 
+/** A client whose AI Modus run is working on one question right now. Broadcast
+ *  over awareness so collaborators see the field is being written, not just the
+ *  person who started the run. */
+export interface AiBusyPeer {
+  clientId: number
+  name: string
+  isSelf: boolean
+  formId: string
+  questionId: string
+}
+
 interface Awareness {
   clientID: number
   setLocalStateField(field: string, value: unknown): void
@@ -64,6 +75,12 @@ let localUser: { sub: string; name: string; color: string } | null = null
 // subscriber gets the current state immediately).
 const presenceCbs = new Map<string, Set<(users: PresentUser[]) => void>>()
 const presenceRoster = new Map<string, PresentUser[]>()
+// Same shape for the AI-busy channel. `localAiBusy` is kept separately because a
+// run can start before the provider exists (or without one at all) — it is what
+// gets (re)published on connect, and what drives the roster while offline.
+const aiBusyCbs = new Map<string, Set<(peers: AiBusyPeer[]) => void>>()
+const aiBusyRoster = new Map<string, AiBusyPeer[]>()
+const localAiBusy = new Map<string, { formId: string; questionId: string } | null>()
 
 /** A stable, readable colour from a user id — same person, same colour. */
 export function colorForUser(sub: string): string {
@@ -80,6 +97,64 @@ export function setLocalUser(user: { sub: string; name: string }): void {
 
 function applyLocalUser(provider: Provider): void {
   if (localUser) provider.awareness.setLocalStateField('user', localUser)
+}
+
+function applyLocalAiBusy(dossierId: string, provider: Provider): void {
+  provider.awareness.setLocalStateField('aiBusy', localAiBusy.get(dossierId) ?? null)
+}
+
+/** Announce which question the local AI Modus run is working on (null when it
+ *  isn't). Safe to call before — or entirely without — a live connection. */
+export function setLocalAiBusy(
+  dossierId: string,
+  busy: { formId: string; questionId: string } | null,
+): void {
+  localAiBusy.set(dossierId, busy)
+  const provider = providers.get(dossierId)
+  // With a provider the roster is rebuilt from awareness (which includes our own
+  // state) via the 'change' handler; without one we are the only client there is.
+  if (provider) applyLocalAiBusy(dossierId, provider)
+  else recomputeAiBusy(dossierId)
+}
+
+function recomputeAiBusy(dossierId: string): void {
+  const provider = providers.get(dossierId)
+  const peers: AiBusyPeer[] = []
+  if (provider) {
+    const self = provider.awareness.clientID
+    for (const [clientId, state] of provider.awareness.getStates()) {
+      const busy = state.aiBusy as { formId?: string; questionId?: string } | null | undefined
+      if (!busy?.formId || !busy.questionId) continue
+      const u = state.user as { name?: string } | undefined
+      peers.push({
+        clientId,
+        name: u?.name ?? '',
+        isSelf: clientId === self,
+        formId: busy.formId,
+        questionId: busy.questionId,
+      })
+    }
+  } else {
+    // Solo session, offline, or still connecting: only the local run can exist.
+    const busy = localAiBusy.get(dossierId)
+    if (busy) {
+      peers.push({ clientId: -1, name: localUser?.name ?? '', isSelf: true, ...busy })
+    }
+  }
+  aiBusyRoster.set(dossierId, peers)
+  aiBusyCbs.get(dossierId)?.forEach((cb) => cb(peers))
+}
+
+/** Subscribe to the questions AI Modus is working on across all clients on this
+ *  dossier. Fires immediately with the current roster. Returns an unsubscribe. */
+export function onAiBusy(dossierId: string, cb: (peers: AiBusyPeer[]) => void): () => void {
+  let set = aiBusyCbs.get(dossierId)
+  if (!set) aiBusyCbs.set(dossierId, (set = new Set()))
+  set.add(cb)
+  cb(aiBusyRoster.get(dossierId) ?? [])
+  return () => {
+    aiBusyCbs.get(dossierId)?.delete(cb)
+  }
 }
 
 function wireAwareness(dossierId: string, provider: Provider): void {
@@ -103,6 +178,7 @@ function wireAwareness(dossierId: string, provider: Provider): void {
     }
     presenceRoster.set(dossierId, users)
     presenceCbs.get(dossierId)?.forEach((cb) => cb(users))
+    recomputeAiBusy(dossierId)
 
     // The server relays awareness *changes* but doesn't replay existing state to
     // a client that just joined. So when we notice a new peer, re-announce
@@ -168,6 +244,8 @@ export function connectDossier(doc: Y.Doc, dossierId: string, onReady: () => voi
       const provider = new WebsocketProvider(url, dossierId, doc, { connect: true })
       providers.set(dossierId, provider)
       applyLocalUser(provider)
+      // A run that started before the socket came up is still going; publish it.
+      applyLocalAiBusy(dossierId, provider)
       wireAwareness(dossierId, provider)
       providerReadyCbs.get(dossierId)?.forEach((cb) => cb())
 
@@ -232,6 +310,11 @@ export function disconnectDossier(dossierId: string): Promise<void> {
   connecting.delete(dossierId)
   presenceRoster.set(dossierId, [])
   presenceCbs.get(dossierId)?.forEach((cb) => cb([]))
+  // The local run (if any) is torn down with the dossier, so drop its state
+  // rather than letting recomputeAiBusy resurrect it from the offline path.
+  localAiBusy.delete(dossierId)
+  aiBusyRoster.set(dossierId, [])
+  aiBusyCbs.get(dossierId)?.forEach((cb) => cb([]))
   return closed
 }
 

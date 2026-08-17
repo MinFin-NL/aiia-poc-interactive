@@ -1,5 +1,11 @@
 <template>
   <div class="tiptap-wrapper">
+    <!-- AI Modus is writing this very field (own run or a collaborator's) -->
+    <p v-if="aiBusyLabel" class="tiptap-ai-busy" role="status">
+      <span class="tiptap-ai-busy__icon" aria-hidden="true">✦</span>
+      <span class="tiptap-ai-busy__label">{{ aiBusyLabel }}</span>
+    </p>
+
     <EditorContent :editor="editor" class="tiptap-editor" />
 
     <!-- Suggestion panel: visible while streaming, when a suggestion is ready
@@ -173,6 +179,9 @@ const props = defineProps<{
   // y-websocket provider — enables remote cursors (CollaborationCaret).
   provider?: unknown | null
   user?: { name: string; color: string } | null
+  // Non-empty while AI Modus is generating this question's answer — shown as a
+  // bar above the content. Empty/undefined hides it.
+  aiBusyLabel?: string
 }>()
 
 const emit = defineEmits<{
@@ -419,6 +428,59 @@ function rejectSuggestion() {
   top: -1.3em;
   user-select: none;
   white-space: nowrap;
+}
+
+/* AI-Modus huisstijl (blauw/paars) — bewust buiten het RVO-palet, gelijk aan
+   AiModeToggle. Zit als strook vast bovenop het invoerveld. */
+.tiptap-ai-busy {
+  display: flex;
+  align-items: center;
+  gap: var(--rvo-space-2xs);
+  margin: 0;
+  padding: var(--rvo-space-2xs) var(--rvo-space-sm);
+  box-sizing: border-box;
+  background: linear-gradient(135deg, rgba(15, 45, 92, 0.08), rgba(91, 33, 182, 0.12));
+  border: 1px solid rgba(91, 33, 182, 0.4);
+  border-block-end: 0;
+  border-radius: var(--rvo-border-radius-sm) var(--rvo-border-radius-sm) 0 0;
+  color: #0f2d5c;
+  font-size: var(--rvo-font-size-sm);
+  font-weight: var(--rvo-font-weight-semibold);
+}
+
+/* Het veld eronder sluit aan op de strook. */
+.tiptap-wrapper:has(.tiptap-ai-busy) .tiptap-editor {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}
+
+.tiptap-ai-busy__icon {
+  animation: tiptap-ai-pulse var(--invulhulp-loop-breathe) var(--invulhulp-ease-in-out) infinite;
+  color: #5b21b6;
+}
+
+/* De tekst 'ademt' mee zodat zichtbaar is dat er nog gewerkt wordt — een
+   voortgangsindicator (WCAG 2.2.2 'essential'), maar de beweging is subtiel
+   genoeg om onder reduced-motion helemaal uit te zetten: de tekst zelf blijft. */
+.tiptap-ai-busy__label {
+  animation: tiptap-ai-fade var(--invulhulp-loop-breathe) var(--invulhulp-ease-in-out) infinite;
+}
+
+@keyframes tiptap-ai-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes tiptap-ai-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tiptap-ai-busy__icon,
+  .tiptap-ai-busy__label {
+    animation: none;
+  }
 }
 
 .tiptap-suggestion {

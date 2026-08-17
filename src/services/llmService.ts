@@ -527,6 +527,10 @@ export interface BulkExtractParams {
   onRetrieved?: (qId: string, sources: AnswerSource[]) => void
   /** Called when the model responded but produced no usable answer for a question. */
   onEmpty?: (qId: string) => void
+  /** The question the model is about to be asked — fires before its call, and
+   *  once with null when the run is done. Drives the per-field "AI is aan het
+   *  nadenken…" bar; skipped questions never fire it. */
+  onQuestionStart?: (qId: string | null) => void
   onProgress: (filled: number, total: number) => void
   isCancelled: () => boolean
   /** Re-evaluated per question, just before its LLM call. Return false to skip
@@ -563,7 +567,7 @@ export function buildAnswerSourceMeta(
 }
 
 export async function bulkExtractFromDocument(params: BulkExtractParams): Promise<number> {
-  const { sessionId, docIds, questions, formContext, onAnswer, onSources, onRetrieved, onEmpty, onProgress, isCancelled, shouldAnswer } = params
+  const { sessionId, docIds, questions, formContext, onAnswer, onSources, onRetrieved, onEmpty, onProgress, onQuestionStart, isCancelled, shouldAnswer } = params
   let filled = 0
   let skipped = 0
 
@@ -577,6 +581,7 @@ export async function bulkExtractFromDocument(params: BulkExtractParams): Promis
       continue
     }
     onProgress(filled, questions.length - skipped)
+    onQuestionStart?.(question.id)
 
     await extractRagStream(
       {
@@ -614,6 +619,7 @@ export async function bulkExtractFromDocument(params: BulkExtractParams): Promis
     })
   }
 
+  onQuestionStart?.(null)
   onProgress(filled, questions.length - skipped)
   return filled
 }

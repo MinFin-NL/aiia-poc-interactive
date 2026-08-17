@@ -8,6 +8,7 @@ import {
   verifyDocuments,
 } from '../services/llmService'
 import type { SmoothSection } from '../services/llmService'
+import { setLocalAiBusy } from '../collab/dossierTransport'
 import { stripHtml } from '../utils/sourceMatching'
 import { isQuestionVisible } from '../utils/answerRefs'
 import type { AnswerSource, FormConfig } from '../models/Assessment'
@@ -138,6 +139,11 @@ export function useAiMode() {
       onProgress: (f, t) => {
         aiModeProgress.value = { ...aiModeProgress.value, [formId]: { filled: f, total: t } }
       },
+      // Broadcast over Yjs awareness so the question's editor — on every
+      // collaborator's screen, not just the starter's — shows the thinking bar.
+      onQuestionStart: (qId) => {
+        setLocalAiBusy(dossierId, qId ? { formId, questionId: qId } : null)
+      },
       isCancelled: () => aiModeCancelled[formId] === true,
       // Re-checked live: don't spend a call on a question hidden by its visibleIf,
       // and pick up any that became visible once the AI filled its controller.
@@ -145,6 +151,10 @@ export function useAiMode() {
       shouldAnswer: (q) =>
         isQuestionVisible(q, (id) => store.dossiers[dossierId]?.forms[formId]?.answers?.[id] ?? ''),
     })
+
+    // Smoothing works across answers, not on one field — no question owns the
+    // bar during it, so make sure the last one released it.
+    setLocalAiBusy(dossierId, null)
 
     if (!aiModeCancelled[formId]) {
       await smoothForm(formId, formConfig, dossierId)
