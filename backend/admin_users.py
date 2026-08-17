@@ -44,6 +44,9 @@ ADMIN_URL = f"{_BASE_URL}/admin/realms/{_REALM}"
 
 DEFAULT_ROLE = "gebruiker"
 ADMIN_ROLE = auth.ADMIN_ROLE
+# Rollen die het formulierenaanbod inperken (auth.SCOPE_ROLES). Sorted zodat de
+# volgorde in de API stabiel is; de titels leven in public/forms/index.json.
+SCOPE_ROLES = sorted(auth.SCOPE_ROLES)
 
 router = APIRouter(
     prefix="/api/admin/users",
@@ -152,11 +155,53 @@ class UserCreate(BaseModel):
     lastName: str
     email: str
     isAdmin: bool = False
+    # Rollen die het formulierenaanbod inperken; leeg = ziet alle formulieren.
+    scopeRoles: list[str] = []
 
 
 class UserUpdate(BaseModel):
     enabled: bool | None = None
     isAdmin: bool | None = None
+    # De volledige gewenste set scope-rollen. None = ongemoeid laten; [] = alle
+    # scope-rollen afnemen, waarmee de gebruiker weer alle formulieren ziet.
+    scopeRoles: list[str] | None = None
+
+
+def _validate_scope_roles(roles: list[str]) -> list[str]:
+    unknown = sorted(set(roles) - auth.SCOPE_ROLES)
+    if unknown:
+        raise HTTPException(status_code=422, detail=f"Onbekende rol: {', '.join(unknown)}")
+    return sorted(set(roles))
+
+
+async def _set_scope_roles(client: httpx.AsyncClient, user_id: str, wanted: list[str]) -> None:
+    """Breng de scope-rollen van een gebruiker naar precies `wanted`.
+
+    Alleen het verschil wordt geschreven: Keycloak faalt niet op een dubbele
+    toekenning, maar een DELETE van een rol die er niet is levert wél ruis op.
+    Rollen buiten SCOPE_ROLES (gebruiker, beheerder) blijven ongemoeid.
+    """
+    res = await _kc(client, "GET", f"/users/{user_id}/role-mappings/realm")
+    if res.status_code != 200:
+        raise HTTPException(status_code=502, detail="Rollen ophalen mislukt")
+    current = {r["name"] for r in res.json()} & auth.SCOPE_ROLES
+    for name in sorted(set(wanted) - current):
+        await _kc(
+            client, "POST", f"/users/{user_id}/role-mappings/realm",
+            json=[await _realm_role(client, name)],
+        )
+    for name in sorted(current - set(wanted)):
+        await _kc(
+            client, "DELETE", f"/users/{user_id}/role-mappings/realm",
+            json=[await _realm_role(client, name)],
+        )
+
+
+@router.get("/roles")
+async def list_scope_roles() -> list[str]:
+    """De rollen die het formulierenaanbod inperken — de UI vult hier de
+    keuzelijst mee, zodat de rolnamen niet in de frontend gedupliceerd staan."""
+    return SCOPE_ROLES
 
 
 @router.get("")
@@ -167,6 +212,14 @@ async def list_users(request: Request) -> list[dict]:
             raise HTTPException(status_code=502, detail="Gebruikers ophalen mislukt")
         admins_res = await _kc(client, "GET", f"/roles/{ADMIN_ROLE}/users", params={"max": 500})
         admin_ids = {u["id"] for u in admins_res.json()} if admins_res.status_code == 200 else set()
+        # Per scope-rol de leden ophalen: één call per rol is goedkoper dan de
+        # role-mappings van elke gebruiker apart opvragen.
+        scope_members: dict[str, set[str]] = {}
+        for name in SCOPE_ROLES:
+            members = await _kc(client, "GET", f"/roles/{name}/users", params={"max": 500})
+            scope_members[name] = (
+                {u["id"] for u in members.json()} if members.status_code == 200 else set()
+            )
     me = auth.current_user(request)
     me_sub = me.get("sub")
     # Match self op e-mail én sub: na een Keycloak-herseed krijgt de beheerder
@@ -188,6 +241,7 @@ async def list_users(request: Request) -> list[dict]:
             "email": u.get("email"),
             "enabled": u.get("enabled", False),
             "isAdmin": u["id"] in admin_ids,
+            "scopeRoles": [n for n in SCOPE_ROLES if u["id"] in scope_members[n]],
             "isSelf": _is_self(u),
             "createdTimestamp": u.get("createdTimestamp"),
         }
@@ -202,6 +256,7 @@ async def create_user(body: UserCreate) -> dict:
     email = body.email.strip().lower()
     if not _EMAIL_RE.match(email):
         raise HTTPException(status_code=422, detail="Ongeldig e-mailadres")
+    scope_roles = _validate_scope_roles(body.scopeRoles)
     async with httpx.AsyncClient(timeout=15) as client:
         res = await _kc(
             client,
@@ -228,6 +283,8 @@ async def create_user(body: UserCreate) -> dict:
         roles = [await _realm_role(client, DEFAULT_ROLE)]
         if body.isAdmin:
             roles.append(await _realm_role(client, ADMIN_ROLE))
+        for name in scope_roles:
+            roles.append(await _realm_role(client, name))
         await _kc(client, "POST", f"/users/{user_id}/role-mappings/realm", json=roles)
 
         password = _temp_password()
@@ -254,6 +311,8 @@ async def update_user(user_id: str, body: UserUpdate, request: Request) -> dict:
             res = await _kc(client, method, f"/users/{user_id}/role-mappings/realm", json=[role])
             if res.status_code not in (200, 204):
                 raise HTTPException(status_code=502, detail="Rol bijwerken mislukt")
+        if body.scopeRoles is not None:
+            await _set_scope_roles(client, user_id, _validate_scope_roles(body.scopeRoles))
     return {"ok": True}
 
 

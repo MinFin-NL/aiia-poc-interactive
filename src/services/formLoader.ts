@@ -1,5 +1,6 @@
 import type { FormConfig, CrossFormMapping, Question, Section } from '../models/Assessment'
 import type { ApplicabilityRule } from '../utils/toepassingsscan'
+import { useAuthStore } from '../stores/authStore'
 
 const cache = new Map<string, FormConfig>()
 let mappingsCache: CrossFormMapping[] | null = null
@@ -54,14 +55,70 @@ export interface FormIndexEntry {
   applicability?: ApplicabilityRule
 }
 
-/** The registry as it stands, placeholders included. Only the dossier overview
- *  wants these — everything that counts, opens or scans forms wants
- *  `loadAvailableForms()` instead. */
-export async function loadFormRegistry(): Promise<FormIndexEntry[]> {
+/**
+ * Een rol die het formulierenaanbod inperkt. De rol-id is de realm-rol in
+ * Keycloak (zie APP_ROLES in backend/auth.py); `forms` is de lijst formulieren
+ * die iemand met die rol te zien krijgt.
+ *
+ * Dit is bewust een expliciete lijst per rol en geen afgeleide van `domains`:
+ * een projectleider loopt formulieren uit vijf domeinen door, dus het domein
+ * is hier niet de juiste korrel. Zie docs/rollen-en-rechten-advies.md §7.
+ */
+export interface FormRole {
+  id: string
+  title: string
+  description?: string
+  forms: string[]
+}
+
+let rolesCache: FormRole[] | null = null
+
+/** De rollen die het aanbod inperken, in registratievolgorde. */
+export async function loadFormRoles(): Promise<FormRole[]> {
+  if (!rolesCache) await fetchRegistry()
+  return rolesCache ?? []
+}
+
+async function fetchRegistry(): Promise<FormIndexEntry[]> {
   const res = await fetch('/forms/index.json', REVALIDATE)
   if (!res.ok) throw new Error('Could not load form index')
-  const raw = await res.json() as { forms: FormIndexEntry[] }
+  const raw = await res.json() as { forms: FormIndexEntry[]; roles?: FormRole[] }
+  rolesCache = raw.roles ?? []
   return raw.forms.map((f) => ({ id: f.id, urn: f.urn, registryUrn: f.registryUrn, title: f.title ?? f.id, track: f.track, order: f.order, domains: f.domains, shortDescription: f.shortDescription, placeholder: f.placeholder, applicability: f.applicability }))
+}
+
+/**
+ * Het aanbod voor iemand met deze realm-rollen.
+ *
+ * Heeft de gebruiker géén van de rollen die het aanbod inperken, dan ziet hij
+ * alles — dat is de bestaande situatie en blijft de standaard. Heeft hij er wel
+ * één (of meer), dan ziet hij de vereniging van die rollen: een rol geeft, hij
+ * neemt niet af van een andere rol.
+ *
+ * Onbekende ids in `forms` worden genegeerd; dat is een typo in index.json en
+ * mag geen leeg scherm opleveren.
+ */
+export function scopeFormsToRoles(
+  entries: FormIndexEntry[],
+  roles: FormRole[],
+  userRoles: string[] | undefined,
+): FormIndexEntry[] {
+  const active = roles.filter((r) => userRoles?.includes(r.id))
+  if (active.length === 0) return entries
+  const allowed = new Set(active.flatMap((r) => r.forms))
+  return entries.filter((f) => allowed.has(f.id))
+}
+
+/** The registry as it stands, placeholders included. Only the dossier overview
+ *  wants these — everything that counts, opens or scans forms wants
+ *  `loadAvailableForms()` instead.
+ *
+ *  Het resultaat is al ingeperkt op de rollen van de ingelogde gebruiker: dit
+ *  is het enige punt waar het aanbod de app in komt, dus filteren we hier in
+ *  plaats van in elk scherm apart. */
+export async function loadFormRegistry(): Promise<FormIndexEntry[]> {
+  const entries = await fetchRegistry()
+  return scopeFormsToRoles(entries, rolesCache ?? [], useAuthStore().user?.roles)
 }
 
 /** The forms that actually exist and can be opened. Placeholders are left out:

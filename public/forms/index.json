@@ -1,4 +1,28 @@
 {
+  "roles": [
+    {
+      "id": "projectmanagement",
+      "title": "Projectmanagement",
+      "description": "Ziet de formulieren die een projectleider zelf doorloopt: intake, aanbieding, de initiatieproducten en de rapportages tot en met afronding.",
+      "forms": [
+        "intake",
+        "aanbiedingsformulier",
+        "ppm",
+        "psa",
+        "quickscan",
+        "prescandpia",
+        "dpia",
+        "aiia",
+        "ihhtoets",
+        "cloudtoets",
+        "bia",
+        "voortgangsrapportage",
+        "afwijkingsformulier",
+        "evaluatie",
+        "risicoimpact"
+      ]
+    }
+  ],
   "forms": [
     {
       "id": "intake",

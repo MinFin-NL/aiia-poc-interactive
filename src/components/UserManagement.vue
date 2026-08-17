@@ -59,6 +59,26 @@
             <input v-model="form.isAdmin" class="rvo-checkbox__input" type="checkbox" />
             Beheerder (mag gebruikers beheren)
           </label>
+          <fieldset v-if="scopeRoles.length" class="rvo-form-fieldset user-mgmt__roles-fieldset">
+            <legend class="rvo-form-fieldset__legend">Formulierenset</legend>
+            <p class="rvo-form-field__description">
+              Zonder rol ziet de gebruiker alle formulieren. Met een rol alleen de formulieren
+              die bij die rol horen.
+            </p>
+            <div class="rvo-checkbox__group">
+              <label v-for="role in scopeRoles" :key="role.id" class="rvo-checkbox">
+                <input
+                  v-model="form.scopeRoles"
+                  :value="role.id"
+                  class="rvo-checkbox__input"
+                  type="checkbox"
+                />
+                <span class="rvo-checkbox__label">
+                  {{ role.title }} ({{ role.forms.length }} formulieren)
+                </span>
+              </label>
+            </div>
+          </fieldset>
           <div>
             <button class="rvo-button rvo-button--primary" type="submit" :disabled="busy">
               {{ busy ? 'Bezig…' : 'Gebruiker aanmaken' }}
@@ -78,6 +98,7 @@
                 <th class="rvo-table-header">Naam</th>
                 <th class="rvo-table-header">E-mail</th>
                 <th class="rvo-table-header">Rol</th>
+                <th v-if="scopeRoles.length" class="rvo-table-header">Formulierenset</th>
                 <th class="rvo-table-header">Status</th>
                 <th class="rvo-table-header">Acties</th>
               </tr>
@@ -92,6 +113,28 @@
                 <td class="rvo-table-cell">
                   <span v-if="u.isAdmin" class="user-mgmt__badge user-mgmt__badge--admin">Beheerder</span>
                   <span v-else class="user-mgmt__badge">Gebruiker</span>
+                </td>
+                <td v-if="scopeRoles.length" class="rvo-table-cell">
+                  <div class="rvo-checkbox__group user-mgmt__roles">
+                    <label
+                      v-for="role in scopeRoles"
+                      :key="role.id"
+                      class="rvo-checkbox user-mgmt__role-check"
+                    >
+                      <input
+                        class="rvo-checkbox__input"
+                        type="checkbox"
+                        :checked="u.scopeRoles.includes(role.id)"
+                        :disabled="busy"
+                        :aria-label="`${role.title} voor ${userLabel(u)}`"
+                        @change="toggleScopeRole(u, role.id)"
+                      />
+                      <span class="rvo-checkbox__label">{{ role.title }}</span>
+                    </label>
+                  </div>
+                  <span v-if="u.scopeRoles.length === 0" class="user-mgmt__all-forms">
+                    Ziet alle formulieren
+                  </span>
                 </td>
                 <td class="rvo-table-cell">
                   <span :class="['user-mgmt__badge', u.enabled ? 'user-mgmt__badge--active' : 'user-mgmt__badge--off']">
@@ -174,6 +217,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import ConfirmDialog from './ConfirmDialog.vue'
+import { loadFormRoles, type FormRole } from '../services/formLoader'
 
 interface ManagedUser {
   id: string
@@ -183,7 +227,19 @@ interface ManagedUser {
   email: string | null
   enabled: boolean
   isAdmin: boolean
+  /** Rollen die het formulierenaanbod inperken; leeg = ziet alles. */
+  scopeRoles: string[]
   isSelf: boolean
+}
+
+/** De rollen die de backend kent (auth.SCOPE_ROLES), aangevuld met de titel en
+ *  formulierenlijst uit public/forms/index.json. De backend is leidend: een rol
+ *  die daar niet in staat kan niet toegekend worden, ook niet als index.json
+ *  hem al noemt. */
+const scopeRoles = ref<FormRole[]>([])
+
+function userLabel(u: ManagedUser): string {
+  return [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email || u.username || 'gebruiker'
 }
 
 const users = ref<ManagedUser[]>([])
@@ -192,7 +248,7 @@ const busy = ref(false)
 const error = ref<string | null>(null)
 const tempPassword = ref<{ who: string; value: string } | null>(null)
 const copied = ref(false)
-const form = ref({ firstName: '', lastName: '', email: '', isAdmin: false })
+const form = ref({ firstName: '', lastName: '', email: '', isAdmin: false, scopeRoles: [] as string[] })
 const deleteDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
 const pendingDelete = ref<ManagedUser | null>(null)
 
@@ -235,7 +291,22 @@ async function refresh() {
   }
 }
 
+async function loadScopeRoles() {
+  try {
+    const known = await api<string[]>('/roles')
+    const described = await loadFormRoles()
+    scopeRoles.value = known.map(
+      (id) => described.find((r) => r.id === id) ?? { id, title: id, forms: [] },
+    )
+  } catch {
+    // Zonder rollenlijst blijft het scherm gewoon werken: de kolom verdwijnt en
+    // gebruikersbeheer doet wat het altijd deed.
+    scopeRoles.value = []
+  }
+}
+
 onMounted(refresh)
+onMounted(loadScopeRoles)
 
 async function run(fn: () => Promise<void>) {
   busy.value = true
@@ -252,15 +323,15 @@ async function run(fn: () => Promise<void>) {
 }
 
 function createUser() {
-  const { firstName, lastName, email, isAdmin } = form.value
+  const { firstName, lastName, email, isAdmin, scopeRoles: roles } = form.value
   run(async () => {
     const res = await api<{ id: string; tempPassword: string }>('', {
       method: 'POST',
-      body: JSON.stringify({ firstName, lastName, email, isAdmin }),
+      body: JSON.stringify({ firstName, lastName, email, isAdmin, scopeRoles: roles }),
     })
     tempPassword.value = { who: email, value: res.tempPassword }
     copied.value = false
-    form.value = { firstName: '', lastName: '', email: '', isAdmin: false }
+    form.value = { firstName: '', lastName: '', email: '', isAdmin: false, scopeRoles: [] }
   })
 }
 
@@ -274,6 +345,20 @@ function resetPassword(u: ManagedUser) {
 
 function toggleAdmin(u: ManagedUser) {
   run(() => api(`/${u.id}`, { method: 'PUT', body: JSON.stringify({ isAdmin: !u.isAdmin }) }))
+}
+
+/** Rol aan- of uitzetten. De backend krijgt de volledige gewenste set, zodat er
+ *  geen verschil kan ontstaan tussen wat het scherm toont en wat Keycloak weet. */
+function toggleScopeRole(u: ManagedUser, roleId: string) {
+  const wanted = u.scopeRoles.includes(roleId)
+    ? u.scopeRoles.filter((r) => r !== roleId)
+    : [...u.scopeRoles, roleId]
+  run(async () => {
+    await api(`/${u.id}`, { method: 'PUT', body: JSON.stringify({ scopeRoles: wanted }) })
+    // De rollen zitten in de sessiecookie, dus de wijziging telt pas na een
+    // nieuwe login — zeg dat, anders lijkt het scherm te liegen.
+    notice.value = `Formulierenset van ${userLabel(u)} aangepast. De wijziging geldt zodra deze gebruiker opnieuw inlogt.`
+  })
 }
 
 function toggleEnabled(u: ManagedUser) {
@@ -373,6 +458,46 @@ async function copyTempPassword() {
   display: flex;
   align-items: center;
   gap: var(--rvo-space-xs);
+}
+
+/* Zelfde reden als in QuestionItem.vue: het RVO-vinkje komt uit een
+   mask-image die het component-CSS niet meelevert, dus zonder deze regel is een
+   aangevinkt vakje een wit blok. Statische url() — een runtime-binding wordt een
+   wit vlak in de productiebuild. */
+.user-mgmt .rvo-checkbox__input:checked::after {
+  -webkit-mask-image: url('@nl-rvo/assets/icons/functioneel/vinkje.svg');
+  mask-image: url('@nl-rvo/assets/icons/functioneel/vinkje.svg');
+}
+
+.user-mgmt__roles-fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.user-mgmt__roles-fieldset .rvo-form-field__description {
+  margin-block: var(--rvo-space-2xs) var(--rvo-space-xs);
+  color: var(--invulhulp-color-text-subtle);
+}
+
+.user-mgmt__roles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rvo-space-2xs);
+}
+
+.user-mgmt__role-check {
+  display: flex;
+  align-items: center;
+  gap: var(--rvo-space-xs);
+  white-space: nowrap;
+}
+
+.user-mgmt__all-forms {
+  display: block;
+  margin-block-start: var(--rvo-space-2xs);
+  font-size: var(--rvo-font-size-xs);
+  color: var(--invulhulp-color-text-subtle);
 }
 
 .user-mgmt__table-wrap {

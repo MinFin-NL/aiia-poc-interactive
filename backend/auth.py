@@ -37,9 +37,16 @@ DEV_USER = {
     "roles": ["gebruiker", "beheerder"],
 }
 
+# Rollen die het formulierenaanbod inperken. Wie er géén heeft, ziet alles;
+# wie er één heeft, ziet alleen de formulieren die in public/forms/index.json
+# onder die rol staan. De frontend doet het filteren (formLoader.ts) — deze set
+# bepaalt alleen welke rollen de sessie in mogen en wat gebruikersbeheer
+# aanbiedt, zodat de rolnamen op één plek in de backend staan.
+SCOPE_ROLES = {"projectmanagement"}
+
 # Realm roles the app kent; andere Keycloak-rollen (offline_access e.d.)
 # worden niet in de sessie opgeslagen.
-APP_ROLES = {"gebruiker", "beheerder"}
+APP_ROLES = {"gebruiker", "beheerder"} | SCOPE_ROLES
 ADMIN_ROLE = "beheerder"
 
 OIDC_CLIENT_ID = os.environ.get("OIDC_CLIENT_ID", "findocs-bff")

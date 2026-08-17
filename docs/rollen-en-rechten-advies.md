@@ -1,8 +1,19 @@
 # Advies: fijnmaziger rollen en rechten
 
-Status: **advies / nog niet geïmplementeerd**. Dit document beschrijft welke rollen
-er ontbreken gegeven het huidige formulierenaanbod, hoe ze zich verhouden tot de
-bestaande dossier-grants, en in welke volgorde je ze zou invoeren.
+Status: **advies / grotendeels nog niet geïmplementeerd**. Dit document beschrijft
+welke rollen er ontbreken gegeven het huidige formulierenaanbod, hoe ze zich
+verhouden tot de bestaande dossier-grants, en in welke volgorde je ze zou invoeren.
+
+> **Wat er inmiddels wél is: scope-rollen.** Er bestaat één laag-B-achtige rol,
+> `projectmanagement`, die het *formulierenaanbod* inperkt: `auth.SCOPE_ROLES` in de
+> backend, een `roles`-blok in `public/forms/index.json`, en filtering in
+> `loadFormRegistry()`. Wie de rol niet heeft ziet alles — de standaard verandert
+> dus niet. Belangrijke afbakening: dit is **menu-inperking, geen autorisatie**. Het
+> gate't geen enkel endpoint; een dossier delen met iemand geeft nog steeds toegang
+> tot de antwoorden op elk formulier. Voor echte rechten blijft §4 (capabilities)
+> staan. En let op §7: de rol somt formulieren expliciet op in plaats van ze uit
+> `domains` af te leiden, omdat een projectleider nu eenmaal vijf domeinen doorkruist.
+> Dat is houdbaar bij een handvol rollen, niet bij twintig.
 
 ## 1. Wat er nu is
 
