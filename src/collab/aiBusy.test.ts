@@ -16,6 +16,9 @@ describe('AI-busy awareness channel', () => {
     return seen
   }
 
+  // Not Array.prototype.at: tsconfig targets ES2020, where it doesn't exist yet.
+  const last = (seen: AiBusyPeer[][]) => seen[seen.length - 1]
+
   it('fires immediately with the current (empty) roster', () => {
     expect(collect('d1')).toEqual([[]])
   })
@@ -23,23 +26,23 @@ describe('AI-busy awareness channel', () => {
   it('publishes the busy question to subscribers and clears it again', () => {
     const seen = collect('d1')
     setLocalAiBusy('d1', { formId: 'f1', questionId: 'q1' })
-    expect(seen.at(-1)).toEqual([
+    expect(last(seen)).toEqual([
       { clientId: -1, name: expect.any(String), isSelf: true, formId: 'f1', questionId: 'q1' },
     ])
     setLocalAiBusy('d1', null)
-    expect(seen.at(-1)).toEqual([])
+    expect(last(seen)).toEqual([])
   })
 
   it('labels the entry with the local user', () => {
     setLocalUser({ sub: 'u-1', name: 'Laurens' })
     const seen = collect('d1')
     setLocalAiBusy('d1', { formId: 'f1', questionId: 'q1' })
-    expect(seen.at(-1)?.[0].name).toBe('Laurens')
+    expect(last(seen)[0].name).toBe('Laurens')
   })
 
   it('keeps dossiers apart', () => {
     const other = collect('d2')
     setLocalAiBusy('d1', { formId: 'f1', questionId: 'q1' })
-    expect(other.at(-1)).toEqual([])
+    expect(last(other)).toEqual([])
   })
 })
