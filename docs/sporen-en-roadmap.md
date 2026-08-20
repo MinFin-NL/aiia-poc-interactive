@@ -36,7 +36,7 @@ De symptomen waren allemaal aanwezig:
 - **De DPIA is wettelijk verplicht (AVG art. 35) maar stond niet in Compliance.** De *EU AI
   Act Compliance Checklist* had "compliance" in de eigen titel en stond in Assessments.
   "Compliance" betekende dus niets consistents.
-- **Quick scan BIO en Prescan DPIA zijn hetzelfde instrumenttype** — een triage die bepaalt of
+- **Quickscan BIO2 en Prescan DPIA zijn hetzelfde instrumenttype** — een triage die bepaalt of
   een zwaarder instrument nodig is — en stonden in verschillende sporen.
 - **Het Compliancespoor had n=1.** Een categorie van één is geen categorie.
 - **De cross-form-graaf sprak de sporen tegen.** Bijna elke van de 87 mappings in
@@ -176,7 +176,9 @@ samen de sterkste sprong.
 - **Een volledig BIO2-/ENSIA-instrument.** BIO2/ISO 27001 vraagt risicoanalyse,
   maatregelenmatrix en in-controlverklaring, met een eigen keten en een auditor. Dat is een
   eigen product en past slecht in de dossier-vorm. Beter ernaar verwijzen dan half nabouwen.
-  (De huidige quickscan blijft wat hij is: een BBN-bepaling, niet meer.)
+  (De Quickscan BIO2 v2.0 blijft wat hij is: een classificatietoets op beschikbaarheid,
+  integriteit en vertrouwelijkheid, met een selectie van toepasselijke BIO2-maatregelen als
+  input voor het risicoacceptatieformulier — geen risicoanalyse en geen in-controlverklaring.)
 
 ### 4.4 Open ontwerpvraag: toepasselijkheid per formulier
 

@@ -95,7 +95,7 @@ is er juist om die te kunnen opnemen zonder codewijziging.
 
 ### 3.4 Twee bestaande formulieren zijn eigenlijk beslishulpen
 
-[`sporen-en-roadmap.md`](sporen-en-roadmap.md) §1 constateert al dat **Quick scan BIO** en
+[`sporen-en-roadmap.md`](sporen-en-roadmap.md) §1 constateert al dat **Quickscan BIO2** en
 **Prescan DPIA** "hetzelfde instrumenttype" zijn: een triage die bepaalt of een zwaarder instrument
 nodig is. Dat is letterlijk de definitie van een beslishulp in de README. Beide zijn beslisbomen
 die als vragenlijst zijn gerenderd: de quickscan leidt naar een BBN-niveau plus "is een DPIA

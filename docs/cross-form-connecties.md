@@ -31,7 +31,7 @@ Intake
   │                                    └── → AIIA ←──┤
   └── → PPM Projectplan                              │
                                                       │
-Quick scan BIO → Prescan DPIA ──────────────────────→ DPIA ↔ AIIA
+Quickscan BIO2 → Prescan DPIA ──────────────────────→ DPIA ↔ AIIA
 ```
 
 ---
@@ -135,21 +135,21 @@ AI-synthese.
 
 ---
 
-## Quick scan BIO → Prescan DPIA (2 koppelingen)
+## Quickscan BIO2 → Prescan DPIA (2 koppelingen)
 
-| Bronvraag (Quick scan BIO) | Doelvraag (Prescan DPIA) |
+| Bronvraag (Quickscan BIO2) | Doelvraag (Prescan DPIA) |
 |---|---|
-| Toelichting op de verwerking van persoonsgegevens | Welke typen persoonsgegevens worden mogelijk verwerkt? |
-| Naam van het proces of systeem + Onderbouwing van de classificatie | Beschrijving van de verwerking of het geheel van verwerkingen |
+| Welke (bijzondere) persoonsgegevens worden verwerkt? | Welke typen persoonsgegevens worden mogelijk verwerkt? |
+| Naam van het proces of informatiesysteem + Onderbouwing van de classificatie | Beschrijving van de verwerking of het geheel van verwerkingen |
 
 ---
 
-## Quick scan BIO → DPIA (2 koppelingen)
+## Quickscan BIO2 → DPIA (2 koppelingen)
 
-| Bronvraag (Quick scan BIO) | Doelvraag (DPIA) |
+| Bronvraag (Quickscan BIO2) | Doelvraag (DPIA) |
 |---|---|
-| Naam van het proces + Beschrijving van de gebruikte systemen | Beknopte omschrijving van het project |
-| Ketenpartners en afnemers van het proces | Betrokken partijen met AVG-rol per partij |
+| Naam van het proces of informatiesysteem + Door welke systemen wordt de informatie verwerkt | Beknopte omschrijving van het project |
+| Wie zijn de ketenpartners? | Betrokken partijen met AVG-rol per partij |
 
 ---
 
@@ -295,7 +295,7 @@ ander formulier beantwoorden.
 | PSA | 3 | Processen → de betrokken processen; informatiebeveiliging en logging/monitoring als onderbouwing bij vraag 17 en 18 |
 | Aanbiedingsformulier | 1 | Projectnaam (`copy`) |
 | DPIA | 1 | Bewaartermijnen → hoe lang de overheidsinformatie te bewaren is |
-| Quick scan BIO | 1 | Vereist niveau voor vertrouwelijkheid → rubricering |
+| Quickscan BIO2 | 1 | Vertrouwelijkheidsclassificatie → rubricering |
 
 **IHH-toets als bronformulier (2 koppelingen)**
 

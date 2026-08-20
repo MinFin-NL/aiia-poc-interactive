@@ -76,3 +76,7 @@ claude.md
 
 # Docx→JSON form authoring helpers (local only)
 opstelhulp/
+
+# Lokale video-opnames: nooit committen (zie README, video gaat via GitHub attachments)
+*.mp4
+*.mov

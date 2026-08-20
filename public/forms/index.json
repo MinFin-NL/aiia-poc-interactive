@@ -76,15 +76,15 @@
     },
     {
       "id": "quickscan",
-      "urn": "urn:nl:minfin:tr:quickscan:1.0",
+      "urn": "urn:nl:minfin:tr:quickscan:2.0",
       "file": "quickscan.json",
-      "title": "Quick scan BIO",
+      "title": "Quickscan BIO2",
       "track": "initiatie",
       "order": 3,
       "domains": [
         "beveiliging"
       ],
-      "shortDescription": "Bepaal snel het BIO-beveiligingsniveau (BBN) en of een DPIA of aanvullende maatregelen nodig zijn."
+      "shortDescription": "Classificeer de informatie op beschikbaarheid, integriteit en vertrouwelijkheid, beoordeel de quantumveiligheid en bepaal welke BIO2-maatregelen van toepassing zijn."
     },
     {
       "id": "prescandpia",

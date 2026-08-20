@@ -8,7 +8,7 @@ A web application that helps Dutch government employees fill in AI-related compl
 
 ## Features
 
-- **19 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quick scan BIO, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier, Restrisico-acceptatie) → *Ontwerpen* (PPM Projectplan, PSA, Datakwaliteit-assessment, Dataset-registratie) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist, Data-ethiektoets, IHH-toets) → *In gebruik nemen* (AI-systeemregistratie/Model Card, Algoritmeregister-publicatie, Verwerkingsregister, Toegankelijkheidsverklaring) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Every form records where it comes from and how faithfully — see [Form lineage](#form-lineage) — and carries a stable identifier in the shape the MinBZK task-registry uses for its instruments (`urn:nl:minfin:tr:dpia:3.0`), see [Form URNs](#form-urns).
+- **19 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quickscan BIO2, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier, Restrisico-acceptatie) → *Ontwerpen* (PPM Projectplan, PSA, Datakwaliteit-assessment, Dataset-registratie) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist, Data-ethiektoets, IHH-toets) → *In gebruik nemen* (AI-systeemregistratie/Model Card, Algoritmeregister-publicatie, Verwerkingsregister, Toegankelijkheidsverklaring) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Every form records where it comes from and how faithfully — see [Form lineage](#form-lineage) — and carries a stable identifier in the shape the MinBZK task-registry uses for its instruments (`urn:nl:minfin:tr:dpia:3.0`), see [Form URNs](#form-urns).
 - **Beslishulp AI-verordening (MinBZK)** — The official [ai-verordening-beslishulp](https://github.com/MinBZK/ai-verordening-beslishulp) decision tree runs inside the app as a modal, launched from a tile fused to the EU AI Act card on the dossier page. It determines whether the AI-verordening applies, which role you hold (aanbieder, gebruiksverantwoordelijke, importeur, distributeur) and which risk group the system falls in, with the upstream explanations, sources and obligations intact. The outcome is stored on the dossier and supplies the risk classification (Bijlage 1) of the AI Impact Assessment. The decision tree is vendored (`vendor/ai-verordening-beslishulp/`, EUPL-1.2) and built into a runtime asset with `npm run beslishulp:build`.
 - **Login via Keycloak (SSO)** — The backend acts as an OpenID Connect backend-for-frontend: users log in through Keycloak, and a signed session cookie gates every API call. A `--dev` flag (backend) and `VITE_AUTH_BYPASS` (frontend) bypass the login for local development.
 - **User management** — Beheerders (admins) can create, edit, reset passwords for, and delete users straight from the app via the Keycloak Admin API.
@@ -124,7 +124,7 @@ For the three **generated** forms (DPIA, Prescan DPIA, IAMA) the URN lives in `s
 | Projectaanbiedingsformulier | `urn:nl:minfin:tr:aanbiedingsformulier:2.0` | — |
 | PPM Projectplan | `urn:nl:minfin:tr:ppm:1.0` | — |
 | PSA | `urn:nl:minfin:tr:psa:1.0` | — |
-| Quick scan BIO | `urn:nl:minfin:tr:quickscan:1.0` | — |
+| Quickscan BIO2 | `urn:nl:minfin:tr:quickscan:2.0` | — |
 | Prescan DPIA | `urn:nl:minfin:tr:prescandpia:2.0` | — |
 | DPIA | `urn:nl:minfin:tr:dpia:3.0` | — |
 | AI Impact Assessment | `urn:nl:minfin:tr:aiia:2.0` | `urn:nl:aivt:tr:aiia:1.0` |
@@ -162,7 +162,7 @@ The `derivation` field has four values:
 | Form | Track | Original instrument | Publisher | Derivation |
 |---|---|---|---|---|
 | Intakeformulier | Verkennen | Intakeformulier IV-verzoek (intern sjabloon) | MinFin | `original` |
-| Quick scan BIO | Verkennen | [Baseline Informatiebeveiliging Overheid](https://bio-overheid.nl/) — baselinetoets BBN | MinBZK / CIP | `derived` |
+| Quickscan BIO2 | Verkennen | Classificatietoets BIO2 (`QIS BIO2 MinFin v1.0 - 10072026.xlsx`), op de [BIO2](https://bio-overheid.nl/)-handreiking dataclassificatie van de IBD | MinFin | `harmonized` |
 | Prescan DPIA | Verkennen | Pre-scan DPIA v2.0 (`urn:nl:prescan`) | MinBZK | `generated` |
 | Aanbiedingsformulier | Besluiten | PPM-aanbiedingsformulier (intern sjabloon) | MinFin | `original` |
 | Restrisico-acceptatie | Besluiten | Geen extern origineel — sluitstuk van DPIA/AIIA/IAMA/BIO, naar het gangbare patroon van formele risicoacceptatie | MinFin | `original` |

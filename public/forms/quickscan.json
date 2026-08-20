@@ -1,33 +1,34 @@
 {
   "id": "quickscan",
-  "version": "1.0",
-  "urn": "urn:nl:minfin:tr:quickscan:1.0",
-  "title": "Quick scan BIO Baselinetoets",
+  "version": "2.0",
+  "urn": "urn:nl:minfin:tr:quickscan:2.0",
+  "title": "Quickscan BIO2 – Classificatietoets",
   "source": {
-    "instrument": "Baseline Informatiebeveiliging Overheid (BIO) — baselinetoets BBN",
-    "publisher": "Ministerie van Binnenlandse Zaken en Koninkrijksrelaties / CIP",
-    "reference": "Baselinetoets voor de bepaling van het basisbeveiligingsniveau (BBN1–BBN3) op beschikbaarheid, integriteit en vertrouwelijkheid",
-    "derivation": "derived",
-    "note": "Afgeleide quickscan, geen volledig BIO2-instrument — zie docs/sporen-en-roadmap.md §4.3."
+    "instrument": "Classificatietoets BIO2 — dataclassificatie op beschikbaarheid, integriteit en vertrouwelijkheid",
+    "publisher": "Ministerie van Financiën, op basis van de IBD-handreiking dataclassificatie bij de Baseline Informatiebeveiliging Overheid versie 2",
+    "version": "QIS BIO2 MinFin v1.0 — 10-07-2026",
+    "reference": "BIO2 5.12.01; Cyberbeveiligingswet art. 21.3.i; Cyberbeveiligingsbesluit art. 16.1–16.3",
+    "derivation": "harmonized",
+    "note": "Veldgetrouw overgezet uit de werkmap 'QIS BIO2 MinFin v1.0 - 10072026.xlsx'. De rekenformules van de werkmap (maximumwaarde per aspect, risiconiveau, quantumresultaat) zijn hier invulvelden: de invuller neemt de hoogste waardering zelf over. De maatregelentabbladen zijn een selectie van toepasselijke BIO2-controls, geen in-controlverklaring."
   },
-  "aiContext": "Dit is een Quick scan BIO Baselinetoets voor het Ministerie van Financiën: hiermee wordt het basisbeveiligingsniveau (BBN) bepaald op basis van beschikbaarheid, integriteit en vertrouwelijkheid, en wordt gescreend of een DPIA nodig is. Schrijf in informatiebeveiligings- en privacytermen.",
+  "aiContext": "Dit is de Quickscan BIO2 (classificatietoets) van het Ministerie van Financiën. Hiermee wordt de classificatie van informatie bepaald op beschikbaarheid, integriteit en vertrouwelijkheid, wordt de quantumveiligheid beoordeeld en wordt vastgesteld welke BIO2-maatregelen van toepassing zijn. Schrijf in informatiebeveiligings- en privacytermen. Bij de waarderingsvragen gaat het steeds om het ergste geval; onderbouw elke waardering feitelijk, zodat iemand die de toets later herhaalt de keuze kan volgen.",
   "meta": {
     "homeComponent": "HomePage",
-    "exportLabel": "Quick scan BIO",
-    "docTitle": "Quick scan BIO Baselinetoets",
-    "footerLabel": "Quick scan BIO – MinFin",
-    "filename": "Quickscan-BIO.pdf",
+    "exportLabel": "Quickscan BIO2",
+    "docTitle": "Quickscan BIO2 – Classificatietoets",
+    "footerLabel": "Quickscan BIO2 – MinFin",
+    "filename": "Quickscan-BIO2.pdf",
     "systemNamePlaceholder": "Bijv. Klantportaal medewerkers v1",
     "homeContent": {
-      "notice": "De baselinetoets BIO is een momentopname van de huidige situatie. Voer de scan opnieuw uit bij nieuwe wet- of regelgeving, meer ketenpartners, meer persoonsgegevens of grote proces- en systeemwijzigingen. Uitgevoerde baselinetoetsen maken onderdeel uit van het systeemdossier.",
-      "description": "De Quick scan BIO Baselinetoets bepaalt het Basis Beveiligingsniveau (BBN) van een proces of systeem conform de Baseline Informatiebeveiliging Overheid (BIO). De uitkomst geeft aan welk beschermingsniveau vereist is en of aanvullende maatregelen of een DPIA noodzakelijk zijn.",
+      "notice": "De classificatietoets BIO2 is een momentopname van de huidige situatie. Voer de toets opnieuw uit bij nieuwe wet- of regelgeving, meer ketenpartners, meer (persoons)gegevens voor dezelfde doelen, of bij grote proces- en systeemwijzigingen — en herijk hem jaarlijks. Uitgevoerde classificatietoetsen, risicoanalyses en DPIA's maken onderdeel uit van het systeemdossier en worden bewaard zolang het informatiesysteem in gebruik is.",
+      "description": "De Quickscan BIO2 bepaalt de classificatie van informatie op beschikbaarheid, integriteit en vertrouwelijkheid conform de Baseline Informatiebeveiliging Overheid versie 2. De uitkomst geeft aan welk beschermingsniveau vereist is, of een aanvullende risicoanalyse of DPIA nodig is, en welke BIO2-maatregelen van toepassing zijn. Er wordt gestreefd naar een zo laag mogelijk classificatieniveau: te hoog classificeren leidt tot onnodige kosten.",
       "steps": [
-        "Basisgegevens: organisatie, afdeling, systeem en opsteller",
-        "BIV-classificatie: vereist niveau voor beschikbaarheid, integriteit en vertrouwelijkheid",
-        "Beveiligingsaspecten: subprocessen, ketenpartners, koppelvlakken en systemen",
-        "Privacy-screening: persoonsgegevens, bijzondere categorieën en DPIA-noodzaak"
+        "Algemeen: basisgegevens, samenvatting en de relatie met eerdere toetsen (PSA, BIA, TBB, prescan DPIA, cloudtoets)",
+        "Proces en informatiesysteem: keten, informatiesoorten, wet- en regelgeving, systemen en quantumveiligheid",
+        "Classificatie: waardeer beschikbaarheid, integriteit en vertrouwelijkheid per vraag, met verplichte argumentatie",
+        "Resultaat: proces- en systeemklasse, aanvullende maatregelen, risiconiveau, BIO2-maatregelen en ondertekening"
       ],
-      "buttonLabel": "Starten met de quick scan"
+      "buttonLabel": "Starten met de quickscan"
     }
   },
   "features": {
@@ -36,11 +37,27 @@
     "conditionalPartB": false
   },
   "navigation": [
-    { "type": "subsections", "sectionId": "qs_a" },
-    { "type": "subsections", "sectionId": "qs_b" },
-    { "type": "subsections", "sectionId": "qs_c" },
-    { "type": "subsections", "sectionId": "qs_d" },
-    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+    {
+      "type": "subsections",
+      "sectionId": "qs_a"
+    },
+    {
+      "type": "subsections",
+      "sectionId": "qs_c"
+    },
+    {
+      "type": "subsections",
+      "sectionId": "qs_b"
+    },
+    {
+      "type": "subsections",
+      "sectionId": "qs_d"
+    },
+    {
+      "type": "specialView",
+      "viewId": "summary",
+      "label": "Naar samenvatting"
+    }
   ],
   "sections": [
     {
@@ -51,26 +68,26 @@
         {
           "id": "qs_a1",
           "title": "0. Basisgegevens",
-          "description": "Vul de basisgegevens in over het proces of systeem waarvoor de baselinetoets wordt uitgevoerd.",
+          "description": "Vul de basisgegevens in over het proces of informatiesysteem waarvoor de classificatietoets BIO2 wordt uitgevoerd.",
           "questions": [
             {
               "id": "qs_a.organisatie",
-              "text": "Organisatie",
+              "text": "Directie",
               "type": "text",
               "importance": "mandatory",
               "format": "shorttext"
             },
             {
               "id": "qs_a.afdeling",
-              "text": "Afdeling",
+              "text": "Afdeling of team",
               "type": "text",
               "importance": "mandatory",
               "format": "shorttext"
             },
             {
               "id": "qs_a.systeemnaam",
-              "text": "Naam van het proces of systeem",
-              "guidance": "Beschrijf het object van de analyse: het systeem, de applicatie of het bedrijfsproces.",
+              "text": "Naam van het proces of informatiesysteem",
+              "guidance": "Het object van de classificatie: het bedrijfsproces, de applicatie of het informatiesysteem.",
               "type": "text",
               "importance": "mandatory",
               "format": "shorttext"
@@ -91,55 +108,189 @@
             },
             {
               "id": "qs_a.datum",
-              "text": "Datum van de baselinetoets",
+              "text": "Datum van de classificatietoets",
               "type": "text",
               "importance": "mandatory",
               "format": "date"
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "qs_b",
-      "title": "Belang van het proces (BIV-classificatie)",
-      "part": "B",
-      "subsections": [
+        },
         {
-          "id": "qs_b1",
-          "title": "1.1 Beschikbaarheid, integriteit en vertrouwelijkheid",
-          "description": "Bepaal het belang van het proces door na te gaan hoe groot de schade is als de betrouwbaarheidsaspecten niet in orde zijn. Denk aan persoonlijke veiligheid, persoonsgegevens, wettelijke verplichtingen, financieel verlies en imagoschade.",
+          "id": "qs_a2",
+          "title": "1. Managementsamenvatting",
           "questions": [
             {
-              "id": "qs_b.beschikbaarheid",
-              "text": "Vereist niveau voor Beschikbaarheid",
-              "guidance": "Hoe groot is de schade als het systeem niet beschikbaar is? Laag = beperkte schade; Midden = aanzienlijke schade; Hoog = kritieke schade voor de organisatie of burgers.",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Laag", "Midden", "Hoog"]
-            },
-            {
-              "id": "qs_b.integriteit",
-              "text": "Vereist niveau voor Integriteit",
-              "guidance": "Hoe groot is de schade als de informatie onjuist of gemanipuleerd is? Laag = beperkte schade; Midden = aanzienlijke schade; Hoog = kritieke schade.",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Laag", "Midden", "Hoog"]
-            },
-            {
-              "id": "qs_b.vertrouwelijkheid",
-              "text": "Vereist niveau voor Vertrouwelijkheid",
-              "guidance": "Hoe groot is de schade als vertrouwelijke informatie bij ongeautoriseerde personen terechtkomt? Laag = beperkte schade; Midden = aanzienlijke schade; Hoog = kritieke schade.",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Laag", "Midden", "Hoog"]
-            },
-            {
-              "id": "qs_b.classificatie_onderbouwing",
-              "text": "Onderbouwing van de classificatie",
-              "guidance": "Beschrijf het proces, de informatie die wordt gebruikt en welke soort persoonsgegevens (indien van toepassing) worden verwerkt. Beschrijf ook de afnemers van het proces.",
+              "id": "qs_a.managementsamenvatting",
+              "text": "Managementsamenvatting",
+              "guidance": "Vat in het kort samen wat er is getoetst en wat de uitkomst is. Vul dit als laatste in, als de classificatie bekend is.",
               "type": "text",
               "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_a3",
+          "title": "2. Inleiding",
+          "questions": [
+            {
+              "id": "qs_a.aanleiding",
+              "text": "Waarom wordt deze Quickscan BIO2 uitgevoerd?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_a.uitvoerder",
+              "text": "Wie voert de classificatietoets uit?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "qs_a.bijzonderheden",
+              "text": "Zijn er bijzonderheden bij de uitvoering van deze toets?",
+              "guidance": "Bijvoorbeeld informatie die nog niet beschikbaar is, of aannames die zijn gedaan.",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "qs_a.projectsamenvatting",
+              "text": "Projectsamenvatting",
+              "guidance": "Korte beschrijving van het project of de wijziging waarbinnen dit proces of systeem wordt gebruikt.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_a4",
+          "title": "2.2 – 2.8 Relatie met andere producten en toetsen",
+          "description": "Deze classificatietoets bouwt voort op eerder uitgevoerde toetsen. Verwijs per onderdeel naar het document en neem de uitkomst over.",
+          "questions": [
+            {
+              "id": "qs_a.psa",
+              "text": "Programma Start Architectuur (PSA): verwijzing en uitkomst",
+              "guidance": "Verwijs naar de PSA en beschrijf welke architectuurkaders relevant zijn voor deze classificatie.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_a.ib_quickscan_eerder",
+              "text": "Is er eerder een IB-quickscan of classificatietoets uitgevoerd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee",
+                "Onbekend"
+              ]
+            },
+            {
+              "id": "qs_a.ib_quickscan_uitkomst",
+              "text": "Verwijzing naar de eerdere IB-quickscan en de eerdere dataclassificatie",
+              "type": "text",
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "qs_a.ib_quickscan_eerder",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "qs_a.bia_uitgevoerd",
+              "text": "Is er eerder een BIA uitgevoerd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee",
+                "Onbekend"
+              ]
+            },
+            {
+              "id": "qs_a.bia_uitkomst",
+              "text": "Verwijzing naar de BIA en de uitkomsten daarvan",
+              "type": "text",
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "qs_a.bia_uitgevoerd",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "qs_a.tbb",
+              "text": "Is het proces of de applicatie vastgesteld als TBB (te beschermen belang)?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee",
+                "Onbekend"
+              ]
+            },
+            {
+              "id": "qs_a.tbb_uitkomst",
+              "text": "Verwijzing naar de TBB-toets en de resulterende TBB-classificatie",
+              "type": "text",
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "qs_a.tbb",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "qs_a.rubricering",
+              "text": "Wat is de rubricering van dit proces of deze informatie?",
+              "guidance": "De rubricering volgt uit het VIR-BI / de Rijksbrede rubriceringsregels en is iets anders dan de vertrouwelijkheidsclassificatie in deel C.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ongerubriceerd",
+                "Departementaal Vertrouwelijk (Dep.V)",
+                "Staatsgeheim Confidentieel",
+                "Staatsgeheim Geheim",
+                "Staatsgeheim Zeer Geheim"
+              ]
+            },
+            {
+              "id": "qs_a.prescan_dpia",
+              "text": "Is er een prescan DPIA uitgevoerd?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee",
+                "Onbekend"
+              ]
+            },
+            {
+              "id": "qs_a.prescan_dpia_uitkomst",
+              "text": "Verwijzing naar de (pre)DPIA en de uitkomsten daarvan",
+              "type": "text",
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "qs_a.prescan_dpia",
+                "equals": "Ja"
+              }
+            },
+            {
+              "id": "qs_a.cloud",
+              "text": "Betreft het een applicatie in de cloud?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee",
+                "Onbekend"
+              ]
+            },
+            {
+              "id": "qs_a.cloud_uitkomst",
+              "text": "Toelichting op de cloudoplossing en de uitkomst van de cloudtoets",
+              "type": "text",
+              "importance": "optional",
+              "visibleIf": {
+                "questionId": "qs_a.cloud",
+                "equals": "Ja"
+              }
             }
           ]
         }
@@ -147,47 +298,941 @@
     },
     {
       "id": "qs_c",
-      "title": "Beveiligingsaspecten",
-      "part": "C",
+      "title": "Proces en informatiesysteem",
+      "part": "B",
       "subsections": [
         {
           "id": "qs_c1",
-          "title": "1.2 Proceskenmerken en systemen",
-          "description": "Beschrijf de relevante kenmerken van het proces en de gebruikte systemen.",
+          "title": "3.1 Geïnterviewden en eigenaarschap",
+          "description": "De informatie-eigenaar moet in deze fase bekend zijn: die stelt de classificatie vast en is verantwoordelijk voor de te nemen beveiligingsmaatregelen.",
+          "questions": [
+            {
+              "id": "qs_c.geinterviewde",
+              "text": "Wie is geïnterviewd voor deze quickscan?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "qs_c.proceseigenaar",
+              "text": "Wie is de proceseigenaar?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "qs_c.businessowner",
+              "text": "Wie is de business owner?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            }
+          ]
+        },
+        {
+          "id": "qs_c2",
+          "title": "3.2 – 3.3 Proces en procesbeschrijving",
+          "questions": [
+            {
+              "id": "qs_c.procesfunctie",
+              "text": "Functie van het proces waarin de informatie wordt gebruikt",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "qs_c.procesbeschrijving",
+              "text": "Geef een bondige beschrijving van het proces en de informatie",
+              "guidance": "Benoem daarbij ook de proces- en informatie-eigenaar.",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            },
+            {
+              "id": "qs_c.hoofd_en_subprocessen",
+              "text": "Benoem het hoofdproces en alle subprocessen",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.beschikbaarheidsvenster",
+              "text": "Betreft het 24/7-dienstverlening, of is er in bepaalde perioden hoge beschikbaarheid nodig?",
+              "guidance": "Denk aan piekmomenten zoals een aangiftecampagne of een betaalrun: dan gelden vaak strengere eisen dan de rest van het jaar.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_c3",
+          "title": "3.4 Ketens en ketenpartners",
+          "description": "Maakt het proces deel uit van een of meer ketens, of zijn anderen afhankelijk van deze informatie?",
+          "questions": [
+            {
+              "id": "qs_c.ketens",
+              "text": "Van welke keten(s) maakt het proces deel uit?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.ketenpartners",
+              "text": "Wie zijn de ketenpartners?",
+              "guidance": "Welke externe partijen zijn betrokken bij of afhankelijk van dit proces of systeem?",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            }
+          ]
+        },
+        {
+          "id": "qs_c4",
+          "title": "3.5 Subprocessen en activiteiten",
           "questions": [
             {
               "id": "qs_c.subprocessen",
-              "text": "Zijn er subprocessen te onderscheiden?",
-              "type": "radio",
-              "importance": "optional",
-              "options": ["Ja", "Nee"]
-            },
-            {
-              "id": "qs_c.ketenpartners", "allowAttachments": true,
-              "text": "Beschrijf de ketenpartners en afnemers van het proces",
-              "guidance": "Welke externe partijen zijn betrokken bij of afhankelijk van dit proces of systeem?",
+              "text": "Welke subprocessen zijn te onderscheiden?",
               "type": "text",
               "importance": "optional"
             },
             {
-              "id": "qs_c.koppelvlakken",
-              "text": "Zijn er geautomatiseerde koppelvlakken met andere systemen?",
-              "guidance": "Worden er automatisch gegevens uitgewisseld met andere systemen of externe partijen?",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Deels"]
+              "id": "qs_c.hoofdactiviteiten",
+              "text": "Welke hoofdactiviteiten worden binnen het proces uitgevoerd en wie voeren die uit?",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_c5",
+          "title": "3.6 Type informatie",
+          "questions": [
+            {
+              "id": "qs_c.informatiesoorten",
+              "text": "Welke informatie wordt gebruikt binnen het proces en de subprocessen?",
+              "guidance": "Bijvoorbeeld financiële gegevens, aanslaggegevens of bedrijfsgegevens. Persoonsgegevens komen in deel D aan bod.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_c6",
+          "title": "3.7 – 3.8 Afnemers en leveranciers van informatie",
+          "questions": [
+            {
+              "id": "qs_c.afnemers",
+              "text": "Welke afnemers van informatie heeft het proces, en welke informatie nemen zij af?",
+              "type": "text",
+              "importance": "mandatory"
             },
             {
-              "id": "qs_c.externe_hosting",
-              "text": "Is er sprake van externe hosting of cloudgebruik?",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Deels"]
+              "id": "qs_c.afnemers_eisen",
+              "text": "Welke kwaliteitseisen stellen de afnemers aan deze informatie?",
+              "type": "text",
+              "importance": "mandatory"
             },
             {
-              "id": "qs_c.systemen_beschrijving", "allowAttachments": true,
-              "text": "Beschrijf de gebruikte systemen en applicaties",
+              "id": "qs_c.leveranciers",
+              "text": "Welke leveranciers van informatie heeft het proces, en welke informatie leveren zij aan?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.leveranciers_eisen",
+              "text": "Welke eisen stellen zij aan de informatie die in het proces wordt gebruikt?",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_c7",
+          "title": "3.9 Wet- en regelgeving",
+          "questions": [
+            {
+              "id": "qs_c.wetgeving",
+              "text": "Welke wet- en regelgeving is van toepassing op deze informatie en dit proces?",
+              "guidance": "Bijvoorbeeld AVG, Archiefwet, Cyberbeveiligingswet (Cbw), sectorspecifieke wetgeving.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.wetgeving_eisen",
+              "text": "Welke specifieke eisen komen daaruit voort?",
+              "guidance": "Bijvoorbeeld een verplichte (pre)DPIA, een AIIA of een bewaartermijn.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_c8",
+          "title": "4. Vragenlijst informatiesysteem",
+          "questions": [
+            {
+              "id": "qs_c.systemen_beschrijving",
+              "text": "Door welke informatievoorziening of systemen wordt de informatie verwerkt?",
               "guidance": "Welke systemen of applicaties worden ingezet voor dit proces?",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            },
+            {
+              "id": "qs_c.informatie_eigenaar",
+              "text": "Wie is de (beoogd) eigenaar van de informatie?",
+              "guidance": "Let op: de eigenaar moet in deze fase bekend zijn of benoemd worden — die stelt de classificatie vast.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "qs_c.systeemeigenaar",
+              "text": "Wie is de informatiesysteemeigenaar?",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "qs_c.gebruikers",
+              "text": "Wie zijn de gebruikers van het informatiesysteem?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.systeemsoort",
+              "text": "Wat voor soort systeem betreft het?",
+              "guidance": "Bijvoorbeeld maatwerk, standaardpakket, SaaS-dienst of koppelvlak.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.output",
+              "text": "Wat is de output van het informatiesysteem?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.koppelvlakken",
+              "text": "Zijn er koppelvlakken met andere informatiesystemen? Zo ja, welke?",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            },
+            {
+              "id": "qs_c.dataverplaatsing",
+              "text": "Hoe kan de informatie of data zich verplaatsen?",
+              "guidance": "Denk aan export, koppelvlakken, back-ups, e-mail en meegenomen apparatuur.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.mutatie_autorisatie",
+              "text": "Hoe kan de informatie gemuteerd of aangepast worden, en hoe krijgt iemand autorisatie?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.quantum_roadmap",
+              "text": "Hoe ziet de roadmap eruit die aangeeft hoe en wanneer het systeem quantumveilig wordt?",
+              "guidance": "Bijvoorbeeld: geen roadmap, hoog-over of gedetailleerd.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.crypto_inzicht",
+              "text": "Hoe geeft het systeem inzicht in de softwarematige en cryptografische afhankelijkheden?",
+              "guidance": "Bijvoorbeeld via een SBOM of CBOM.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.crypto_agility",
+              "text": "Hoe wordt crypto-agility meegenomen in het systeem?",
+              "guidance": "Bijvoorbeeld via de architectuur of via een handmatig overzicht van gebruikte algoritmen.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_c9",
+          "title": "4.9 Quantumveiligheid",
+          "description": "Vragen over de quantumveiligheid van de informatie. Dit raakt zowel de vertrouwelijkheid, de integriteit als de beschikbaarheid. Beantwoord alle vragen; licht toe wat nog niet volledig te beantwoorden is en kom daarop terug zodra de informatie beschikbaar is.",
+          "questions": [
+            {
+              "id": "qs_c.q1_informatietransport",
+              "text": "Q1 Informatietransport — wordt het communicatiekanaal beschermd met versleuteling?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q2_transportmiddel",
+              "text": "Q2 Transportmiddel — wordt voor de versleuteling van het communicatiekanaal iets anders dan TLS, IPsec of SSH gebruikt?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q3_tls_versie",
+              "text": "Q3 TLS-versie — wordt voor de versleuteling een quantumveilige methode ondersteund?",
+              "guidance": "Als OpenSSL wordt gebruikt is minimaal versie 3.5 nodig.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q4_quantumveilig_certificaat",
+              "text": "Q4 Quantumveilig certificaat — wordt voor de authenticatie een quantumveilig certificaat ondersteund?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q5_sleuteluitwisseling",
+              "text": "Q5 Sleuteluitwisseling — wordt voor de sleuteluitwisseling een quantumveilige methode ondersteund?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q6_authenticatie_certificaat",
+              "text": "Q6 Authenticatiecertificaat — wordt voor de authenticatie een quantumveilig certificaat ondersteund?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q7_ssh_sleuteluitwisseling",
+              "text": "Q7 SSH-sleuteluitwisseling — wordt voor de sleuteluitwisseling een quantumveilige methode ondersteund?",
+              "guidance": "Er is nog geen vastgestelde IETF-standaard voor quantumveilige SSH-sleuteluitwisseling; de draft draft-ietf-sshm-mlkem-hybrid-kex wordt door OpenSSH 10.3 al standaard ondersteund.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q8_ssh_certificaat",
+              "text": "Q8 SSH-certificaat — wordt voor de authenticatie een quantumveilige handtekeningmethode gebruikt?",
+              "guidance": "OpenSSH ondersteunt quantumveilige handtekeningen nog niet; dat komt in een latere versie.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q9_authenticatie",
+              "text": "Q9 Authenticatie — wordt authenticatie gebruikt om autorisatie te verkrijgen voor het aanpassen of inzien van informatie?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q10_certificaten",
+              "text": "Q10 Authenticatiecertificaten — wordt daarbij gebruikgemaakt van certificaten?",
+              "guidance": "Bijvoorbeeld via Active Directory.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q11_publieke_sleutels",
+              "text": "Q11 Publieke sleutels — zijn de publieke sleutels in deze certificaten van quantumveilige methoden?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.q12_handtekeningen",
+              "text": "Q12 Digitale handtekeningen — zijn de digitale handtekeningen in deze certificaten van quantumveilige methoden?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_c.quantum_transport_argumentatie",
+              "text": "Argumentatie bij het informatietransport (Q1 – Q3)",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.quantum_certificaten_argumentatie",
+              "text": "Argumentatie bij certificaten en sleuteluitwisseling (Q4 – Q6)",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.quantum_ssh_argumentatie",
+              "text": "Argumentatie bij SSH (Q7 – Q8)",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.quantum_authenticatie_argumentatie",
+              "text": "Argumentatie bij authenticatie en certificaten (Q9 – Q12)",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_c.quantum_resultaat",
+              "text": "Resultaat quantumveiligheid",
+              "guidance": "Niet quantumveilig betekent dat aan minimaal één van de voorwaarden om quantumveilig te zijn niet wordt voldaan.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Quantumveilig",
+                "Niet quantumveilig",
+                "Nog niet vast te stellen",
+                "Niet van toepassing"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qs_b",
+      "title": "Classificatie (BIV)",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "qs_b1",
+          "title": "Beschikbaarheid",
+          "description": "Gevolgen van het niet beschikbaar hebben van de benodigde informatie of gegevens, in het ergste geval. Kies per vraag één antwoord en vul altijd de argumentatie in.",
+          "questions": [
+            {
+              "id": "qs_b.b1",
+              "text": "B1 Managementbeslissingen — Welke tijdsduur, waarin het nemen van beslissingen door het ontbreken van informatie negatief wordt beïnvloed, is acceptabel?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Uren",
+                "Kritiek/Zeer ernstig — Dag (deel)",
+                "Gemiddeld — Week",
+                "Gering — Meer dan een week",
+                "Verwaarloosbaar — Meer dan 2 weken"
+              ]
+            },
+            {
+              "id": "qs_b.b1_argumentatie",
+              "text": "Argumentatie bij B1",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.b2",
+              "text": "B2 Imagoverlies — Hoe lang duurt het voordat er sprake is van imagoverlies wanneer de informatie niet voorhanden is?",
+              "guidance": "Imagoverlies is lastig in te schatten omdat er soms veel tijd is voor bepaalde beslissingen. Bedenk wel dat er soms een wettelijke maximumtermijn is waarbinnen informatie beschikbaar moet zijn.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Uren",
+                "Kritiek/Zeer ernstig — Dag (deel)",
+                "Gemiddeld — Week",
+                "Gering — Meer dan een week",
+                "Verwaarloosbaar — Meer dan 2 weken"
+              ]
+            },
+            {
+              "id": "qs_b.b2_argumentatie",
+              "text": "Argumentatie bij B2",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.b3",
+              "text": "B3 Hapering dienstverlening (RTO) — Hoe lang kan de informatie onbeschikbaar zijn voordat er hapering in de dienstverlening aan burgers, bedrijven of ketenpartners ontstaat? Binnen welke tijd moet de dienstverlening hersteld zijn?",
+              "guidance": "Deze vraag gaat over de hersteltijd (Recovery Time Objective); vraag B7 gaat over het dataverlies (RPO). In de hersteltijd zit ook het herstellen van gegevens, zodat het proces weer normaal kan verlopen.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Hersteltijd max 4 werkuren",
+                "Kritiek/Zeer ernstig — Hersteltijd max 8 werkuren",
+                "Gemiddeld — Hersteltijd max 16 werkuren",
+                "Gering — Hersteltijd max 40 werkuren",
+                "Verwaarloosbaar — Hersteltijd meer dan 40 werkuren"
+              ]
+            },
+            {
+              "id": "qs_b.b3_argumentatie",
+              "text": "Argumentatie bij B3",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.b4",
+              "text": "B4 Wettelijke aansprakelijkheid — Hoe lang kan de informatie onbeschikbaar zijn voordat wettelijke of contractuele verplichtingen niet kunnen worden nagekomen?",
+              "guidance": "Let op situaties waarin uitval een week mag duren, behalve op de dag dat bijvoorbeeld uitkeringen worden berekend en naar de bank gestuurd. Geef dat aan in de argumentatie en bedenk daar mitigerende maatregelen voor.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Dag (deel)",
+                "Kritiek/Zeer ernstig — Dag (deel)",
+                "Gemiddeld — Week",
+                "Gering — Meer dan een week",
+                "Verwaarloosbaar — Meer dan 2 weken"
+              ]
+            },
+            {
+              "id": "qs_b.b4_argumentatie",
+              "text": "Argumentatie bij B4",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.b5",
+              "text": "B5 Additionele kosten — Na welke periode zijn additionele kosten voor de organisatie te verwachten wanneer de informatie niet beschikbaar is?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Dag (deel)",
+                "Kritiek/Zeer ernstig — Dag (deel)",
+                "Gemiddeld — Week",
+                "Gering — Meer dan een week",
+                "Verwaarloosbaar — Meer dan 2 weken"
+              ]
+            },
+            {
+              "id": "qs_b.b5_argumentatie",
+              "text": "Argumentatie bij B5",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.b6",
+              "text": "B6 Moreel van de medewerkers — Na welke periode is er een duidelijk negatieve invloed op het moreel en de motivatie van medewerkers wanneer de informatiestroom hapert?",
+              "guidance": "Bedenk hierbij ook dat er een wettelijke plicht kan zijn om bepaalde systemen tijdig beschikbaar te hebben.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Uren",
+                "Kritiek/Zeer ernstig — Dag (deel)",
+                "Gemiddeld — Week",
+                "Gering — Meer dan een week",
+                "Verwaarloosbaar — Meer dan 2 weken"
+              ]
+            },
+            {
+              "id": "qs_b.b6_argumentatie",
+              "text": "Argumentatie bij B6",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.b7",
+              "text": "B7 Herstel (RPO) — Hoeveel dataverlies is acceptabel voordat er hapering in de dienstverlening aan burgers, bedrijven of ketenpartners ontstaat? Zijn er hoge herstelkosten voor het achteraf verwerken van verloren werk?",
+              "guidance": "Deze vraag gaat over het dataverlies (Recovery Point Objective); vraag B3 gaat over de hersteltijd (RTO).",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Dataverlies minder dan 4 uur",
+                "Kritiek/Zeer ernstig — Dataverlies tot 8 uur",
+                "Gemiddeld — Dataverlies 8 – 24 uur",
+                "Gering — Dataverlies meer dan 24 uur",
+                "Verwaarloosbaar — Dataverlies meer dan een week"
+              ]
+            },
+            {
+              "id": "qs_b.b7_argumentatie",
+              "text": "Argumentatie bij B7",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_b2",
+          "title": "Integriteit",
+          "description": "Gevolgen van fouten in de informatie of van doelbewuste manipulatie om te frauderen of fraude te maskeren, in het ergste geval. In deze methode worden integriteit en authenticiteit samen beoordeeld: verlies van authenticiteit manifesteert zich in de praktijk als foutieve of misleidende informatie.",
+          "questions": [
+            {
+              "id": "qs_b.i1",
+              "text": "I1 Managementbeslissingen — Kan onjuiste informatie leiden tot onjuiste beslissingen? Wat zijn daarvan de gevolgen?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Zeer zware gevolgen",
+                "Kritiek/Zeer ernstig — Zware gevolgen",
+                "Gemiddeld — Gemiddelde gevolgen",
+                "Gering — Beperkte gevolgen",
+                "Verwaarloosbaar — Verwaarloosbaar / geen gevolgen"
+              ]
+            },
+            {
+              "id": "qs_b.i1_argumentatie",
+              "text": "Argumentatie bij I1",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.i2",
+              "text": "I2 Fraudepotentie — Zijn er frauderisico's met deze informatie, en welke gevolgen hebben die?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Zeer zware schade",
+                "Kritiek/Zeer ernstig — Zware schade",
+                "Gemiddeld — Gemiddelde schade",
+                "Gering — Beperkte schade",
+                "Verwaarloosbaar — Verwaarloosbaar / geen schade"
+              ]
+            },
+            {
+              "id": "qs_b.i2_argumentatie",
+              "text": "Argumentatie bij I2",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.i3",
+              "text": "I3 Onderbreking van strategische processen — In hoeverre kunnen de kernprocessen van de organisatie onderbroken worden door ongeautoriseerde wijzigingen in of fouten in de informatie?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Zeer hoog",
+                "Kritiek/Zeer ernstig — Hoog",
+                "Gemiddeld — Gemiddeld",
+                "Gering — Beperkt",
+                "Verwaarloosbaar — Verwaarloosbaar"
+              ]
+            },
+            {
+              "id": "qs_b.i3_argumentatie",
+              "text": "Argumentatie bij I3",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.i4",
+              "text": "I4 Vertrouwen van het publiek c.q. klanten — Kan het vertrouwen van het publiek geschaad worden door onjuiste informatie?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Zeer zwaar",
+                "Kritiek/Zeer ernstig — Zwaar",
+                "Gemiddeld — Gemiddeld",
+                "Gering — Beperkt",
+                "Verwaarloosbaar — Verwaarloosbaar"
+              ]
+            },
+            {
+              "id": "qs_b.i4_argumentatie",
+              "text": "Argumentatie bij I4",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.i5",
+              "text": "I5 Wettelijke aansprakelijkheid — Wat kunnen de gevolgen zijn van het niet voldoen aan wettelijke of contractuele verplichtingen doordat de informatie onjuist is?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Zeer zwaar",
+                "Kritiek/Zeer ernstig — Zwaar",
+                "Gemiddeld — Gemiddeld",
+                "Gering — Beperkt",
+                "Verwaarloosbaar — Verwaarloosbaar"
+              ]
+            },
+            {
+              "id": "qs_b.i5_argumentatie",
+              "text": "Argumentatie bij I5",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.i6",
+              "text": "I6 Additionele kosten — In hoeverre kunnen er additionele kosten ontstaan door het toepassen van onjuiste informatie?",
+              "guidance": "Bijvoorbeeld door het herstellen van een corrupte database of het opnieuw invoeren van gegevens.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Zeer hoge kosten",
+                "Kritiek/Zeer ernstig — Hoge kosten",
+                "Gemiddeld — Gemiddelde kosten",
+                "Gering — Lage kosten",
+                "Verwaarloosbaar — Verwaarloosbaar"
+              ]
+            },
+            {
+              "id": "qs_b.i6_argumentatie",
+              "text": "Argumentatie bij I6",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.i7",
+              "text": "I7 Moreel van de medewerkers — Wat zijn de schadelijke effecten op het moreel van medewerkers wanneer zij onjuiste informatie gebruiken?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal — Zeer zwaar",
+                "Kritiek/Zeer ernstig — Zwaar",
+                "Gemiddeld — Gemiddeld",
+                "Gering — Beperkt",
+                "Verwaarloosbaar — Verwaarloosbaar"
+              ]
+            },
+            {
+              "id": "qs_b.i7_argumentatie",
+              "text": "Argumentatie bij I7",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_b3",
+          "title": "Vertrouwelijkheid",
+          "description": "Gevolgen van onbedoelde of ongeautoriseerde verspreiding van gegevens of informatie, in het ergste geval.",
+          "questions": [
+            {
+              "id": "qs_b.v1",
+              "text": "V1 Vertrouwen van de burger — Wat zijn de gevolgen voor de organisatie als de binnen het proces beschikbare informatie te vroeg of niet volgens de regels wordt verspreid?",
+              "guidance": "Het vertrouwen van de burger wordt geschaad als informatie lekt, bedoeld of onbedoeld. Hoe ernstig is dat, en wat zijn de (politieke) gevolgen?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Geheim / Zeer Geheim — Catastrofale gevolgen",
+                "Confidentieel — Zeer ernstige gevolgen",
+                "Vertrouwelijk — Ernstige gevolgen",
+                "Intern — Acceptabel",
+                "Openbaar — Geen gevolgen"
+              ]
+            },
+            {
+              "id": "qs_b.v1_argumentatie",
+              "text": "Argumentatie bij V1",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.v2",
+              "text": "V2 Vertrouwen van het publiek — Wat zijn de gevolgen voor het publieke imago van de organisatie als vertrouwelijke informatie onterecht wordt verspreid?",
+              "guidance": "Neem bij de beantwoording zowel persoonsgegevens als niet-persoonsgegevens mee.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Geheim / Zeer Geheim — Catastrofale gevolgen",
+                "Confidentieel — Zeer ernstige gevolgen",
+                "Vertrouwelijk — Ernstige gevolgen",
+                "Intern — Acceptabel",
+                "Openbaar — Geen gevolgen"
+              ]
+            },
+            {
+              "id": "qs_b.v2_argumentatie",
+              "text": "Argumentatie bij V2",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.v3",
+              "text": "V3 Toegang tot de keten — Kan de organisatie de toegang tot de keten geweigerd worden?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Geheim / Zeer Geheim — Ja",
+                "Confidentieel — Ja",
+                "Vertrouwelijk — Mogelijk",
+                "Intern — Nee",
+                "Openbaar — Niet van toepassing"
+              ]
+            },
+            {
+              "id": "qs_b.v3_argumentatie",
+              "text": "Argumentatie bij V3",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.v4",
+              "text": "V4 Vertrouwen van ketenpartners — Wat zijn de gevolgen voor de relatie met de ketenpartners als vertrouwelijke informatie onterecht wordt verspreid?",
+              "guidance": "Denk aan koppelingen met ketenpartners zoals Suwinet of de BRP.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Geheim / Zeer Geheim — Catastrofale gevolgen",
+                "Confidentieel — Zeer ernstige gevolgen",
+                "Vertrouwelijk — Ernstige gevolgen",
+                "Intern — Acceptabel",
+                "Openbaar — Geen gevolgen"
+              ]
+            },
+            {
+              "id": "qs_b.v4_argumentatie",
+              "text": "Argumentatie bij V4",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.v5",
+              "text": "V5 (Wettelijke) aansprakelijkheid — Wat zijn de gevolgen voor de (wettelijke) aansprakelijkheid bij het onterecht verspreiden van deze informatie?",
+              "guidance": "Neem zowel persoonsgegevens als niet-persoonsgegevens mee.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Geheim / Zeer Geheim — Catastrofale gevolgen",
+                "Confidentieel — Zeer ernstige gevolgen",
+                "Vertrouwelijk — Ernstige gevolgen",
+                "Intern — Acceptabel",
+                "Openbaar — Geen gevolgen"
+              ]
+            },
+            {
+              "id": "qs_b.v5_argumentatie",
+              "text": "Argumentatie bij V5",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.v6",
+              "text": "V6 Additionele kosten — In hoeverre is er sprake van additionele kosten door onterechte verspreiding van deze informatie?",
+              "guidance": "Denk aan herstelkosten, juridische kosten en schadevergoedingen, maar ook aan de bestuurlijke boete van de Autoriteit Persoonsgegevens en andere toezichthouders voor de Cbw.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Geheim / Zeer Geheim — Zeer hoge kosten",
+                "Confidentieel — Hoge kosten",
+                "Vertrouwelijk — Gemiddelde kosten",
+                "Intern — Lage kosten",
+                "Openbaar — Geen kosten"
+              ]
+            },
+            {
+              "id": "qs_b.v6_argumentatie",
+              "text": "Argumentatie bij V6",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_b.v7",
+              "text": "V7 Moreel van de medewerkers — In hoeverre kan de onterechte verspreiding van deze informatie een duidelijk negatieve invloed hebben op het moreel en de motivatie van medewerkers?",
+              "guidance": "Neem zowel persoonsgegevens als niet-persoonsgegevens mee.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Geheim / Zeer Geheim — Zeer hoge invloed",
+                "Confidentieel — Hoge invloed",
+                "Vertrouwelijk — Gemiddelde invloed",
+                "Intern — Lage invloed",
+                "Openbaar — Geen invloed"
+              ]
+            },
+            {
+              "id": "qs_b.v7_argumentatie",
+              "text": "Argumentatie bij V7",
+              "guidance": "Verplicht: leg vast waarom deze waardering is gekozen, zodat iemand die de toets later herhaalt de keuze kan volgen.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_b4",
+          "title": "Classificatieresultaat",
+          "description": "Neem per betrouwbaarheidsaspect de hoogste waardering uit de voorgaande blokken over. Dat is de classificatie van de informatie.",
+          "questions": [
+            {
+              "id": "qs_b.beschikbaarheid",
+              "text": "Beschikbaarheidsclassificatie",
+              "guidance": "De hoogste waardering uit B1 tot en met B7.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal",
+                "Kritiek/Zeer ernstig",
+                "Gemiddeld",
+                "Gering",
+                "Verwaarloosbaar"
+              ]
+            },
+            {
+              "id": "qs_b.integriteit",
+              "text": "Integriteitsclassificatie",
+              "guidance": "De hoogste waardering uit I1 tot en met I7.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Catastrofaal",
+                "Kritiek/Zeer ernstig",
+                "Gemiddeld",
+                "Gering",
+                "Verwaarloosbaar"
+              ]
+            },
+            {
+              "id": "qs_b.vertrouwelijkheid",
+              "text": "Vertrouwelijkheidsclassificatie",
+              "guidance": "De hoogste waardering uit V1 tot en met V7. Vanaf Confidentieel gelden altijd de aanvullende regels uit ABDO of ABRO; BIO2 alleen volstaat dan niet.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Geheim / Zeer Geheim",
+                "Confidentieel",
+                "Vertrouwelijk",
+                "Intern",
+                "Openbaar"
+              ]
+            },
+            {
+              "id": "qs_b.classificatie_onderbouwing",
+              "text": "Onderbouwing van de classificatie",
+              "guidance": "Vat samen waar het zwaartepunt van het te beschermen belang ligt en waarom. Er wordt gestreefd naar een zo laag mogelijk classificatieniveau: te hoog classificeren leidt tot onnodige kosten.",
               "type": "text",
               "importance": "mandatory"
             }
@@ -197,41 +1242,151 @@
     },
     {
       "id": "qs_d",
-      "title": "Privacy en DPIA-screening",
+      "title": "Resultaat, risico en maatregelen",
       "part": "D",
       "subsections": [
         {
           "id": "qs_d1",
-          "title": "Privacy-vragen",
-          "description": "Beantwoord de privacy-vragen om te bepalen of een DPIA noodzakelijk is. De Autoriteit Persoonsgegevens heeft een lijst van verwerkingen opgesteld waarvoor een DPIA verplicht is.",
+          "title": "5. Classificatie van het proces",
+          "questions": [
+            {
+              "id": "qs_d.procesklasse",
+              "text": "Welke procesklasse hoort bij dit proces?",
+              "guidance": "Ondersteunend: geen directe relatie met de producten of diensten waaraan de organisatie haar bestaansrecht ontleent. Bijdragend: indirecte relatie, het ontbreken ervan geeft effectiviteits- en efficiencyverlies in het primaire proces. Strategisch: directe relatie met de doelstellingen van de organisatie. Kritisch strategisch: het proces speelt een primaire rol voor de doelstelling; langdurige uitval brengt de organisatie in een hachelijke positie.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ondersteunend — gewenst proces, MTU meer dan 2 weken",
+                "Bijdragend — noodzakelijk proces, MTU meer dan 1 week",
+                "Strategisch — vitaal proces, MTU meer dan 48 uur",
+                "Kritisch strategisch — tijdkritiek proces, MTU meer dan 24 uur"
+              ]
+            },
+            {
+              "id": "qs_d.procesklasse_toelichting",
+              "text": "Toelichting op de procesklasse",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_d2",
+          "title": "6. Classificatie van het informatiesysteem",
+          "questions": [
+            {
+              "id": "qs_d.systeemklasse",
+              "text": "Welke klasse hoort bij het informatiesysteem?",
+              "guidance": "Nuttig: het systeem ondersteunt het bedrijfsproces en is handig om te hebben. Belangrijk: het levert een belangrijke bijdrage, voortzetting van het proces zonder het systeem kost onevenredig veel inspanning, het verhoogt effectiviteit en efficiëntie, of het wordt door veel medewerkers of burgers gebruikt. Vitaal: het uitvoeren van de bedrijfsprocessen is zonder het systeem (nagenoeg) onmogelijk.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Nuttig",
+                "Belangrijk",
+                "Vitaal"
+              ]
+            },
+            {
+              "id": "qs_d.systeemklasse_argumentatie",
+              "text": "Argumentatie bij de systeemklasse",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_d3",
+          "title": "7. Zijn aanvullende maatregelen noodzakelijk?",
+          "description": "Wordt één van deze vragen met Ja beantwoord, dan krijgt het systeem altijd de classificatie HOOG en moeten er op basis van een risicoanalyse aanvullende maatregelen bovenop de BIO2-maatregelen worden gedefinieerd om de cyberdreiging te reduceren.",
+          "questions": [
+            {
+              "id": "qs_d.statelijke_actoren",
+              "text": "1. Is er weerstand vereist tegen statelijke actoren?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_d.externe_rubricering",
+              "text": "2. Heeft de ontvangen informatie een classificatie of rubricering meegekregen van de (externe) bronhouder?",
+              "guidance": "Bijvoorbeeld een EU- of NAVO-rubricering.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_d.georganiseerde_misdaad",
+              "text": "3. Is er weerstand nodig tegen georganiseerde misdaad en zware criminaliteit?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee"
+              ]
+            },
+            {
+              "id": "qs_d.extra_maatregelen",
+              "text": "Conclusie: zijn aanvullende maatregelen bovenop de BIO2-baseline noodzakelijk?",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee",
+                "Nader te bepalen"
+              ]
+            },
+            {
+              "id": "qs_d.extra_maatregelen_toelichting",
+              "text": "Toelichting op de aanvullende maatregelen",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_d4",
+          "title": "Privacy en DPIA-screening",
+          "description": "Persoonsgegevens bepalen mede de vertrouwelijkheidsclassificatie en de vraag of een DPIA verplicht is.",
           "questions": [
             {
               "id": "qs_d.persoonsgegevens",
               "text": "Worden er persoonsgegevens verwerkt?",
               "type": "radio",
               "importance": "mandatory",
-              "options": ["Ja", "Nee"]
+              "options": [
+                "Ja",
+                "Nee"
+              ]
             },
             {
               "id": "qs_d.bijzondere_persoonsgegevens",
               "text": "Worden er bijzondere persoonsgegevens verwerkt (artikel 9 AVG)?",
-              "guidance": "Bijv. gezondheidsgegevens, ras, politieke opvattingen, biometrische gegevens.",
+              "guidance": "Bijvoorbeeld BSN, godsdienst of levensovertuiging, ras, politieke gezindheid, medische gegevens of strafrechtelijke gegevens.",
               "type": "radio",
               "importance": "mandatory",
-              "options": ["Ja", "Nee", "Niet van toepassing"]
+              "options": [
+                "Ja",
+                "Nee",
+                "Niet van toepassing"
+              ]
             },
             {
-              "id": "qs_d.grootschalige_verwerking",
-              "text": "Is er sprake van grootschalige verwerking van persoonsgegevens?",
-              "guidance": "Let op het aantal betrokkenen, volume van gegevens, duur en geografische omvang.",
-              "type": "radio",
-              "importance": "mandatory",
-              "options": ["Ja", "Nee", "Onduidelijk"]
+              "id": "qs_d.persoonsgegevens_toelichting",
+              "text": "Welke (bijzondere) persoonsgegevens worden verwerkt?",
+              "guidance": "Beschrijf welke persoonsgegevens worden verwerkt en in welke context. Bijvoorbeeld naam, adres en woonplaats, telefoonnummers of postcodes met huisnummers.",
+              "type": "text",
+              "importance": "optional"
             },
             {
               "id": "qs_d.dpia_noodzakelijk",
-              "text": "Is een DPIA noodzakelijk op basis van de quick scan?",
-              "guidance": "Bepaal op basis van de voorgaande antwoorden of een DPIA verplicht is.",
+              "text": "Is een DPIA noodzakelijk op basis van deze scan?",
+              "guidance": "Of een volledige DPIA verplicht is, volgt uit de prescan DPIA. Deze vraag legt vast wat deze classificatietoets daarover signaleert.",
               "type": "radio",
               "importance": "mandatory",
               "options": [
@@ -239,21 +1394,238 @@
                 "Nee — geen DPIA vereist",
                 "Nader te bepalen"
               ]
-            },
+            }
+          ]
+        },
+        {
+          "id": "qs_d5",
+          "title": "Risiconiveau in context",
+          "description": "Ondergrens: de BIO2-overheidsmaatregelen (deel 2) zijn wettelijk verplicht voor alle overheidsorganisaties, ongeacht het risiconiveau. Cbw- en Cbb-maatregelen zijn aanvullend verplicht voor Cbw-entiteiten. Eigen aanvullende maatregelen zijn bindend via het organisatiebeleid (ISMS, BIO2 §5).",
+          "questions": [
             {
-              "id": "qs_d.extra_maatregelen",
-              "text": "Zijn aanvullende beveiligingsmaatregelen bovenop de BIO-baseline nodig?",
-              "guidance": "Op basis van de BIV-classificatie en de privacy-uitkomst: zijn extra maatregelen vereist?",
+              "id": "qs_d.risiconiveau",
+              "text": "Welk risiconiveau volgt uit de classificatie?",
+              "guidance": "Staat één of meer van de drie aspecten op Hoog, dan is een diepgaande risicoanalyse het advies. Risicoacceptatie na een bewuste, gedocumenteerde proportionaliteitsafweging is een volwaardige keuze voor ISO- en organisatie-eigen maatregelen; voor BIO2-overheidsmaatregelen nooit.",
               "type": "radio",
               "importance": "mandatory",
-              "options": ["Ja", "Nee", "Nader te bepalen"]
+              "options": [
+                "1 — Zeer laag: BIO2-overheidsmaatregelen voldoende",
+                "2 — Laag: BIO2 + eigen maatregelen voldoende",
+                "3 — Gemiddeld: BIO2 + eigen maatregelen voldoende, aanvullende risicoanalyse overwegen",
+                "4 — Hoog: aanvullende risicoanalyse vereist",
+                "5 — Extreem: aanvullende risicoanalyse vereist, escaleren naar CISO en management"
+              ]
             },
             {
-              "id": "qs_d.persoonsgegevens_toelichting",
-              "text": "Toelichting op de verwerking van persoonsgegevens",
-              "guidance": "Beschrijf welke persoonsgegevens worden verwerkt en in welke context.",
+              "id": "qs_d.vervolgstappen",
+              "text": "Welke vervolgstappen zijn afgesproken?",
+              "guidance": "Bij 'aanvullende risicoanalyse vereist': start de risicoanalyse, rapporteer de uitkomst aan het management, registreer het risico in het risicoacceptatieformulier of risicoregister en leg de verbetermaatregelen vast met een streefdatum.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "qs_d6",
+          "title": "BIO2-maatregelen",
+          "description": "Selecteer alle BIO2-maatregelen die van toepassing zijn op basis van de context van het proces en de resulterende BIV-classificatie. Neem de geselecteerde maatregelen over in het risicoacceptatieformulier dat de proceseigenaar ondertekent.",
+          "questions": [
+            {
+              "id": "qs_d.maatregelen_organisatorisch",
+              "text": "5. Organisatorische maatregelen",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "5.01 Beleidsregels voor informatiebeveiliging",
+                "5.02 Rollen en verantwoordelijkheden bij informatiebeveiliging",
+                "5.03 Functiescheiding",
+                "5.04 Managementverantwoordelijkheden",
+                "5.05 Contact met overheidsinstanties",
+                "5.06 Contact met speciale belangengroepen",
+                "5.07 Informatie en analyses over dreigingen",
+                "5.08 Informatiebeveiliging in projectmanagement",
+                "5.09 Inventarisatie van informatie en andere gerelateerde bedrijfsmiddelen",
+                "5.10 Aanvaardbaar gebruik van informatie en andere gerelateerde bedrijfsmiddelen",
+                "5.11 Retourneren van bedrijfsmiddelen",
+                "5.12 Classificeren van informatie",
+                "5.13 Labelen van informatie",
+                "5.14 Overdragen van informatie",
+                "5.15 Toegangsbeveiliging",
+                "5.16 Identiteitsbeheer",
+                "5.17 Beheren van authenticatie-informatie",
+                "5.18 Toegangsrechten",
+                "5.19 Informatiebeveiliging in leveranciersrelaties",
+                "5.20 Adresseren van informatiebeveiliging in leveranciersovereenkomsten",
+                "5.21 Beheren van informatiebeveiliging in de ICT-toeleveringsketen",
+                "5.22 Monitoren, beoordelen en beheren van wijzigingen van leveranciersdiensten",
+                "5.23 Informatiebeveiliging voor het gebruik van clouddiensten",
+                "5.24 Plannen en voorbereiden van het beheer van informatiebeveiligingsincidenten",
+                "5.25 Beoordelen van en besluiten over informatiebeveiligingsgebeurtenissen",
+                "5.26 Reageren op informatiebeveiligingsincidenten",
+                "5.27 Leren van informatiebeveiligingsincidenten",
+                "5.28 Verzamelen van bewijsmateriaal",
+                "5.29 Informatiebeveiliging tijdens een verstoring",
+                "5.30 ICT-gereedheid voor bedrijfscontinuïteit",
+                "5.31 Wettelijke, statutaire, regelgevende en contractuele eisen",
+                "5.32 Intellectuele eigendomsrechten",
+                "5.33 Beschermen van registraties",
+                "5.34 Privacy en bescherming van persoonsgegevens",
+                "5.35 Onafhankelijke beoordeling van informatiebeveiliging",
+                "5.36 Naleving van beleid, regels en normen voor informatiebeveiliging",
+                "5.37 Gedocumenteerde bedieningsprocedure"
+              ]
+            },
+            {
+              "id": "qs_d.maatregelen_mensgericht",
+              "text": "6. Mensgerichte beheersmaatregelen",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "6.01 Screening",
+                "6.02 Arbeidsovereenkomst",
+                "6.03 Bewustwording van, opleiding en training in informatiebeveiliging",
+                "6.04 Disciplinaire procedure",
+                "6.05 Verantwoordelijkheden na beëindiging of wijziging van het dienstverband",
+                "6.06 Vertrouwelijkheids- of geheimhoudingsovereenkomsten",
+                "6.07 Werken op afstand",
+                "6.08 Melden van informatiebeveiligingsgebeurtenissen"
+              ]
+            },
+            {
+              "id": "qs_d.maatregelen_fysiek",
+              "text": "7. Fysieke beheersmaatregelen",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "7.01 Fysieke beveiligingszones",
+                "7.02 Fysieke toegangsbeveiliging",
+                "7.03 Beveiligen van kantoren, ruimten en faciliteiten",
+                "7.04 Monitoren van de fysieke beveiliging",
+                "7.05 Beschermen tegen fysieke en omgevingsdreigingen",
+                "7.06 Werken in beveiligde zones",
+                "7.07 'Clear desk' en 'clear screen'",
+                "7.08 Plaatsen en beschermen van apparatuur",
+                "7.09 Beveiligen van bedrijfsmiddelen buiten het terrein",
+                "7.10 Opslagmedia",
+                "7.11 Nutsvoorzieningen",
+                "7.12 Beveiligen van bekabeling",
+                "7.13 Onderhoud van apparatuur",
+                "7.14 Veilig verwijderen of hergebruiken van apparatuur"
+              ]
+            },
+            {
+              "id": "qs_d.maatregelen_technologisch",
+              "text": "8. Technologische beheersmaatregelen",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "8.01 'User endpoint devices'",
+                "8.02 Speciale toegangsrechten",
+                "8.03 Beperking toegang tot informatie",
+                "8.04 Toegangsbeveiliging op broncode",
+                "8.05 Beveiligde authenticatie",
+                "8.06 Capaciteitsbeheer",
+                "8.07 Bescherming tegen malware",
+                "8.08 Beheer van technische kwetsbaarheden",
+                "8.09 Configuratiebeheer",
+                "8.10 Wissen van informatie",
+                "8.11 Maskeren van gegevens",
+                "8.12 Voorkomen van gegevenslekken (data leakage prevention)",
+                "8.13 Back-up van informatie",
+                "8.14 Redundantie van informatieverwerkende faciliteiten",
+                "8.15 Logging",
+                "8.16 Monitoren van activiteiten",
+                "8.17 Kloksynchronisatie",
+                "8.18 Gebruik van speciale systeemhulpmiddelen",
+                "8.19 Installeren van software op operationele omgevingen",
+                "8.20 Beveiliging netwerkcomponenten",
+                "8.21 Beveiliging van netwerkdiensten",
+                "8.22 Netwerksegmentatie",
+                "8.23 Toepassen van webfilters",
+                "8.24 Gebruik van cryptografie",
+                "8.25 Beveiligen tijdens de ontwikkelcyclus",
+                "8.26 Toepassingsbeveiligingseisen",
+                "8.27 Veilige systeemarchitectuur en technische uitgangspunten",
+                "8.28 Veilig coderen",
+                "8.29 Testen van de beveiliging tijdens ontwikkeling en acceptatie",
+                "8.30 Uitbestede systeemontwikkeling",
+                "8.31 Scheiding van ontwikkel-, test- en productieomgevingen",
+                "8.32 Wijzigingenbeheer",
+                "8.33 Testgegevens",
+                "8.34 Bescherming van informatiesystemen tijdens audits"
+              ]
+            },
+            {
+              "id": "qs_d.maatregelen_onderbouwing",
+              "text": "Onderbouwing van de selectie van maatregelen",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "qs_d.maatregelen_opvolging",
+              "text": "Maatregelen die nog opvolging nodig hebben",
+              "type": "table",
+              "importance": "optional",
+              "columns": [
+                {
+                  "id": "control",
+                  "label": "Control",
+                  "hint": "Het BIO2-nummer, bijvoorbeeld 8.13."
+                },
+                {
+                  "id": "maatregel",
+                  "label": "Maatregel",
+                  "hint": "De naam van de beheersmaatregel."
+                },
+                {
+                  "id": "status",
+                  "label": "Status",
+                  "type": "select",
+                  "options": [
+                    "Niet gestart",
+                    "In uitvoering",
+                    "Geïmplementeerd",
+                    "Risico geaccepteerd"
+                  ]
+                },
+                {
+                  "id": "onderbouwing",
+                  "label": "Onderbouwing",
+                  "hint": "Waarom deze maatregel nodig is en wat er nog moet gebeuren."
+                }
+              ],
+              "notesLabel": "Toelichting bij de opvolging",
+              "minRows": 1,
+              "maxRows": 40,
+              "optionalTable": true
+            }
+          ]
+        },
+        {
+          "id": "qs_d7",
+          "title": "Ondertekening",
+          "description": "De uitgevoerde classificatietoets maakt onderdeel uit van het systeemdossier en wordt bewaard zolang het informatiesysteem in gebruik is: zowel de Cbw als de AVG spreken over 'passende maatregelen', en dat moet ook achteraf aantoonbaar zijn.",
+          "questions": [
+            {
+              "id": "qs_d.afwijking_motivatie",
+              "text": "Is er een motivatie om af te wijken van de conclusie?",
+              "guidance": "Alleen de data-eigenaar kan gemotiveerd afwijken van de conclusie van deze toets.",
               "type": "text",
               "importance": "optional"
+            },
+            {
+              "id": "qs_d.naam_eigenaar",
+              "text": "Naam van de informatie-eigenaar die vaststelt",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "shorttext"
+            },
+            {
+              "id": "qs_d.datum_vaststelling",
+              "text": "Aldus opgemaakt d.d.",
+              "type": "text",
+              "importance": "mandatory",
+              "format": "date"
             }
           ]
         }
