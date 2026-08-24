@@ -236,7 +236,8 @@
     },
     {
       "id": "cloudtoets",
-      "urn": "urn:nl:minfin:tr:cloudtoets:0.1",
+      "urn": "urn:nl:minfin:tr:cloudtoets:1.0",
+      "file": "cloudtoets.json",
       "title": "Cloudtoets",
       "track": "initiatie",
       "order": 11,
@@ -244,7 +245,6 @@
         "beveiliging",
         "project"
       ],
-      "placeholder": "onzeker",
       "shortDescription": "Weeg af of een clouddienst is toegestaan onder het Rijksbrede cloudbeleid: risicoafweging, datalocatie, afhankelijkheid en exitstrategie."
     },
     {
@@ -388,7 +388,7 @@
     },
     {
       "id": "restrisico",
-      "urn": "urn:nl:minfin:tr:restrisico:1.0",
+      "urn": "urn:nl:minfin:tr:restrisico:1.1",
       "file": "restrisico.json",
       "title": "Restrisico-acceptatie",
       "track": "uitvoering",

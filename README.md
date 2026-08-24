@@ -8,7 +8,7 @@ A web application that helps Dutch government employees fill in AI-related compl
 
 ## Features
 
-- **19 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quickscan BIO2, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier, Restrisico-acceptatie) → *Ontwerpen* (PPM Projectplan, PSA, Datakwaliteit-assessment, Dataset-registratie) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist, Data-ethiektoets, IHH-toets) → *In gebruik nemen* (AI-systeemregistratie/Model Card, Algoritmeregister-publicatie, Verwerkingsregister, Toegankelijkheidsverklaring) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Every form records where it comes from and how faithfully — see [Form lineage](#form-lineage) — and carries a stable identifier in the shape the MinBZK task-registry uses for its instruments (`urn:nl:minfin:tr:dpia:3.0`), see [Form URNs](#form-urns).
+- **20 forms grouped by lifecycle phase** — *Verkennen & afbakenen* (Intakeformulier, Quickscan BIO2, Prescan DPIA) → *Onderbouwen & besluiten* (Aanbiedingsformulier, Restrisico-acceptatie) → *Ontwerpen* (PPM Projectplan, PSA, Datakwaliteit-assessment, Dataset-registratie) → *Toetsen* (DPIA, AI Impact Assessment, IAMA, EU AI Act Compliance Checklist, Data-ethiektoets, IHH-toets, Cloudtoets) → *In gebruik nemen* (AI-systeemregistratie/Model Card, Algoritmeregister-publicatie, Verwerkingsregister, Toegankelijkheidsverklaring) → *Beheren & evalueren* (nothing yet — deliberately shown empty). Every form describes one project or system, matching the dossier that holds it. The subject domain (privacy, beveiliging, AI, data, project) is a tag on each card, not a grouping — see [`docs/sporen-en-roadmap.md`](docs/sporen-en-roadmap.md) for the reasoning and the roadmap of missing instruments. Forms are defined as JSON files under `public/forms/` and loaded at runtime. Every form records where it comes from and how faithfully — see [Form lineage](#form-lineage) — and carries a stable identifier in the shape the MinBZK task-registry uses for its instruments (`urn:nl:minfin:tr:dpia:3.0`), see [Form URNs](#form-urns).
 - **Beslishulp AI-verordening (MinBZK)** — The official [ai-verordening-beslishulp](https://github.com/MinBZK/ai-verordening-beslishulp) decision tree runs inside the app as a modal, launched from a tile fused to the EU AI Act card on the dossier page. It determines whether the AI-verordening applies, which role you hold (aanbieder, gebruiksverantwoordelijke, importeur, distributeur) and which risk group the system falls in, with the upstream explanations, sources and obligations intact. The outcome is stored on the dossier and supplies the risk classification (Bijlage 1) of the AI Impact Assessment. The decision tree is vendored (`vendor/ai-verordening-beslishulp/`, EUPL-1.2) and built into a runtime asset with `npm run beslishulp:build`.
 - **Login via Keycloak (SSO)** — The backend acts as an OpenID Connect backend-for-frontend: users log in through Keycloak, and a signed session cookie gates every API call. A `--dev` flag (backend) and `VITE_AUTH_BYPASS` (frontend) bypass the login for local development.
 - **User management** — Beheerders (admins) can create, edit, reset passwords for, and delete users straight from the app via the Keycloak Admin API.
@@ -132,7 +132,7 @@ For the three **generated** forms (DPIA, Prescan DPIA, IAMA) the URN lives in `s
 | EU AI Act Compliance Checklist | `urn:nl:minfin:tr:euaiact:0.1` | `urn:nl:aivt:tr:ca:1.0` |
 | Data-ethiektoets | `urn:nl:minfin:tr:dataethiek:1.0` | — |
 | IHH-toets | `urn:nl:minfin:tr:ihhtoets:0.1` | — |
-| Cloudtoets *(placeholder)* | `urn:nl:minfin:tr:cloudtoets:0.1` | — |
+| Cloudtoets | `urn:nl:minfin:tr:cloudtoets:1.0` | — |
 | BIA *(placeholder)* | `urn:nl:minfin:tr:bia:0.1` | — |
 | Datakwaliteit-assessment | `urn:nl:minfin:tr:datakwaliteit:1.0` | — |
 | Dataset-registratie (datasheet) | `urn:nl:minfin:tr:datasetregistratie:1.0` | — |
@@ -140,7 +140,7 @@ For the three **generated** forms (DPIA, Prescan DPIA, IAMA) the URN lives in `s
 | Algoritmeregister-publicatie | `urn:nl:minfin:tr:algoritmeregister:1.0` | — |
 | Verwerkingsregister (AVG art. 30) | `urn:nl:minfin:tr:verwerkingsregister:1.0` | — |
 | Toegankelijkheidsverklaring | `urn:nl:minfin:tr:toegankelijkheid:1.0` | — |
-| Restrisico-acceptatie | `urn:nl:minfin:tr:restrisico:1.0` | — |
+| Restrisico-acceptatie | `urn:nl:minfin:tr:restrisico:1.1` | — |
 | Projectvoortgangsrapportage *(placeholder)* | `urn:nl:minfin:tr:voortgangsrapportage:0.1` | — |
 | Projectafwijkingsformulier *(placeholder)* | `urn:nl:minfin:tr:afwijkingsformulier:0.1` | — |
 | Evaluatieformulier *(placeholder)* | `urn:nl:minfin:tr:evaluatie:0.1` | — |
@@ -175,6 +175,7 @@ The `derivation` field has four values:
 | IAMA | Toetsen | Impact Assessment Mensenrechten en Algoritmes v2 (`urn:nl:iama`) | MinBZK | `generated` |
 | EU AI Act Compliance Checklist | Toetsen | AI-BOK v1.0 Template 3 + task-registry `conformity_assessment_eu_ai_act` (`urn:nl:aivt:tr:ca:1.0`) | Jan Willem van Veen / MinBZK | `harmonized` |
 | Data-ethiektoets | Toetsen | DAMA-DMBOK2 hfdst. 2 (Data Handling Ethics), §3.1 — Belmont-principes | DAMA International | `derived` |
+| Cloudtoets | Toetsen | Handreiking gebruik clouddienst v1.0 (`Handreiking Toestaan Cloudtoepassingv1.0.docx`); Cloudbeleid MinFin, Rijksbreed Cloudbeleid 2022, implementatiekader 'risicoafweging cloudgebruik' | MinFin (Adviescommissie Cloudgebruik) | `harmonized` |
 | IHH-toets | Toetsen | Informatiehuishoudingstoets bij IV-verzoeken (intern sjabloon CDIO/IHH); Archiefwet, RINFIN 2022, NEN-ISO 16175-1:2020, DUTO-raamwerk Nationaal Archief | MinFin (CDIO/IHH) | `harmonized` |
 | AI-systeemregistratie (Model Card) | In gebruik nemen | AI-BOK v1.0 Template 2 | Jan Willem van Veen | `harmonized` |
 | Algoritmeregister-publicatie | In gebruik nemen | [Algoritmeregister](https://algoritmes.overheid.nl/) — standaard voor de publicatie van algoritmes | MinBZK | `harmonized` |

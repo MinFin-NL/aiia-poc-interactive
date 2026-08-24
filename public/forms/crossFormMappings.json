@@ -2444,5 +2444,144 @@
       "ihh_b.18"
     ],
     "synthesisHint": "Vertaal de autorisatie-, toegangs- en loggingmaatregelen uit de IHH-toets naar een algemene beschrijving van de technische en organisatorische beveiligingsmaatregelen zoals artikel 30 AVG die vraagt."
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_a.identificatie",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.topdesk_nummer"
+    ],
+    "synthesisHint": "Neem het Topdesk-meldingsnummer letterlijk over als identificatie van de aanvraag.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_b.naam_proces",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_a.directie_afdeling"
+    ],
+    "synthesisHint": "Neem de directie of afdeling uit het intakeformulier letterlijk over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_b.beschrijving",
+    "sourceFormId": "intake",
+    "sourceQuestionIds": [
+      "intake_b.omschrijving",
+      "intake_b.aanleiding"
+    ],
+    "synthesisHint": "Combineer de omschrijving en de aanleiding uit het intakeformulier tot een korte beschrijving van de business problematiek of behoefte en de voorziene oplossing, geschreven vanuit de clouddienst die daarvoor nodig is."
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_b.beschrijving",
+    "sourceFormId": "psa",
+    "sourceQuestionIds": [
+      "psa_a.aanleiding",
+      "psa_d.technologie"
+    ],
+    "synthesisHint": "Vat de aanleiding en de technologielaag uit de PSA samen tot een korte beschrijving van de behoefte en de voorziene cloudoplossing."
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_b.type_clouddienst",
+    "sourceFormId": "prescandpia",
+    "sourceQuestionIds": [
+      "d0.5.3"
+    ],
+    "synthesisHint": "De prescan DPIA legt al vast welke vorm van cloud het betreft; neem die categorie over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_c.rubricering",
+    "sourceFormId": "quickscan",
+    "sourceQuestionIds": [
+      "qs_a.rubricering"
+    ],
+    "synthesisHint": "De rubricering uit de Quickscan BIO2 bepaalt of deze gelijk is aan of lager dan Departementaal Vertrouwelijk (Dep. V).",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_c.basisregistratie",
+    "sourceFormId": "prescandpia",
+    "sourceQuestionIds": [
+      "d5.1.1"
+    ],
+    "synthesisHint": "De prescan DPIA stelt vast of het een basisregistratie betreft; neem dat antwoord over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_c.bijzondere_persoonsgegevens",
+    "sourceFormId": "prescandpia",
+    "sourceQuestionIds": [
+      "d1.2.1"
+    ],
+    "synthesisHint": "De prescan DPIA stelt vast of het systeem bijzondere persoonsgegevens verwerkt; neem dat antwoord over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_c.bijzondere_persoonsgegevens",
+    "sourceFormId": "quickscan",
+    "sourceQuestionIds": [
+      "qs_d.bijzondere_persoonsgegevens"
+    ],
+    "synthesisHint": "De Quickscan BIO2 stelt vast of er bijzondere persoonsgegevens (artikel 9 AVG) worden verwerkt.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_c.explain",
+    "sourceFormId": "quickscan",
+    "sourceQuestionIds": [
+      "qs_d.persoonsgegevens_toelichting"
+    ],
+    "synthesisHint": "Gebruik de opsomming van (bijzondere) persoonsgegevens uit de Quickscan BIO2 als basis voor de explain: welke gegevens het betreft en waarom verwerking met deze clouddienst toch verantwoord is."
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_d.doorgifte",
+    "sourceFormId": "prescandpia",
+    "sourceQuestionIds": [
+      "d2.1.1",
+      "d2.1.6"
+    ],
+    "synthesisHint": "De prescan DPIA legt vast of er doorgifte buiten de EER plaatsvindt en op welk mechanisme die berust. Let op de omkering: doorgifte buiten de EER betekent hier niet automatisch 'Nee' — een adequaatheidsbesluit of passend doorgiftemechanisme telt ook mee.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_e.exitstrategie",
+    "sourceFormId": "psa",
+    "sourceQuestionIds": [
+      "psa_f.exit_strategie"
+    ],
+    "synthesisHint": "Neem de exit-strategie uit de PSA over en vul die aan met wat het cloudbeleid vraagt: welke data en functionaliteit meegaan, welke afspraken met de provider zijn gemaakt en welke doorlooptijd en kosten daarmee gemoeid zijn."
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_e.vervolgstappen",
+    "sourceFormId": "quickscan",
+    "sourceQuestionIds": [
+      "qs_d.vervolgstappen"
+    ],
+    "synthesisHint": "De vervolgstappen uit de Quickscan BIO2 die het cloudgebruik raken, horen ook hier thuis."
+  },
+  {
+    "targetFormId": "quickscan",
+    "targetQuestionId": "qs_a.cloud_uitkomst",
+    "sourceFormId": "cloudtoets",
+    "sourceQuestionIds": [
+      "ct_b.type_clouddienst",
+      "ct_b.type_service",
+      "ct_e.uitkomst"
+    ],
+    "synthesisHint": "Vat de cloudoplossing en de uitkomst van de cloudtoets samen: welk type clouddienst en servicemodel, en of het inschakelen van de clouddienst in beginsel is toegestaan."
   }
 ]

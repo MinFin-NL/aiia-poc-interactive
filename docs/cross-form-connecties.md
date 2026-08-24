@@ -11,13 +11,14 @@ Een koppeling heeft een **modus**:
 
 Een `copy`-koppeling naar een keuzevraag waarvan het bronantwoord geen geldige optie is (of een tabel met andere kolommen) vult niets in — dan toont het paneel alleen het bronantwoord ter informatie.
 
-**Totaal: 256 koppelingen** verdeeld over 53 formulierparen, waarvan 36 in `copy`-modus.
+**Totaal: 270 koppelingen** verdeeld over 58 formulierparen, waarvan 44 in `copy`-modus.
 
 > De per-paar secties hieronder beschrijven de oorspronkelijke koppelingen; de tellingen erin zijn
 > niet allemaal bijgewerkt. De koppelingen van de zeven formulieren die in juli 2026 zijn
 > toegevoegd staan gebundeld in [§ Nieuwe formulieren](#nieuwe-formulieren-juli-2026) onderaan;
-> de IAMA-koppelingen staan in [§ IAMA](#iama-augustus-2026) en die van de IHH-toets in
-> [§ IHH-toets](#ihh-toets-augustus-2026).
+> de IAMA-koppelingen staan in [§ IAMA](#iama-augustus-2026), die van de IHH-toets in
+> [§ IHH-toets](#ihh-toets-augustus-2026) en die van de cloudtoets in
+> [§ Cloudtoets](#cloudtoets-augustus-2026).
 > `public/forms/crossFormMappings.json` is de bron van waarheid.
 
 ---
@@ -308,3 +309,36 @@ De koppelingen naar de keuzevragen (rubricering, vraag 17 en 18) staan in `copy`
 de bronwaarde een geldige optie is: het paneel toont het bronantwoord dan ter informatie naast de
 vraag, wat hier precies de bedoeling is — de IHH-professional leest de PSA-tekst mee bij het
 beantwoorden, maar de keuze blijft aan de invuller.
+
+---
+
+## Cloudtoets (augustus 2026)
+
+De cloudtoets (Handreiking gebruik clouddienst) hangt met **14 koppelingen** aan het dossier. De
+zwaartepunten zijn de gegevensverwerking — rubricering, basisregistratie en bijzondere
+persoonsgegevens staan al in de Quickscan BIO2 en de prescan DPIA — en de exitstrategie, die de
+PSA al beschrijft.
+
+**Cloudtoets als doelformulier (13 koppelingen)**
+
+| Bronformulier | Koppelingen | Zwaartepunt |
+|---|---|---|
+| Prescan DPIA | 4 | Vorm van cloud, basisregistratie en bijzondere persoonsgegevens (`copy`); doorgifte buiten de EER en het doorgiftemechanisme |
+| Quickscan BIO2 | 4 | Rubricering en bijzondere persoonsgegevens (`copy`); de opsomming van persoonsgegevens → de explain; vervolgstappen |
+| Intake | 3 | Topdesk-nummer → identificatie, directie/afdeling → naam proces (`copy`); omschrijving en aanleiding → korte beschrijving |
+| PSA | 2 | Aanleiding en technologielaag → korte beschrijving; exit-strategie → exitstrategie cloudbeleid |
+
+**Cloudtoets als bronformulier (1 koppeling)**
+
+| Doelformulier | Koppelingen | Zwaartepunt |
+|---|---|---|
+| Quickscan BIO2 | 1 | Type clouddienst, type service en de uitkomst van de toets → de toelichting op de cloudoplossing |
+
+De koppeling van de prescan DPIA naar de vraag over doorgifte staat bewust in `copy`-modus zonder
+dat de bronwaarde een geldige optie is: de vragen zijn tegengesteld geformuleerd (doorgifte buiten
+de EER versus verwerking binnen de EER of onder een passend mechanisme), dus het paneel toont het
+bronantwoord alleen ter informatie en de invuller kiest zelf. Hetzelfde geldt voor de rubricering
+uit de Quickscan BIO2, die als niveau is vastgelegd en hier als ja/nee-vraag terugkomt.
+
+Ook nieuw: `Cloudtoets` is als optie toegevoegd aan de vraag welke assessments aan een
+restrisico-acceptatie ten grondslag liggen (Restrisico-acceptatie 1.1).

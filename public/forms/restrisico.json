@@ -1,7 +1,7 @@
 {
   "id": "restrisico",
-  "version": "1.0",
-  "urn": "urn:nl:minfin:tr:restrisico:1.0",
+  "version": "1.1",
+  "urn": "urn:nl:minfin:tr:restrisico:1.1",
   "title": "Restrisico-acceptatie",
   "aiContext": "Dit is een restrisico-acceptatieformulier voor het Ministerie van Financiën: het sluitstuk van de DPIA, de AI Impact Assessment, de IAMA en de Quick scan BIO. Het bundelt de risico's die na alle beheersmaatregelen overblijven, legt per risico een expliciet besluit vast (accepteren, aanvullend beheersen, of niet accepteren) en registreert wie dat besluit neemt, op welke termijn het geldig is en onder welke voorwaarden. Schrijf zakelijk en besluitvormend: een restrisico is pas bruikbaar beschreven als duidelijk is wat er kan gebeuren, hoe erg dat is, wie het draagt en wat het signaal is dat het zich voordoet.",
   "source": {
@@ -98,6 +98,7 @@
                 "IAMA",
                 "EU AI Act Compliance Checklist",
                 "Quick scan BIO / BBN-bepaling",
+                "Cloudtoets",
                 "Datakwaliteit-assessment",
                 "Data-ethiektoets",
                 "Beveiligingsonderzoek of penetratietest",
