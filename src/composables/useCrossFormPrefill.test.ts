@@ -102,3 +102,64 @@ describe('prefillCopyAnswers: intake → aanbiedingsformulier', () => {
     expect(store.forms.aanbiedingsformulier.answers['aa_b.aanleiding']).toBeUndefined()
   })
 })
+
+/**
+ * The kernvragen are the point of entry for a dossier: ten answers that are
+ * supposed to leave the heavy assessments partly filled in before anyone opens
+ * them. This pins that promise against the real form JSON and the real
+ * mappings, so a renamed question id in either file fails here instead of
+ * quietly reducing the yield to nothing.
+ */
+describe('prefillCopyAnswers: kernvragen → de zware assessments', () => {
+  beforeEach(() => setActivePinia(createPinia()))
+
+  const KERNVRAGEN = {
+    'kern.aanleiding': '<p>Handhaving loopt vast op papieren dossiers.</p>',
+    'kern.doel': '<p>Doorlooptijd terug naar tien werkdagen.</p>',
+    'kern.beschrijving': '<p>Een scoringsmodel dat zaken op behandelvolgorde zet.</p>',
+    'kern.betrokkenen': '<p>Aanvragers, die er zelf niet voor kiezen.</p>',
+    'kern.grondslag': '<p>Artikel 4:2 Awb, uitvoering van een wettelijke taak.</p>',
+    'kern.alternatieven': '<p>Niets doen en handmatig triëren zijn overwogen.</p>',
+    'kern.menselijke_rol': '<p>Een behandelaar beoordeelt elke zaak zelf.</p>',
+    'kern.transparantie': '<p>Vermelding in het besluit en in het algoritmeregister.</p>',
+    'kern.bezwaar': '<p>Bezwaar via de gewone route; fouten worden ambtshalve hersteld.</p>',
+    'kern.monitoring': '<p>Maandelijks op doorlooptijd en verschillen tussen groepen.</p>',
+    'kern.eigenaar': '<p>De directeur Handhaving is eindverantwoordelijk.</p>',
+    'kern.exit': '<p>Uitzetten bij aanhoudende ongelijke uitwerking.</p>',
+  }
+
+  async function open(formId: string) {
+    const store = useAssessmentStore()
+    store.ensureDossier()
+    for (const [id, value] of Object.entries(KERNVRAGEN)) {
+      store.setAnswerForForm('kernvragen', id, value)
+    }
+    store.setActiveForm(formId)
+    const summary = await prefillCopyAnswers(await loadForm(formId))
+    return { store, summary }
+  }
+
+  it('fills the IAMA opening questions verbatim', async () => {
+    const { store, summary } = await open('iama')
+    const answers = store.forms.iama.answers
+    expect(answers['d1.1.1']).toBe(KERNVRAGEN['kern.aanleiding'])
+    expect(answers['d1.1.2']).toBe(KERNVRAGEN['kern.doel'])
+    expect(answers['d1.3.4']).toBe(KERNVRAGEN['kern.grondslag'])
+    expect(answers['d1.4.2']).toBe(KERNVRAGEN['kern.eigenaar'])
+    expect(answers['d1.4.3']).toBe(KERNVRAGEN['kern.exit'])
+    expect(summary.sourceFormIds).toEqual(['kernvragen'])
+    expect(summary.count).toBeGreaterThanOrEqual(5)
+  })
+
+  it('fills the AIIA and the algoritmeregister too', async () => {
+    expect((await open('aiia')).summary.count).toBeGreaterThanOrEqual(5)
+    expect((await open('algoritmeregister')).summary.count).toBeGreaterThanOrEqual(4)
+  })
+
+  it('leaves the DPIA to synthesis rather than copying prose into it', async () => {
+    // Every DPIA mapping is a synthesise hint: its fields combine several
+    // kernvragen, so a verbatim copy would be wrong, not merely incomplete.
+    const { summary } = await open('dpia')
+    expect(summary.count).toBe(0)
+  })
+})

@@ -55,7 +55,7 @@ export function useFormProgress() {
    */
   function trackSummary(
     dossier: Dossier,
-    /** Forms to leave out of the count entirely — the toepassingsscan ruled
+    /** Forms to leave out of the count entirely — the kernvragen ruled
      *  them not applicable, so a phase must be able to reach "afgerond"
      *  without them. */
     skip?: ReadonlySet<string>,

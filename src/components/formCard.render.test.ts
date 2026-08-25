@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest'
 import { createSSRApp } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import FormCard from './FormCard.vue'
-import type { ApplicabilityVerdict } from '../utils/toepassingsscan'
+import type { ApplicabilityVerdict } from '../utils/toepasselijkheid'
 
 const ALWAYS: ApplicabilityVerdict = { status: 'altijd', reason: '', kenmerken: [] }
 

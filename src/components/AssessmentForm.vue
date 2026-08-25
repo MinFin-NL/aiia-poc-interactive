@@ -45,9 +45,15 @@
       <DossierList />
     </main>
 
+    <!-- The kernvragen: the step before the dossier page. Its own screen, not
+         a view of the open form, because it comes first — see the Screen type. -->
+    <main v-else-if="store.screen === 'kernvragen'" class="assessment-shell__portal">
+      <KernvragenView />
+    </main>
+
     <!-- Dossier detail page (no form selected) -->
     <main v-else-if="store.activeFormId === null" class="assessment-shell__portal">
-      <DossierDetail @open="store.setActiveForm" />
+      <DossierDetail @open="openForm" />
     </main>
 
     <div v-else-if="isLoading" class="assessment-shell__loading">
@@ -168,6 +174,8 @@ import AppHeader from './AppHeader.vue'
 import AppFooter from './AppFooter.vue'
 import DossierList from './DossierList.vue'
 import DossierDetail from './DossierDetail.vue'
+import KernvragenView from './KernvragenView.vue'
+import { KERNVRAGEN_FORM_ID } from '../utils/kernvragen'
 import FormIntro from './FormIntro.vue'
 import SectionNav from './SectionNav.vue'
 import SectionView from './SectionView.vue'
@@ -177,6 +185,17 @@ import SummaryView from './SummaryView.vue'
 import UserManagement from './UserManagement.vue'
 
 const store = useAssessmentStore()
+
+/**
+ * Open a form from the dossier page. The kernvragen are the one exception: they
+ * have a screen of their own (ten blocks on one page, with the consequences for
+ * the other forms beside them), so every card and CTA that names them lands
+ * there rather than in the ordinary form shell.
+ */
+function openForm(formId: string) {
+  if (formId === KERNVRAGEN_FORM_ID) store.openKernvragen()
+  else store.setActiveForm(formId)
+}
 const auth = useAuthStore()
 const { aiModeActive, aiModeProgress, aiModePhase, cancelAiMode } = useAiMode()
 const formConfig = ref<FormConfig | null>(null)

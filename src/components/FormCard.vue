@@ -121,7 +121,7 @@ import { computed } from 'vue'
 import AiModeToggle from './AiModeToggle.vue'
 import type { FormIndexEntry, FormPlaceholder } from '../services/formLoader'
 import type { FormProgress } from '../utils/formProgress'
-import { applicabilityLabel, type ApplicabilityVerdict } from '../utils/toepassingsscan'
+import { applicabilityLabel, type ApplicabilityVerdict } from '../utils/toepasselijkheid'
 
 /**
  * Eén formulierkaart op de dossierpagina. De kaart is dom: alle oordelen

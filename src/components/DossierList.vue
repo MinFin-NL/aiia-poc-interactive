@@ -150,8 +150,10 @@ function openCreateDialog() {
 
 function onCreateConfirmed(name: string) {
   const trimmed = name.trim() || `Dossier ${store.dossierList.length + 1}`
-  // createDossier activates the new dossier and lands on its detail page
+  // createDossier activates the new dossier; the kernvragen come before its
+  // detail page, which would otherwise open with every form on `onbepaald`.
   store.createDossier(trimmed)
+  store.openKernvragen()
 }
 </script>
 

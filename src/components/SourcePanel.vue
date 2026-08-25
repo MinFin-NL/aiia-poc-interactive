@@ -40,6 +40,14 @@
             <span class="source-panel__doc-name">{{ entry.source.docName }}</span>
             <span class="source-panel__fragment">{{ fragmentLabel(entry.source) }}</span>
           </div>
+          <!-- The kernvragen transcript is indexed and cited like any uploaded
+               document, but it is not evidence: it is what the invuller wrote.
+               Without this line an answer derived from it reads as corroborated
+               by a source, which is exactly the wrong impression. -->
+          <p v-if="isDerived(entry.source)" class="source-panel__derived">
+            Dit is geen brondocument maar uw eigen antwoord op de kernvragen — het bevestigt dit
+            antwoord niet, het is de herkomst ervan.
+          </p>
           <div class="source-panel__snippet">
             <span
               v-for="(seg, i) in entry.segments"
@@ -64,6 +72,7 @@
 import { computed, ref } from 'vue'
 import type { AnswerSource } from '../models/Assessment'
 import { matchAnswerToChunk, segmentText, type TextSegment } from '../utils/sourceMatching'
+import { useAssessmentStore } from '../stores/assessmentStore'
 
 const props = withDefaults(defineProps<{
   sources: AnswerSource[]
@@ -85,6 +94,13 @@ const emit = defineEmits<{
 }>()
 
 const open = ref(props.defaultOpen)
+
+const store = useAssessmentStore()
+
+/** Text this app generated from the user's own kernvragen, not an upload. */
+function isDerived(source: AnswerSource): boolean {
+  return store.documents.some((d) => d.id === source.docId && d.derived === 'kernvragen')
+}
 
 // Sort best-supported sources first; highlight the matched passages.
 const matchedSources = computed(
@@ -184,6 +200,13 @@ function fragmentLabel(source: AnswerSource): string {
   justify-content: space-between;
   gap: var(--rvo-space-sm);
   margin-block-end: var(--rvo-space-2xs);
+}
+
+.source-panel__derived {
+  margin: 0;
+  font-size: var(--rvo-font-size-sm);
+  line-height: var(--rvo-line-height-md);
+  color: var(--rvo-color-grijs-700);
 }
 
 .source-panel__doc-name {

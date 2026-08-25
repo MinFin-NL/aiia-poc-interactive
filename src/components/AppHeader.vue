@@ -148,8 +148,14 @@ const showResetButton = computed(
     store.currentView !== 'home',
 )
 
+// The kernvragen get one too: it is a full-page step with the dossier name as
+// its only way back, and without a crumb there is nothing at the top of a long
+// page that says where you are.
 const showBreadcrumb = computed(
-  () => store.screen === 'dossier' && !auth.userManagementOpen && store.activeDossier.name !== '',
+  () =>
+    (store.screen === 'dossier' || store.screen === 'kernvragen') &&
+    !auth.userManagementOpen &&
+    store.activeDossier.name !== '',
 )
 
 const activeFormTitle = computed(() => {
@@ -159,6 +165,8 @@ const activeFormTitle = computed(() => {
 
 const activePhaseLabel = computed(() => {
   if (store.activeFormId === null) return null
+  // The kernvragen come before the phases; "Intake" would misplace them.
+  if (store.screen === 'kernvragen') return null
   const track = availableForms.value.find((f) => f.id === store.activeFormId)?.track
   // A form with a typo'd track is already surfaced on the dossier page; don't
   // repeat "Niet ingedeeld" in the breadcrumb of every one of its views.

@@ -1,0 +1,338 @@
+{
+  "id": "kernvragen",
+  "version": "1.0",
+  "urn": "urn:nl:minfin:tr:kernvragen:1.0",
+  "title": "Kernvragen",
+  "source": {
+    "instrument": "Kernvragen bij de start van een IV-project",
+    "publisher": "Ministerie van Financiën",
+    "reference": "Samengesteld uit IAMA (deel 1 Waarom / deel 4 Mensenrechten), AIIA deel A, Model DPIA Rijksdienst en de toepassingsscan van deze invulhulp",
+    "derivation": "harmonized",
+    "note": "Tien startvragen die zowel bepalen welke formulieren gelden als de inhoudelijke bron vormen voor de rest van het dossier. De keuzevragen in blok 2 tot en met 5 zijn de zes vragen van de vroegere toepassingsscan, ongewijzigd van formulering."
+  },
+  "aiContext": "Dit zijn de tien kernvragen die aan het begin van een IV-project worden beantwoord. Ze beschrijven waarom het project bestaat, wat het systeem is en doet, wie het raakt, welke gegevens erin omgaan, op grond waarvan het mag, welke publieke waarden op het spel staan, wat er mis kan gaan, hoe erover verantwoording wordt afgelegd en wie eigenaar is. De antwoorden zijn de gezamenlijke bron voor alle andere formulieren in het dossier: houd ze zakelijk, feitelijk en concreet, en schrijf in volledige zinnen zodat ze elders herbruikbaar zijn.",
+  "meta": {
+    "homeComponent": "HomePage",
+    "exportLabel": "Kernvragen",
+    "docTitle": "Kernvragen bij de start van het project",
+    "footerLabel": "Kernvragen – MinFin",
+    "filename": "Kernvragen.pdf",
+    "systemNamePlaceholder": "Bijv. Klantportaal medewerkers v1",
+    "homeContent": {
+      "notice": "Begin hier. Deze tien vragen bepalen welke formulieren voor dit project gelden én leveren de tekst waarmee de rest van het dossier alvast gevuld kan worden. U hoeft er geen documenten voor te uploaden.",
+      "description": "De kernvragen zijn de fundamentele vragen die aan ieder IV-project vooraf horen te gaan: waarom doen we dit, wat doet het, wie raakt het, mag het, wat gaat er mis als het misgaat, en wie legt daarover verantwoording af. Zes van de vragen hebben ook een aankruisdeel; daarmee wordt meteen zichtbaar welke toetsen en formulieren van toepassing zijn.",
+      "steps": [
+        "Waarom en waartoe: aanleiding en doel",
+        "Wat het is en wat het doet",
+        "Wie het raakt en welk besluit eraan hangt",
+        "Welke gegevens erin omgaan",
+        "Grondslag, alternatieven en publieke waarden",
+        "Risico's, tegenspraak en eigenaarschap"
+      ],
+      "buttonLabel": "Beginnen met de kernvragen"
+    }
+  },
+  "features": {
+    "riskClassification": false,
+    "decisionGate": false,
+    "conditionalPartB": false
+  },
+  "navigation": [
+    { "type": "subsections", "sectionId": "kern_a" },
+    { "type": "subsections", "sectionId": "kern_b" },
+    { "type": "subsections", "sectionId": "kern_c" },
+    { "type": "subsections", "sectionId": "kern_d" },
+    { "type": "specialView", "viewId": "summary", "label": "Naar samenvatting" }
+  ],
+  "sections": [
+    {
+      "id": "kern_a",
+      "title": "Waarom en wat",
+      "part": "A",
+      "subsections": [
+        {
+          "id": "kern_1",
+          "title": "1. Waarom en waartoe?",
+          "description": "De eerste vraag van elk impactassessment. Wie hier geen scherp antwoord op heeft, kan de rest ook niet afwegen.",
+          "questions": [
+            {
+              "id": "kern.aanleiding",
+              "text": "Welk probleem lost dit project op, en wat gebeurt er als we niets doen?",
+              "guidance": "Beschrijf het probleem zelf, niet de oplossing. Noem de aanleiding (een knelpunt, nieuwe wetgeving, een politieke toezegging) en wat de gevolgen zijn als de huidige situatie blijft zoals hij is. Dat laatste — het nulalternatief — is het ijkpunt waartegen alle latere afwegingen worden gehouden.",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            },
+            {
+              "id": "kern.doel",
+              "text": "Wat wilt u bereiken, en waaraan ziet u straks dat het gelukt is?",
+              "guidance": "Noem het hoofddoel en eventuele subdoelen, en maak concreet hoe u succes vaststelt: welke uitkomst, voor wie, binnen welke termijn. Vermijd doelen die alleen over het middel gaan (\"een systeem in gebruik nemen\").",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "kern_2",
+          "title": "2. Wat is het, en wat doet het?",
+          "description": "De vraag is niet of het \"AI\" heet. Een scoringsregel in een spreadsheet telt hier net zo goed mee als een taalmodel.",
+          "questions": [
+            {
+              "id": "kern.oplevering",
+              "text": "Wat levert dit project op, of wat gaat het ministerie hiermee aanbieden?",
+              "guidance": "Het gaat om wat er wordt aangeboden, niet om wie het bouwt: ook bij ingekochte software ligt de verplichting bij de organisatie die het aanbiedt. Kruis alles aan wat van toepassing is.",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "Publieke website of webformulier",
+                "Besloten webapplicatie achter een login",
+                "Mobiele app",
+                "Intranet of extranet",
+                "Backoffice- of desktopsoftware zonder webinterface",
+                "API of koppelvlak",
+                "Dataproduct, dataset of model zonder eigen interface",
+                "Infrastructuur of hardware"
+              ]
+            },
+            {
+              "id": "kern.gedrag",
+              "text": "Wat doet het systeem? Kruis alles aan wat van toepassing is.",
+              "guidance": "Niet: heet het \"AI\"? Een scoringsregel in een spreadsheet telt hier net zo goed mee als een taalmodel. Kies de onderste optie alleen als het systeem uitsluitend vaste, door mensen opgeschreven regels volgt.",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "Rangschikt, scoort of prioriteert mensen of zaken",
+                "Genereert tekst, beeld, geluid of code",
+                "Leert van data of past zijn gedrag in de tijd aan",
+                "Herkent patronen, beelden, spraak of tekst",
+                "Bevat een ingekochte component die als \"slim\" of \"AI\" wordt aangeprezen",
+                "Nee, geen van deze — het systeem volgt alleen vaste, door mensen opgeschreven regels"
+              ]
+            },
+            {
+              "id": "kern.beschrijving",
+              "text": "Beschrijf in gewone taal hoe het werkt.",
+              "guidance": "Welke techniek of aanpak, welke gegevens gaan erin, wat komt eruit, en welke stappen zitten daartussen. Schrijf het zo op dat een collega die niet aan het project werkt het begrijpt — deze beschrijving wordt hergebruikt in de AIIA, de DPIA, de model card en het algoritmeregister.",
+              "type": "text",
+              "importance": "mandatory",
+              "allowAttachments": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kern_b",
+      "title": "Wie het raakt",
+      "part": "B",
+      "subsections": [
+        {
+          "id": "kern_3",
+          "title": "3. Wie merkt hier iets van — en wie kan er niet voor kiezen?",
+          "description": "Het tweede deel is de ethische helft: er is verschil tussen een gebruiker die kan weglopen en een burger die het ondergaat.",
+          "questions": [
+            {
+              "id": "kern.doelgroep",
+              "text": "Wie merkt straks iets van de werking van dit systeem?",
+              "guidance": "Werking buiten de eigen organisatie bepaalt onder meer of publicatie in het Algoritmeregister speelt.",
+              "type": "checkbox",
+              "importance": "mandatory",
+              "options": [
+                "Burgers",
+                "Bedrijven of instellingen buiten de rijksoverheid",
+                "Medewerkers van het ministerie of andere overheidsorganisaties",
+                "Niemand buiten het projectteam — alleen interne techniek"
+              ]
+            },
+            {
+              "id": "kern.betrokkenen",
+              "text": "Wie van hen kan er niet voor kiezen, en zitten daar kwetsbare groepen bij?",
+              "guidance": "Denk aan mensen die met de overheid te maken krijgen zonder dat zelf te willen: aanvragers, gecontroleerden, geregistreerden. Noem ook groepen die extra geraakt kunnen worden — minderjarigen, mensen met een beperking, mensen met beperkte digitale of taalvaardigheid, mensen in een afhankelijke positie.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "kern_4",
+          "title": "4. Welk besluit of oordeel over mensen hangt hieraan?",
+          "questions": [
+            {
+              "id": "kern.besluit",
+              "text": "Ondersteunt of vervangt het systeem een besluit of beoordeling over een persoon?",
+              "guidance": "Bijvoorbeeld een aanvraag toekennen of afwijzen, selecteren voor controle, een risico-inschatting of het beoordelen van medewerkers.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja, het neemt zo’n besluit of bereidt het voor",
+                "Ja, maar alleen als hulpmiddel bij een menselijk oordeel",
+                "Nee",
+                "Weet ik niet"
+              ]
+            },
+            {
+              "id": "kern.menselijke_rol",
+              "text": "Wat is precies de rol van de mens die het laatste woord heeft?",
+              "guidance": "Beschrijf wie de uitkomst beoordeelt, welke informatie diegene daarbij ziet, hoeveel tijd en ruimte er is om ervan af te wijken, en hoe vaak dat in de praktijk naar verwachting gebeurt. Een handtekening onder een uitkomst die niemand kan controleren is geen menselijke tussenkomst.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "kern_5",
+          "title": "5. Op welke gegevens draait het, en waar komen die vandaan?",
+          "questions": [
+            {
+              "id": "kern.persoonsgegevens",
+              "text": "Komen er in dit project gegevens voor die — ook indirect — naar een persoon te herleiden zijn?",
+              "guidance": "Denk breed: ook personeelsnummers, IP-adressen, logging en pseudoniemen tellen mee, net als gegevens over eigen medewerkers.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee, uitsluitend gegevens die niet naar personen herleidbaar zijn",
+                "Weet ik niet"
+              ]
+            },
+            {
+              "id": "kern.eigen_dataset",
+              "text": "Beheert dit project een eigen dataset, of levert het zelf gegevens aan anderen?",
+              "guidance": "Alleen gegevens van een ander systeem tonen telt niet mee; een eigen bestand, datawarehouse of trainingsset wel.",
+              "type": "radio",
+              "importance": "mandatory",
+              "options": [
+                "Ja",
+                "Nee, er wordt geen eigen dataset beheerd of geleverd",
+                "Weet ik niet"
+              ]
+            },
+            {
+              "id": "kern.gegevens",
+              "text": "Welke gegevens gaan erin, waar komen ze vandaan en hoe lang blijven ze bewaard?",
+              "guidance": "Noem de categorieën gegevens (niet elk veld), de bronnen of registraties waaruit ze komen, of er gegevens van derden of uit basisregistraties bij zitten, en wat er nu bekend is over bewaartermijnen. Bijzondere persoonsgegevens of strafrechtelijke gegevens: benoem ze hier expliciet.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kern_c",
+      "title": "Mag het, en tegen welke prijs",
+      "part": "C",
+      "subsections": [
+        {
+          "id": "kern_6",
+          "title": "6. Op grond waarvan mag dit — en kan het ook lichter?",
+          "description": "Proportionaliteit en subsidiariteit: is het middel in verhouding tot het doel, en is er geen minder ingrijpende weg?",
+          "questions": [
+            {
+              "id": "kern.grondslag",
+              "text": "Welke wettelijke taak of bevoegdheid voert u hiermee uit, en wat is de grondslag?",
+              "guidance": "Noem de wet, het besluit of de regeling, en de taak die u daarmee uitvoert. Is er (nog) geen grondslag, schrijf dat dan op — dat is een uitkomst, geen omissie.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "kern.alternatieven",
+              "text": "Welke alternatieven hebt u overwogen, en waarom vallen die af?",
+              "guidance": "Neem in elk geval mee: niets doen, een niet-digitale of eenvoudiger oplossing, en een variant met minder gegevens. Leg uit waarom het gekozen middel in verhouding staat tot het doel.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "kern_7",
+          "title": "7. Welke publieke waarden staan op het spel, en welke botsen met elkaar?",
+          "description": "Er is bijna altijd een botsing. Die benoemen is het punt van deze vraag — niet hem oplossen.",
+          "questions": [
+            {
+              "id": "kern.waarden",
+              "text": "Welke publieke waarden en grondrechten worden hier positief of negatief geraakt, en waar wringt het?",
+              "guidance": "Denk aan rechtsgelijkheid, rechtszekerheid, privacy, autonomie, non-discriminatie, transparantie, doelmatigheid, veiligheid en toegankelijkheid. Benoem ten minste één spanning tussen twee van deze waarden — bijvoorbeeld doelmatigheid tegenover zorgvuldigheid, of transparantie tegenover fraudebestendigheid — en welke kant u voorlopig kiest.",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "kern_8",
+          "title": "8. Wat gaat er mis als het misgaat?",
+          "questions": [
+            {
+              "id": "kern.risicos",
+              "text": "Wat zijn de gevolgen van een fout, uitval, misbruik of een datalek — en voor wie?",
+              "guidance": "Redeneer vanuit degene die geraakt wordt, niet vanuit het project: welke schade loopt iemand op bij een onterechte afwijzing, een verkeerde score of een lek, en hoe moeilijk is dat te herstellen? Noem ook wat er gebeurt als het systeem een tijd niet werkt.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "kern.ongelijke_uitwerking",
+              "text": "Kan dit voor de ene groep anders uitpakken dan voor de andere?",
+              "guidance": "Vooringenomenheid ontstaat zelden met opzet. Denk aan gegevens die de historie van eerdere ongelijkheid bevatten, aan groepen die ondervertegenwoordigd zijn in de data, en aan kenmerken die als omweg voor herkomst, gezondheid of inkomen kunnen werken (postcode, achternaam, taalgebruik).",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kern_d",
+      "title": "Verantwoording",
+      "part": "D",
+      "subsections": [
+        {
+          "id": "kern_9",
+          "title": "9. Hoe leggen we uit wat er gebeurt, en hoe kan iemand er iets tegen inbrengen?",
+          "questions": [
+            {
+              "id": "kern.transparantie",
+              "text": "Hoe komt iemand te weten dat dit systeem in zijn zaak is gebruikt, en hoe wordt de uitkomst uitgelegd?",
+              "guidance": "Beschrijf wat er actief bekend wordt gemaakt (publicatie, een passage in een besluit, een melding aan de gebruiker) en in welke taal. Kan de uitkomst überhaupt worden uitgelegd in termen die de betrokkene begrijpt?",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "kern.bezwaar",
+              "text": "Hoe maakt iemand bezwaar, en hoe wordt een fout hersteld?",
+              "guidance": "Noem de route (bezwaar, klacht, contact, inzage- of correctieverzoek), wie hem behandelt, en wat er gebeurt als blijkt dat het systeem het mis had: wordt alleen dat geval hersteld, of ook eerdere gevallen met dezelfde fout?",
+              "type": "text",
+              "importance": "mandatory"
+            }
+          ]
+        },
+        {
+          "id": "kern_10",
+          "title": "10. Wie is eigenaar, hoe weten we of het werkt, en wanneer stoppen we?",
+          "questions": [
+            {
+              "id": "kern.eigenaar",
+              "text": "Wie is eindverantwoordelijk, en wie doet de ontwikkeling, de inzet en het beheer?",
+              "guidance": "Noem functies of rollen, niet alleen namen: opdrachtgever, eindverantwoordelijke, ontwikkelaar (intern of leverancier), beheerder, en degene die in de dagelijkse praktijk met de uitkomst werkt.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "kern.monitoring",
+              "text": "Hoe stelt u vast of het in de praktijk doet wat het moet doen?",
+              "guidance": "Wat meet u, hoe vaak, en wie kijkt ernaar? Denk aan foutmarges, klachten, verschillen tussen groepen, en het aantal keren dat een mens van de uitkomst afwijkt. Noem ook wanneer het assessment opnieuw wordt gedaan.",
+              "type": "text",
+              "importance": "mandatory"
+            },
+            {
+              "id": "kern.exit",
+              "text": "Wanneer stopt u ermee, en hoe?",
+              "guidance": "Onder welke omstandigheden zou u dit systeem uitzetten, wie mag dat besluiten, en wat gebeurt er dan met de gegevens, het model en de lopende zaken? Een exitstrategie die pas bij problemen wordt bedacht, is er geen.",
+              "type": "text",
+              "importance": "optional"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

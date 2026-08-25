@@ -67,12 +67,28 @@
       <section v-if="isFirstRun" class="first-run" aria-labelledby="first-run-title">
         <p class="rvo-text rvo-text--sm first-run__eyebrow">Stap 1 van 2</p>
         <h2 id="first-run-title" class="rvo-heading rvo-heading--xl first-run__title">
-          Begin met je brondocumenten
+          Begin met de tien kernvragen
         </h2>
         <p class="rvo-text first-run__lead">
-          Upload wat er al ligt: notulen, een projectplan, een brainstorm of een architectuurschets.
-          FinDocs leest ze en vult daarna de formulieren van dit dossier voor je in — elk antwoord met
-          een verwijzing naar de passage waar het vandaan komt. Jij controleert, past aan en stelt vast.
+          Tien vragen over waarom dit project bestaat, wat het doet, wie het raakt en wat er mis kan
+          gaan. Ze bepalen welke formulieren hier gelden, en FinDocs vult daarna de rest van het
+          dossier ermee voor je in — elk antwoord met een verwijzing naar waar het vandaan komt.
+          Jij controleert, past aan en stelt vast.
+        </p>
+
+        <div class="rvo-action-group first-run__start">
+          <button
+            type="button"
+            class="rvo-button rvo-button--primary"
+            @click="store.openKernvragen()"
+          >
+            Start met de kernvragen
+          </button>
+        </div>
+
+        <p class="rvo-text rvo-text--sm first-run__or">
+          Liever eerst documenten? Upload wat er al ligt — notulen, een projectplan, een
+          architectuurschets — dan leest FinDocs die mee.
         </p>
 
         <label
@@ -119,7 +135,7 @@
           class="rvo-link first-run__skip"
           @click="showFullDossier = true"
         >
-          Ik heb geen documenten — laat me de formulieren zelf invullen
+          Sla dit over — laat me het dossier zelf doorlopen
         </button>
       </section>
 
@@ -337,13 +353,16 @@
             <template v-else-if="readyDocIds.length > 0">
               {{ bulkFillForms.length }}
               {{ bulkFillForms.length === 1 ? 'formulier is' : 'formulieren zijn' }} nog leeg.
-              AI Modus vult ze één voor één in op basis van je {{ readyDocIds.length }}
-              brondocument{{ readyDocIds.length === 1 ? '' : 'en' }}. Je controleert daarna elk antwoord —
-              met bronverwijzing per vraag.
+              AI Modus vult ze één voor één in op basis van
+              <template v-if="kernvragenIsSource && uploadCount > 0">uw kernvragen en {{ uploadCount }}
+                brondocument{{ uploadCount === 1 ? '' : 'en' }}</template>
+              <template v-else-if="kernvragenIsSource">uw antwoorden op de kernvragen</template>
+              <template v-else>je {{ uploadCount }} brondocument{{ uploadCount === 1 ? '' : 'en' }}</template>.
+              Je controleert daarna elk antwoord — met bronverwijzing per vraag.
             </template>
             <template v-else>
-              Upload eerst een brondocument hierboven; daarna kan AI Modus deze
-              {{ bulkFillForms.length }} lege
+              Beantwoord eerst de kernvragen hieronder, of upload een brondocument hierboven; daarna
+              kan AI Modus deze {{ bulkFillForms.length }} lege
               {{ bulkFillForms.length === 1 ? 'formulier' : 'formulieren' }} in één keer invullen.
             </template>
           </p>
@@ -372,12 +391,15 @@
         </button>
       </section>
 
-      <!-- Toepassingsscan: which of the forms below actually apply here. -->
-      <ToepassingsscanTile
-        :run="store.toepassingsscanRun"
+      <!-- Kernvragen: which of the forms below actually apply here, and where
+           their content comes from. This is their card — they are deliberately
+           left out of the "Vooraf" band, see preludeForms. -->
+      <KernvragenTile
         :kenmerken="store.kenmerken"
         :counts="scanCounts"
-        @open="scanModal?.open()"
+        :answered="kernvragenProgress.answered"
+        :total="kernvragenProgress.total"
+        @open="store.openKernvragen()"
       />
 
       <!-- Intake en aanbieding gaan aan de fasering vooraf. Ze horen erbij, maar
@@ -539,7 +561,6 @@
       :dossier-id="store.activeDossierId"
     />
     <BeslishulpModal ref="beslishulpModal" />
-    <ToepassingsscanModal ref="scanModal" />
   </div>
 </template>
 
@@ -547,7 +568,9 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import bevestigingIcon from '@nl-rvo/assets/icons/status/bevestiging.svg'
 import infoIcon from '@nl-rvo/assets/icons/functioneel/info.svg'
-import { loadFormRegistry, type FormIndexEntry } from '../services/formLoader'
+import { flattenFormQuestions, loadForm, loadFormRegistry, type FormIndexEntry } from '../services/formLoader'
+import { isEmptyAnswer } from '../utils/crossFormCopy'
+import { syncKernvragenSource } from '../services/kernvragenSource'
 import { useAssessmentStore } from '../stores/assessmentStore'
 import { useAiMode } from '../composables/useAiMode'
 import { useFormProgress } from '../composables/useFormProgress'
@@ -560,9 +583,9 @@ import ShareDialog from './ShareDialog.vue'
 import FormCard from './FormCard.vue'
 import BeslishulpModal from './BeslishulpModal.vue'
 import BeslishulpTile from './BeslishulpTile.vue'
-import ToepassingsscanModal from './ToepassingsscanModal.vue'
-import ToepassingsscanTile from './ToepassingsscanTile.vue'
-import { evaluateApplicability, type ApplicabilityVerdict } from '../utils/toepassingsscan'
+import KernvragenTile from './KernvragenTile.vue'
+import { evaluateApplicability, type ApplicabilityVerdict } from '../utils/toepasselijkheid'
+import { KERNVRAGEN_FORM_ID } from '../utils/kernvragen'
 import { BESLISHULP_HOST_FORM_ID, isOutOfScope, riskLevelFor, verdictLevelLabel } from '../utils/beslishulp'
 import { fetchDossier, saveDossier } from '../services/dossierService'
 import { PdfNoTextError } from '../services/llmService'
@@ -599,7 +622,6 @@ const shareError = ref('')
 const aiModeErrorDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null)
 const aiModeErrorFormId = ref<string | null>(null)
 const beslishulpModal = ref<InstanceType<typeof BeslishulpModal> | null>(null)
-const scanModal = ref<InstanceType<typeof ToepassingsscanModal> | null>(null)
 
 // ---- Toepassingsscan ------------------------------------------------------
 // One verdict per form, recomputed whenever the scan (or the beslishulp, which
@@ -627,6 +649,18 @@ function nvtForms(group: TrackGroup): FormIndexEntry[] {
 const nvtFormIds = computed(
   () => new Set(forms.value.filter((f) => verdictFor(f.id).status === 'nvt').map((f) => f.id)),
 )
+
+// The kernvragen question ids, for the progress line on the tile. Loaded
+// rather than hardcoded so the count stays right when a question is added.
+const kernvraagIds = ref<string[]>([])
+
+const kernvragenProgress = computed(() => {
+  const answers = store.activeDossier?.forms[KERNVRAGEN_FORM_ID]?.answers ?? {}
+  return {
+    answered: kernvraagIds.value.filter((id) => !isEmptyAnswer(answers[id])).length,
+    total: kernvraagIds.value.length,
+  }
+})
 
 const scanCounts = computed(() => {
   const counts = { verplicht: 0, mogelijk: 0, nvt: 0 }
@@ -691,6 +725,17 @@ onMounted(async () => {
   store.ensureDossier()
   // Registry incl. placeholders: dit overzicht toont ook wat er nog niet is.
   forms.value = await loadFormRegistry()
+  // Best-effort: without it the tile just shows 0 van 0 and nothing else breaks.
+  try {
+    const kernvragen = await loadForm(KERNVRAGEN_FORM_ID)
+    kernvraagIds.value = flattenFormQuestions(kernvragen).map((q) => q.id)
+    // Every route back to this page passes here, so this is the one place that
+    // keeps the AI's copy of the kernvragen in step with the answers. It
+    // returns immediately when nothing changed.
+    void syncKernvragenSource(kernvragen)
+  } catch {
+    kernvraagIds.value = []
+  }
 })
 
 function onAiModeErrorDismissed() {
@@ -772,7 +817,7 @@ const nextStep = computed<NextStep | null>(() => {
 
   const notStarted = withStatus.filter((f) => f.progress?.status !== 'afgerond')
   if (notStarted.length === 0) return null
-  // Verplicht volgens de toepassingsscan gaat voor; anders gewoon de eerste in
+  // Verplicht volgens de kernvragen gaat voor; anders gewoon de eerste in
   // de fasevolgorde.
   const required = notStarted.find((f) => verdictFor(f.form.id).status === 'verplicht')
   const target = required ?? notStarted[0]
@@ -805,10 +850,23 @@ const bulkFillForms = computed(() =>
   forms.value.filter(
     (f) =>
       !f.placeholder &&
+      // The kernvragen are the source, so filling them from themselves is
+      // circular — and they are the one form the person has to write.
+      f.id !== KERNVRAGEN_FORM_ID &&
       verdictFor(f.id).status !== 'nvt' &&
       statusFor(f.id)?.status === 'niet-gestart',
   ),
 )
+
+/** True when the AI has the kernvragen to work from. Worth distinguishing from
+ *  an upload in the copy below: an answer built out of the invuller's own words
+ *  needs a different kind of checking than one pulled from a source. */
+const kernvragenIsSource = computed(() =>
+  store.documents.some((d) => d.derived === 'kernvragen' && !d.indexing && (d.chunkCount ?? 0) > 0),
+)
+const uploadCount = computed(() => readyDocIds.value.filter((id) =>
+  store.documents.some((d) => d.id === id && d.derived !== 'kernvragen'),
+).length)
 
 const runningFormTitle = computed(() => {
   const formId = dossierAiRun.value?.formId
@@ -1057,7 +1115,13 @@ const trackGroups = computed(() => groupFormsByTrack(forms.value))
 const preludeGroups = computed(() =>
   trackGroups.value.filter((g) => !g.isPhase && g.track !== 'onbekend'),
 )
-const preludeForms = computed(() => preludeGroups.value.flatMap((g) => applicableForms(g)))
+// The kernvragen have their own card at the top of the page — KernvragenTile,
+// with the kenmerken it produced on it. A second, plainer card down here would
+// be the same form twice on one screen. It stays in every count, though: it is
+// real work, and a dossier is not done while it is empty.
+const preludeForms = computed(() =>
+  preludeGroups.value.flatMap((g) => applicableForms(g)).filter((f) => f.id !== KERNVRAGEN_FORM_ID),
+)
 
 // De tijdlijn houdt de echte fasen — plus de `onbekend`-bak, want die is het
 // zichtbare vangnet voor een typo in index.json.
@@ -1273,6 +1337,19 @@ function markerState(group: TrackGroup): 'done' | 'busy' | 'todo' | 'empty' {
 .first-run__title {
   color: var(--rvo-color-lintblauw);
   margin: var(--rvo-space-2xs) 0 var(--rvo-space-sm);
+}
+
+.first-run__start {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rvo-space-sm);
+  margin-block-end: var(--rvo-space-lg);
+}
+
+.first-run__or {
+  max-inline-size: 68ch;
+  margin-block-end: var(--rvo-space-sm);
+  line-height: var(--rvo-line-height-md);
 }
 
 .first-run__lead {

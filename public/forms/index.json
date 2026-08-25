@@ -5,6 +5,7 @@
       "title": "Projectmanagement",
       "description": "Ziet de formulieren die een projectleider zelf doorloopt: intake, aanbieding, de initiatieproducten en de rapportages tot en met afronding.",
       "forms": [
+        "kernvragen",
         "intake",
         "aanbiedingsformulier",
         "ppm",
@@ -24,6 +25,22 @@
     }
   ],
   "forms": [
+    {
+      "id": "kernvragen",
+      "urn": "urn:nl:minfin:tr:kernvragen:1.0",
+      "file": "kernvragen.json",
+      "title": "Kernvragen",
+      "track": "intake",
+      "order": 0,
+      "domains": [
+        "project",
+        "privacy",
+        "beveiliging",
+        "ai",
+        "data"
+      ],
+      "shortDescription": "Tien startvragen die bepalen welke formulieren gelden en die de rest van het dossier van inhoud voorzien."
+    },
     {
       "id": "intake",
       "urn": "urn:nl:minfin:tr:intake:2.0",

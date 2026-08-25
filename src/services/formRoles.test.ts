@@ -28,15 +28,16 @@ describe('rollen in index.json', () => {
     }
   })
 
-  it('kent projectmanagement de vijftien projectformulieren toe', () => {
+  it('kent projectmanagement de zestien projectformulieren toe', () => {
     const pm = roles.find((r) => r.id === 'projectmanagement')
     expect(pm).toBeDefined()
-    // De lijst uit de fase-indeling: intake en aanbieding, de initiatiefase,
-    // de twee uitvoeringsrapportages en de twee afrondingsformulieren.
+    // De lijst uit de fase-indeling: de kernvragen vooraf, intake en aanbieding,
+    // de initiatiefase, de twee uitvoeringsrapportages en de twee
+    // afrondingsformulieren.
     expect(pm!.forms).toEqual([
-      'intake', 'aanbiedingsformulier', 'ppm', 'psa', 'quickscan', 'prescandpia', 'dpia',
-      'aiia', 'ihhtoets', 'cloudtoets', 'bia', 'voortgangsrapportage', 'afwijkingsformulier',
-      'evaluatie', 'risicoimpact',
+      'kernvragen', 'intake', 'aanbiedingsformulier', 'ppm', 'psa', 'quickscan', 'prescandpia',
+      'dpia', 'aiia', 'ihhtoets', 'cloudtoets', 'bia', 'voortgangsrapportage',
+      'afwijkingsformulier', 'evaluatie', 'risicoimpact',
     ])
     // Wat een projectleider níét ziet — de vakinhoudelijke formulieren.
     expect(pm!.forms).not.toContain('iama')

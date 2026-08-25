@@ -1,7 +1,8 @@
 # Toepasselijkheid van formulieren: wanneer geldt een formulier niet?
 
-**Status: stap 2 en 3 van §5.8 zijn gebouwd** — zie §7 voor wat er staat, welke open punten
-daarbij zijn beslist en wat er nog niet is. Dit document legt daarnaast de oorspronkelijke
+**Status: stap 2 en 3 van §5.8 zijn gebouwd; de scan is inmiddels opgegaan in de kernvragen**
+— zie §7 voor wat er staat, welke open punten daarbij zijn beslist en wat er nog niet is, en
+§8 voor de overgang naar de kernvragen. Dit document legt daarnaast de oorspronkelijke
 vraag, analyse en opties vast. De aanleiding is de toegankelijkheidsverklaring, maar de vraag
 is algemener. §1–4 zijn de oorspronkelijke analyse op basis van dat ene formulier; **§5 is de
 richting die is uitgevoerd** en gaat uit van een veel bredere scope (persoonsgegevens en AI),
@@ -375,3 +376,74 @@ snapshot.
 - **Dossieroverzicht.** De voortgangsbalk op de dossierkaarten in `DossierList.vue` telt nog
   alle formulieren mee; alleen de fasetelling op de dossierpagina zelf houdt rekening met
   n.v.t.
+
+## 8. Van toepassingsscan naar kernvragen
+
+De scan uit §7 stelde zes vragen en leverde zeven booleans op. Die booleans stuurden de
+toepasselijkheid netjes aan, maar verder niets: de gebruiker beantwoordde zes vragen en stond
+daarna nog steeds voor twintig lege formulieren. En AI Modus, het enige dat die formulieren
+kon vullen, deed niets zolang er geen documenten waren geüpload — precies de drempel waar de
+tool op stukliep.
+
+De **kernvragen** lossen dat op door de scan te absorberen in een set van tien vragen die twee
+dingen tegelijk doen:
+
+| | Toepassingsscan (v2) | Kernvragen (v3) |
+|---|---|---|
+| Aantal vragen | 6 | 10 blokken, 22 velden |
+| Opslag | blob op `FormState.toepassingsscan` (host: intake) | een gewoon formulier, `public/forms/kernvragen.json` |
+| Levert op | 7 kenmerken | dezelfde 7 kenmerken **plus** ~500 woorden inhoud |
+| Vult formulieren | niet | 81 cross-form-mappings (31 kopie, 50 synthese) |
+| AI Modus zonder upload | onmogelijk | de antwoorden worden als brondocument geïndexeerd |
+
+### 8.1 Waarom een echt formulier
+
+De kernvragen zijn geen blob maar `kernvragen.json`. Daarmee erven ze de editor, de bijlagen,
+de exports, de collab-envelop en — het punt — `crossFormMappings.json`, dat een gewone
+`sourceFormId` nodig heeft om ergens uit te kunnen putten. Wat in code blijft is alleen de
+tabel die een antwoordoptie aan een kenmerk knoopt (`src/utils/kernvragen.ts`): een typefout
+in een JSON-asset zou daar stilzwijgend een regel uitschakelen. `kernvragen.test.ts` bewaakt
+beide richtingen tegen de echte JSON.
+
+De motor zelf is ongemoeid gebleven en heet nu naar wat hij doet:
+`src/utils/toepasselijkheid.ts` houdt de kenmerken en `evaluateApplicability`, en weet niets
+van vragen.
+
+### 8.2 De vier nieuwe vragen
+
+Zes van de tien blokken dragen de vragen van de scan, woord voor woord. Wat erbij is gekomen
+is normatief en stuurt géén kenmerk aan — dat is precies waarom het er niet eerder stond:
+
+- **grondslag en alternatieven** (proportionaliteit en subsidiariteit)
+- **welke publieke waarden botsen**
+- **wat er misgaat als het misgaat, en of dat voor de ene groep anders uitpakt**
+- **uitleg, bezwaar en herstel**
+
+Ze bepalen de richting van het project en zijn tegelijk de meest hergebruikte vragen in het
+hele formulierenbestand — DPIA §14, IAMA §1.2/§4.5, AIIA §3.1 en het algoritmeregister stellen
+ze allemaal opnieuw.
+
+### 8.3 De antwoorden als bron
+
+`src/services/kernvragenSource.ts` rendert de beantwoorde vragen tot platte tekst en indexeert
+die via het bestaande `POST /api/documents/index`. Daarmee is `readyDocIds` niet meer leeg en
+werkt `startDossierAiMode()` ongewijzigd, zonder één upload.
+
+Dat vraagt wel om eerlijkheid in de UI. Het document heet *"Projectstart — uw eigen
+antwoorden"* en draagt `SourceDocument.derived === 'kernvragen'`; `SourcePanel` zet er een
+regel bij dat dit geen brondocument is maar de herkomst van het antwoord. Zonder die regel
+leest een AI-antwoord als "onderbouwd met bronnen" terwijl het een parafrase van de invuller
+is.
+
+### 8.4 Migratie
+
+Dossiers van vóór de kernvragen houden hun blob. `migrateScanAnswers` vertaalt de oude
+optie-ids naar de nieuwe antwoorden — de formuleringen zijn identiek, dus niemands vastgelegde
+oordeel verschuift. De vertaling gebeurt lui in de store-getter `kernvragenAnswers`; de oude
+blob blijft staan.
+
+### 8.5 Wat nog steeds niet is gebouwd
+
+Alles uit §7.3 staat nog open. Daar komt bij: de kernvragen kennen geen eigen voortgangsregel
+op de dossierkaarten in `DossierList.vue`, en de synthese-mappings zijn nog niet getoetst op
+hoeveel ze in de praktijk daadwerkelijk opleveren.

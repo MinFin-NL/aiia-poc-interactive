@@ -1,5 +1,5 @@
 import type { FormConfig, CrossFormMapping, Question, Section } from '../models/Assessment'
-import type { ApplicabilityRule } from '../utils/toepassingsscan'
+import type { ApplicabilityRule } from '../utils/toepasselijkheid'
 import { useAuthStore } from '../stores/authStore'
 
 const cache = new Map<string, FormConfig>()
@@ -51,7 +51,7 @@ export interface FormIndexEntry {
   placeholder?: FormPlaceholder
   // When this form applies to a dossier, expressed over the kenmerken the
   // toepassingsscan derives. Absent ⇒ the form always applies. See
-  // src/utils/toepassingsscan.ts and docs/toepasselijkheid-van-formulieren.md.
+  // src/utils/toepasselijkheid.ts and docs/toepasselijkheid-van-formulieren.md.
   applicability?: ApplicabilityRule
 }
 

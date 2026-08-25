@@ -27,11 +27,14 @@ import {
 import type { DossierPayload } from '../collab/ydocCodec'
 import { BESLISHULP_HOST_FORM_ID, riskLevelFor, type BeslishulpRun } from '../utils/beslishulp'
 import {
+  KERNVRAGEN_FORM_ID,
   TOEPASSINGSSCAN_HOST_FORM_ID,
   deriveKenmerken,
-  type Kenmerken,
+  hasKernvragenAnswers,
+  migrateScanAnswers,
   type ToepassingsscanRun,
-} from '../utils/toepassingsscan'
+} from '../utils/kernvragen'
+import type { Kenmerken } from '../utils/toepasselijkheid'
 
 export type FormId = string
 export type DossierId = string
@@ -81,6 +84,14 @@ export interface SourceDocument {
   indexError?: string
   chunkCount?: number
   ontology?: DocumentOntology
+  /**
+   * Not a document somebody uploaded but text this app generated from the
+   * user's own answers — currently only the kernvragen transcript. It is
+   * indexed and cited like any other source, so the UI has to say where it
+   * really came from: an answer grounded in it is a rephrasing of the invuller,
+   * not corroboration by a source. See src/services/kernvragenSource.ts.
+   */
+  derived?: 'kernvragen'
 }
 
 export interface Dossier {
@@ -101,9 +112,17 @@ export interface Dossier {
   sharedWithMe?: boolean
 }
 
-/** Top-level screen: the dossier overview or a single dossier (whose own
- *  activeFormId decides between the detail page and an open form). */
-export type Screen = 'dossierList' | 'dossier'
+/**
+ * Top-level screen: the dossier overview, the kernvragen, or a single dossier
+ * (whose own activeFormId decides between the detail page and an open form).
+ *
+ * `kernvragen` is a screen rather than just another open form because it comes
+ * *before* the dossier page: a fresh dossier lands on it, and until it is
+ * answered there is nothing sensible to show on the timeline — every form
+ * would read `onbepaald`. The kernvragen form is still the active form while
+ * this screen is up, so the editor, collab and AI all target it as usual.
+ */
+export type Screen = 'dossierList' | 'kernvragen' | 'dossier'
 
 function initialFormState(): FormState {
   return {
@@ -252,23 +271,32 @@ export const useAssessmentStore = defineStore('assessment', {
       return this.activeDossier.forms[BESLISHULP_HOST_FORM_ID]?.beslishulp ?? null
     },
 
-    /** The dossier's toepassingsscan — the single read path, mirroring
-     *  beslishulpRun. See TOEPASSINGSSCAN_HOST_FORM_ID. */
+    /** A toepassingsscan from before the kernvragen, if this dossier has one.
+     *  Read only by the migration — see TOEPASSINGSSCAN_HOST_FORM_ID. */
     toepassingsscanRun(): ToepassingsscanRun | null {
       return this.activeDossier.forms[TOEPASSINGSSCAN_HOST_FORM_ID]?.toepassingsscan ?? null
     },
 
+    /** The kernvragen answers that decide the kenmerken, from the kernvragen
+     *  form or — for a dossier that predates it — from its stored scan. */
+    kernvragenAnswers(): Answers {
+      const own = this.activeDossier.forms[KERNVRAGEN_FORM_ID]?.answers
+      if (hasKernvragenAnswers(own)) return own as Answers
+      return migrateScanAnswers(this.toepassingsscanRun)
+    },
+
     /**
-     * What this dossier *has*, derived live from the scan answers and the
-     * beslishulp conclusion. Null until a scan has been run — callers must
-     * treat that as "unknown", never as "nothing applies".
+     * What this dossier *has*, derived live from the kernvragen and the
+     * beslishulp conclusion. Null until the kernvragen have been answered —
+     * callers must treat that as "unknown", never as "nothing applies".
      *
-     * Recomputed rather than read from the stored snapshot so a beslishulp run
-     * after the scan updates `ai_verordening_in_scope` without re-answering.
+     * Recomputed rather than read from a snapshot so a beslishulp run
+     * afterwards updates `ai_verordening_in_scope` without re-answering.
      */
     kenmerken(): Kenmerken | null {
-      const run = this.toepassingsscanRun
-      return run ? deriveKenmerken(run.answers, this.beslishulpRun) : null
+      const answers = this.kernvragenAnswers
+      if (!hasKernvragenAnswers(answers)) return null
+      return deriveKenmerken(answers, this.beslishulpRun)
     },
     showPartB(): boolean { return this.activeForm.goDecision === true },
 
@@ -490,6 +518,20 @@ export const useAssessmentStore = defineStore('assessment', {
       this.screen = 'dossierList'
     },
 
+    /** Open the kernvragen for the active dossier. Sets them as the active
+     *  form — so QuestionItem, collab and the cross-form suggestions all point
+     *  at the right form — but keeps the dedicated screen. */
+    openKernvragen() {
+      this.ensureDossier()
+      const dossier = this.dossiers[this.activeDossierId!]
+      if (!dossier.forms[KERNVRAGEN_FORM_ID]) {
+        dossier.forms[KERNVRAGEN_FORM_ID] = initialFormState()
+      }
+      dossier.activeFormId = KERNVRAGEN_FORM_ID
+      this.screen = 'kernvragen'
+      this._docFor(dossier.id)
+    },
+
     /** Open a dossier's detail page from the overview. Always lands on the
      *  detail page, never on a stale open form. */
     openDossier(id: DossierId) {
@@ -637,15 +679,6 @@ export const useAssessmentStore = defineStore('assessment', {
       this.setRiskLevelForForm(formId, run ? riskLevelFor(new Set(run.labels)) : null)
     },
 
-    /** Record (or clear, with null) the dossier's toepassingsscan. */
-    setToepassingsscanRun(run: ToepassingsscanRun | null) {
-      const id = this.activeDossierId
-      if (!id) return
-      const formId = TOEPASSINGSSCAN_HOST_FORM_ID
-      if (!this.dossiers[id].forms[formId]) this.dossiers[id].forms[formId] = initialFormState()
-      this._docFor(id)?.setToepassingsscan(formId, run)
-    },
-
     setGoDecision(decision: boolean) {
       const id = this.activeDossierId
       const formId = this.activeDossier.activeFormId
@@ -751,7 +784,11 @@ export const useAssessmentStore = defineStore('assessment', {
       for (const fid of Object.keys(dossier.forms)) doc?.resetForm(fid)
     },
 
-    async addDocument(name: string, content: string): Promise<SourceDocument> {
+    async addDocument(
+      name: string,
+      content: string,
+      derived?: SourceDocument['derived'],
+    ): Promise<SourceDocument> {
       this.ensureDossier()
       const dossier = this.dossiers[this.activeDossierId!]
       const doc: SourceDocument = {
@@ -760,6 +797,7 @@ export const useAssessmentStore = defineStore('assessment', {
         content,
         uploadedAt: Date.now(),
         indexing: true,
+        ...(derived ? { derived } : {}),
       }
       dossier.documents.push(doc)
       this.touch(dossier.id)

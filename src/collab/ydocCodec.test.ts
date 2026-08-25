@@ -10,7 +10,7 @@
  */
 import { describe, it, expect } from 'vitest'
 import { dossierToYDoc, yDocToDossier, type DossierPayload } from './ydocCodec'
-import { deriveKenmerken } from '../utils/toepassingsscan'
+import { deriveKenmerken } from '../utils/kernvragen'
 import type { FormState } from '../stores/assessmentStore'
 
 /** One fixture that hits every answer kind and edge the codec must preserve. */

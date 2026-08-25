@@ -2583,5 +2583,773 @@
       "ct_e.uitkomst"
     ],
     "synthesisHint": "Vat de cloudoplossing en de uitkomst van de cloudtoets samen: welk type clouddienst en servicemodel, en of het inschakelen van de clouddienst in beginsel is toegestaan."
+  },
+  {
+    "targetFormId": "intake",
+    "targetQuestionId": "intake_b.aanleiding",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.aanleiding"
+    ],
+    "synthesisHint": "Neem de aanleiding uit de kernvragen over als aanleiding van het IV-verzoek.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "intake",
+    "targetQuestionId": "intake_b.doelstelling",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel"
+    ],
+    "synthesisHint": "Neem het doel uit de kernvragen over als doelstelling van het IV-verzoek.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "intake",
+    "targetQuestionId": "intake_b.omschrijving",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.beschrijving"
+    ],
+    "synthesisHint": "Neem de systeembeschrijving uit de kernvragen over als omschrijving van het IV-verzoek.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_b.aanleiding",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.aanleiding"
+    ],
+    "synthesisHint": "Neem de aanleiding uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_b.doelstelling",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel"
+    ],
+    "synthesisHint": "Plaats het doel uit de kernvragen in de strategische context van het aanbiedingsformulier."
+  },
+  {
+    "targetFormId": "aanbiedingsformulier",
+    "targetQuestionId": "aa_c.impact_gebruikers",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.betrokkenen"
+    ],
+    "synthesisHint": "Beschrijf de impact op gebruikers, processen en organisatie vanuit wie er iets van het systeem merkt."
+  },
+  {
+    "targetFormId": "ppm",
+    "targetQuestionId": "ppm_a.doelstellingen",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel"
+    ],
+    "synthesisHint": "Formuleer de projectdoelstellingen en randvoorwaarden op basis van het doel en de succescriteria uit de kernvragen."
+  },
+  {
+    "targetFormId": "ppm",
+    "targetQuestionId": "ppm_c.alternatieven_aanpak",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.alternatieven"
+    ],
+    "synthesisHint": "Neem de overwogen alternatieven uit de kernvragen over als alternatieve wijzen van aanpak.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "ppm",
+    "targetQuestionId": "ppm_d.stakeholders",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.betrokkenen"
+    ],
+    "synthesisHint": "Vertaal wie het systeem raakt naar de gebruikers en stakeholders van het project."
+  },
+  {
+    "targetFormId": "psa",
+    "targetQuestionId": "psa_a.aanleiding",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.aanleiding",
+      "kern.doel"
+    ],
+    "synthesisHint": "Combineer de aanleiding en het doel uit de kernvragen tot de aanleiding en doelstelling van de PSA."
+  },
+  {
+    "targetFormId": "psa",
+    "targetQuestionId": "psa_d.functioneel",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.beschrijving"
+    ],
+    "synthesisHint": "Neem de systeembeschrijving uit de kernvragen over als functionele beschrijving.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "psa",
+    "targetQuestionId": "psa_f.exit_strategie",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.exit"
+    ],
+    "synthesisHint": "Neem de exitstrategie uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d1.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.aanleiding",
+      "kern.doel",
+      "kern.beschrijving"
+    ],
+    "synthesisHint": "Combineer aanleiding, doel en systeembeschrijving uit de kernvragen tot het voorstel van de DPIA."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d2.3",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Beschrijf welke categorieën persoonsgegevens erin omgaan en waar ze vandaan komen, op basis van de kernvraag over gegevens."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d3.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Beschrijf de gegevensverwerking — bronnen, stromen en bewaartermijnen — op basis van de kernvraag over gegevens."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d4",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.beschrijving"
+    ],
+    "synthesisHint": "Beschrijf de technieken en methoden van de gegevensverwerking op basis van de systeembeschrijving uit de kernvragen."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d5.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel"
+    ],
+    "synthesisHint": "Vertaal het doel uit de kernvragen naar specifieke, uitdrukkelijk omschreven verwerkingsdoeleinden."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d6.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.betrokkenen"
+    ],
+    "synthesisHint": "Beschrijf de betrokken partijen en categorieën betrokkenen op basis van wie het systeem raakt."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d14.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.alternatieven"
+    ],
+    "synthesisHint": "Onderbouw de subsidiariteit met de alternatieven die volgens de kernvragen zijn overwogen en waarom die afvallen."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d14.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.waarden",
+      "kern.risicos"
+    ],
+    "synthesisHint": "Onderbouw de proportionaliteit: weeg het doel tegen de geraakte publieke waarden en de mogelijke schade uit de kernvragen."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d15.1.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.bezwaar"
+    ],
+    "synthesisHint": "Beschrijf de procedure voor de rechten van betrokkenen op basis van de bezwaar- en herstelroute uit de kernvragen."
+  },
+  {
+    "targetFormId": "dpia",
+    "targetQuestionId": "d16.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.risicos"
+    ],
+    "synthesisHint": "Beschrijf de risico’s voor betrokkenen op basis van wat er volgens de kernvragen misgaat als het misgaat."
+  },
+  {
+    "targetFormId": "prescandpia",
+    "targetQuestionId": "d0.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.beschrijving"
+    ],
+    "synthesisHint": "Neem de systeembeschrijving uit de kernvragen over als beschrijving van de verwerking.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "prescandpia",
+    "targetQuestionId": "d0.3",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel"
+    ],
+    "synthesisHint": "Neem het doel uit de kernvragen over als doel van de gegevensverwerking.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "1.1.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel"
+    ],
+    "synthesisHint": "Formuleer het beoogde doel en de verwachte resultaten van het AI-systeem op basis van het doel uit de kernvragen."
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "1.1.4",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.aanleiding"
+    ],
+    "synthesisHint": "Neem de aanleiding uit de kernvragen over als aanleiding voor de inzet van het AI-systeem.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "1.2.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.beschrijving"
+    ],
+    "synthesisHint": "Neem de systeembeschrijving uit de kernvragen over als beschrijving van het AI-systeem.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "1.2.3",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.alternatieven"
+    ],
+    "synthesisHint": "Neem de overwogen alternatieven uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "1.3.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.betrokkenen"
+    ],
+    "synthesisHint": "Neem over wie de gevolgen van het systeem ondervindt, inclusief wie er niet voor kan kiezen.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "2.1.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.waarden"
+    ],
+    "synthesisHint": "Beschrijf de impact op grondrechten op basis van de publieke waarden die volgens de kernvragen geraakt worden."
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "2.1.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.grondslag"
+    ],
+    "synthesisHint": "Neem de wettelijke grondslag uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "3.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.alternatieven",
+      "kern.waarden"
+    ],
+    "synthesisHint": "Beoordeel de proportionaliteit: weeg de geraakte waarden tegen het doel en noem de minder ingrijpende alternatieven uit de kernvragen."
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "4.1.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.ongelijke_uitwerking"
+    ],
+    "synthesisHint": "Beschrijf hoe met ongewenste bias wordt omgegaan, uitgaande van de ongelijke uitwerking die in de kernvragen is benoemd."
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "5.1.7",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Beschrijf hoe inputdata wordt verzameld en gecombineerd, op basis van de kernvraag over gegevens en bronnen."
+  },
+  {
+    "targetFormId": "aiia",
+    "targetQuestionId": "7.2.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.transparantie"
+    ],
+    "synthesisHint": "Neem over hoe er naar betrokkenen en gebruikers over het systeem wordt gecommuniceerd.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.1.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.aanleiding"
+    ],
+    "synthesisHint": "Neem de aanleiding en het op te lossen probleem uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.1.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel"
+    ],
+    "synthesisHint": "Neem het doel en de succescriteria uit de kernvragen over als hoofd- en subdoelen.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.2.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.waarden"
+    ],
+    "synthesisHint": "Licht uit de kernvraag over publieke waarden de waarden die positief geraakt worden."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.2.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.waarden"
+    ],
+    "synthesisHint": "Licht uit de kernvraag over publieke waarden de waarden die negatief geraakt worden, inclusief de botsing die daar benoemd is."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.3.4",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.grondslag"
+    ],
+    "synthesisHint": "Neem de wettelijke grondslag uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.4.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.eigenaar"
+    ],
+    "synthesisHint": "Neem de eindverantwoordelijke uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d1.4.3",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.exit"
+    ],
+    "synthesisHint": "Neem de exitstrategie uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.1.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.alternatieven"
+    ],
+    "synthesisHint": "Onderbouw waarom dit type algoritme het meest geschikt is, met de alternatieven uit de kernvragen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d2.3.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Beschrijf het type inputdata op basis van de kernvraag over gegevens en hun herkomst."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.2.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.menselijke_rol"
+    ],
+    "synthesisHint": "Neem over welke rol de mens speelt die het laatste woord heeft.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.3.4",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.transparantie"
+    ],
+    "synthesisHint": "Beschrijf de uitlegbaarheid voor betrokkenen op basis van de kernvraag over transparantie."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.4.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.monitoring"
+    ],
+    "synthesisHint": "Beschrijf de monitoring gedurende de levenscyclus op basis van de kernvraag over monitoring."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.4.3",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.bezwaar"
+    ],
+    "synthesisHint": "Beschrijf de laagdrempelige meldroute op basis van de bezwaar- en herstelroute uit de kernvragen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d3.5.2",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.risicos"
+    ],
+    "synthesisHint": "Beschrijf de risico’s en nadelige effecten voor de geraakte mensen en groepen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.2.3",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.ongelijke_uitwerking"
+    ],
+    "synthesisHint": "Beoordeel het risico op ongerechtvaardigd onderscheid met de ongelijke uitwerking uit de kernvragen."
+  },
+  {
+    "targetFormId": "iama",
+    "targetQuestionId": "d4.5.1",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.alternatieven"
+    ],
+    "synthesisHint": "Beantwoord de subsidiariteitsvraag met de alternatieven uit de kernvragen, inclusief niets doen en een niet-digitale oplossing."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_b.grondslag",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.grondslag"
+    ],
+    "synthesisHint": "Neem de wettelijke grondslag uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_b.grondrechten",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.waarden"
+    ],
+    "synthesisHint": "Beschrijf welke grondrechten geraakt worden en hoe dat wordt beperkt, op basis van de kernvraag over publieke waarden."
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_b.uitleg",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.transparantie"
+    ],
+    "synthesisHint": "Neem over hoe aan een betrokkene wordt uitgelegd dat en hoe het algoritme is gebruikt.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_b.bezwaar",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.bezwaar"
+    ],
+    "synthesisHint": "Neem de bezwaar- en herbeoordelingsroute uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_d.menselijk",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.menselijke_rol"
+    ],
+    "synthesisHint": "Neem over hoe de menselijke tussenkomst is geregeld.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_d.monitoring",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.monitoring"
+    ],
+    "synthesisHint": "Neem over hoe de werking van het algoritme wordt gemonitord.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "algoritmeregister",
+    "targetQuestionId": "ar_d.verantwoordelijke",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.eigenaar"
+    ],
+    "synthesisHint": "Neem over wie verantwoordelijk is voor beheer en doorontwikkeling."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_a.doel",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel"
+    ],
+    "synthesisHint": "Vat het doel uit de kernvragen samen tot wat het systeem doet."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_a.eigenaar",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.eigenaar"
+    ],
+    "synthesisHint": "Noem uit de kernvragen de eindverantwoordelijke met naam en rol."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_b.inputdata",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Beschrijf welke gegevens het systeem in gaan, op basis van de kernvraag over gegevens."
+  },
+  {
+    "targetFormId": "modelcard",
+    "targetQuestionId": "mc_d.bias_risicos",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.ongelijke_uitwerking"
+    ],
+    "synthesisHint": "Vat de ongelijke uitwerking uit de kernvragen samen als bekende bias-risico’s."
+  },
+  {
+    "targetFormId": "euaiact",
+    "targetQuestionId": "eaa_a.doel",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel",
+      "kern.beschrijving"
+    ],
+    "synthesisHint": "Combineer doel en systeembeschrijving uit de kernvragen tot het beoogde doel en de werking van het AI-systeem."
+  },
+  {
+    "targetFormId": "verwerkingsregister",
+    "targetQuestionId": "vr_a.omschrijving",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.beschrijving"
+    ],
+    "synthesisHint": "Vat de systeembeschrijving uit de kernvragen samen tot een korte omschrijving van de verwerking."
+  },
+  {
+    "targetFormId": "verwerkingsregister",
+    "targetQuestionId": "vr_a.doel",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.doel"
+    ],
+    "synthesisHint": "Vertaal het doel uit de kernvragen naar de doeleinden van de verwerking."
+  },
+  {
+    "targetFormId": "verwerkingsregister",
+    "targetQuestionId": "vr_b.bronnen",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Noem de bronnen van de gegevens op basis van de kernvraag over gegevens."
+  },
+  {
+    "targetFormId": "verwerkingsregister",
+    "targetQuestionId": "vr_d.rechten",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.bezwaar"
+    ],
+    "synthesisHint": "Neem over hoe betrokkenen hun rechten kunnen uitoefenen.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "datasetregistratie",
+    "targetQuestionId": "ds_b.herkomst",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Beschrijf de herkomst van de data op basis van de kernvraag over gegevens en bronnen."
+  },
+  {
+    "targetFormId": "datasetregistratie",
+    "targetQuestionId": "ds_c.bewaartermijn",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Noem wat er in de kernvragen bekend is over bewaartermijnen en wat er daarna met de gegevens gebeurt."
+  },
+  {
+    "targetFormId": "datakwaliteit",
+    "targetQuestionId": "dq_a.herkomst",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Beschrijf de lineage van de data op basis van de kernvraag over gegevens en bronnen."
+  },
+  {
+    "targetFormId": "dataethiek",
+    "targetQuestionId": "de_b.zeggenschap",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.betrokkenen"
+    ],
+    "synthesisHint": "Beschrijf de zeggenschap van betrokkenen, uitgaande van wie er volgens de kernvragen niet voor kan kiezen."
+  },
+  {
+    "targetFormId": "dataethiek",
+    "targetQuestionId": "de_c.alternatief",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.alternatieven"
+    ],
+    "synthesisHint": "Neem het minder ingrijpende alternatief uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "dataethiek",
+    "targetQuestionId": "de_d.fout",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.risicos",
+      "kern.bezwaar"
+    ],
+    "synthesisHint": "Combineer wie de gevolgen van een fout draagt met de herstelroute uit de kernvragen."
+  },
+  {
+    "targetFormId": "restrisico",
+    "targetQuestionId": "rr_b.zwaarste",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.risicos"
+    ],
+    "synthesisHint": "Beschrijf het zwaarste restrisico op basis van wat er volgens de kernvragen misgaat als het misgaat."
+  },
+  {
+    "targetFormId": "restrisico",
+    "targetQuestionId": "rr_b.betrokkenen",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.risicos",
+      "kern.betrokkenen"
+    ],
+    "synthesisHint": "Beschrijf welke restrisico’s burgers of andere betrokkenen rechtstreeks raken."
+  },
+  {
+    "targetFormId": "restrisico",
+    "targetQuestionId": "rr_c.alternatief",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.alternatieven"
+    ],
+    "synthesisHint": "Neem het alternatief met een lager restrisico uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "restrisico",
+    "targetQuestionId": "rr_c.monitoring",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.monitoring"
+    ],
+    "synthesisHint": "Neem over hoe wordt bewaakt of een geaccepteerd risico zich voordoet.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_b.beschrijving",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.beschrijving"
+    ],
+    "synthesisHint": "Vat de systeembeschrijving uit de kernvragen samen tot een korte beschrijving."
+  },
+  {
+    "targetFormId": "cloudtoets",
+    "targetQuestionId": "ct_e.exitstrategie",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.exit"
+    ],
+    "synthesisHint": "Neem de exitstrategie uit de kernvragen over.",
+    "mode": "copy"
+  },
+  {
+    "targetFormId": "ihhtoets",
+    "targetQuestionId": "ihh_a.bewaartermijn",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.gegevens"
+    ],
+    "synthesisHint": "Noem wat er in de kernvragen bekend is over bewaartermijnen van de opgeslagen overheidsinformatie."
+  },
+  {
+    "targetFormId": "toegankelijkheid",
+    "targetQuestionId": "tv_d.melden",
+    "sourceFormId": "kernvragen",
+    "sourceQuestionIds": [
+      "kern.bezwaar"
+    ],
+    "synthesisHint": "Beschrijf hoe gebruikers een probleem kunnen melden, op basis van de bezwaar- en herstelroute uit de kernvragen."
   }
 ]
