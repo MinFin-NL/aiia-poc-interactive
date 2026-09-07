@@ -1,17 +1,17 @@
 {
   "id": "aiia",
-  "version": "2.0",
-  "urn": "urn:nl:minfin:tr:aiia:2.0",
+  "version": "2.1",
+  "urn": "urn:nl:minfin:tr:aiia:2.1",
   "registryUrn": "urn:nl:aivt:tr:aiia:1.0",
   "title": "AI Impact Assessment",
   "source": {
-    "instrument": "AI Impact Assessment (AIIA)",
-    "publisher": "Ministerie van Infrastructuur en Waterstaat",
+    "instrument": "AI Impact Assessment (AIIA) 2.0",
+    "publisher": "Ministerie van Financiën",
     "version": "2.0",
     "url": "https://www.rijksoverheid.nl/documenten/rapporten/2022/11/30/ai-impact-assessment-ministerie-van-infrastructuur-en-waterstaat",
-    "reference": "AIIA IenW v2.0, aangevuld met de risicoclassificatie onder de AI-verordening (Verordening (EU) 2024/1689)",
+    "reference": "IenW AI Impact Assessment 2.0 (december 2024), hoofdstukken 1-7; risicoclassificatie via de MinBZK-beslishulp AI-verordening in plaats van Bijlage 1",
     "derivation": "harmonized",
-    "note": "Handmatig opgebouwd naar het IenW-model; niet gegenereerd uit par-dpia-form en losstaand van de vendored IAMA."
+    "note": "Bron is het AI Impact Assessment 2.0 van het Ministerie van Infrastructuur en Waterstaat (PDF, december 2024); de officiele Invultemplate-AIIA2.0.docx van het Algoritmekader is de invulvorm daarvan. De 110 vragen en hun verplicht/hulpvraag-indeling (34 blauw, 76 groen) zijn ongewijzigd overgenomen. Eigen toevoegingen van MinFin, niet afkomstig uit het IenW-format: 1.1.4 (aanleiding), 1.1.5 (verwachte voordelen), 1.1.6 (termijn en looptijd) en 3.3 (conclusie; stuurt de beslispoort naar deel B aan en is daarom verplicht, hoewel de bron hier geen vraag stelt). Bijlage 1 van de bron is vervangen door de MinBZK-beslishulp AI-verordening (zie vendor/ai-verordening-beslishulp); Bijlage 2 wordt gedekt door euaiact; Bijlage 3 (generatieve AI) is nog niet verwerkt. Niet gegenereerd uit par-dpia-form en losstaand van de vendored IAMA."
   },
   "aiContext": "Dit is een AI Impact Assessment (AIIA) voor het Ministerie van Financiën: het beoordeelt de verantwoorde inzet van een AI-systeem, inclusief risicoclassificatie onder de AI-verordening, impact op grondrechten, en waarborgen rond bias, nauwkeurigheid, transparantie en beveiliging. Schrijf in AI-governance- en compliance-termen.",
   "meta": {
@@ -96,20 +96,21 @@
                 "Beperkt risico",
                 "Minimaal risico",
                 "Nog niet bepaald"
-              ]
+              ],
+              "followUp": "Licht uw antwoord toe."
             },
             {
               "id": "1.1.3",
               "text": "Waar in de organisatie wordt het systeem ingezet (afdeling, proces, werkzaamheden)?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "1.1.4",
               "text": "Wat is de aanleiding voor de inzet van dit AI-systeem?",
               "guidance": "Beschrijf welk probleem of welke behoefte ten grondslag ligt aan de keuze voor dit systeem.",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "1.1.5",
@@ -148,7 +149,7 @@
               "id": "1.2.3",
               "text": "Welke alternatieven zijn overwogen (inclusief niet-AI-oplossingen)?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             }
           ]
         },
@@ -179,7 +180,7 @@
               "id": "1.3.3",
               "text": "Welke stakeholders zijn geconsulteerd bij de ontwikkeling of aanschaf van het systeem?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "1.3.4",
@@ -210,7 +211,7 @@
               "id": "1.4.3",
               "text": "Is de benodigde expertise voor onderhoud en beheer gedocumenteerd en geborgd?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk", "N.v.t."],
               "followUp": "Licht toe hoe de expertise is geborgd of welke stappen worden genomen."
             },
@@ -239,19 +240,19 @@
               "id": "2.1.2",
               "text": "Wat is de wettelijke grondslag voor de inzet van het AI-systeem?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "2.1.3",
               "text": "Welke grondrechtelijke bepalingen zijn van toepassing op dit systeem?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "2.1.4",
               "text": "Welke rechten kunnen worden geschonden als het systeem niet correct functioneert?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             }
           ]
         },
@@ -291,7 +292,7 @@
               "text": "Zijn er overige positieve of negatieve effecten voor specifieke groepen of de samenleving als geheel?",
               "guidance": "Denk aan werkgelegenheid, toegankelijkheid, sociale cohesie of ongelijkheid.",
               "type": "text",
-              "importance": "optional"
+              "importance": "mandatory"
             }
           ]
         },
@@ -347,7 +348,7 @@
               "id": "4.1.2",
               "text": "Is de inputdata relevant en representatief voor de beoogde toepassing?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk", "N.v.t."],
               "followUp": "Licht toe hoe de representativiteit is vastgesteld."
             },
@@ -355,7 +356,7 @@
               "id": "4.1.3",
               "text": "Zijn subpopulaties beschermd in de steekproefstrategie?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "N.v.t."],
               "followUp": "Beschrijf welke subpopulaties zijn onderscheiden en hoe zij beschermd worden."
             },
@@ -363,19 +364,19 @@
               "id": "4.1.4",
               "text": "Is de variabelekeuze gemotiveerd en gerechtvaardigd?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "4.1.5",
               "text": "Hoe houdt het systeem rekening met ongerechtvaardigde bias in de uitkomsten?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "4.1.6",
               "text": "Kunnen beoogde gebruikers het systeem feitelijk gebruiken ongeacht hun kenmerken (toegankelijkheid)?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Beschrijf eventuele toegankelijkheidsmaatregelen."
             },
@@ -383,7 +384,7 @@
               "id": "4.1.7",
               "text": "Zijn er monitoringsmechanismen ingericht om negatieve effecten voor specifieke groepen te signaleren?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "In ontwikkeling"],
               "followUp": "Beschrijf hoe de monitoring is ingericht."
             }
@@ -404,13 +405,13 @@
               "id": "4.2.2",
               "text": "Welke acceptatiecriteria gelden voor de kwaliteit van input en output?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "4.2.3",
               "text": "Sluiten de acceptatiecriteria aan bij de data en het doel van het systeem?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Licht toe waarom de criteria aansluiten of wat er nog moet worden verbeterd."
             },
@@ -418,13 +419,13 @@
               "id": "4.2.4",
               "text": "Hoe wordt de output periodiek gemonitord?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "4.2.5",
               "text": "Hoe worden afwijkingen van de acceptatiecriteria geanalyseerd en gecorrigeerd?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "4.2.6",
@@ -449,13 +450,13 @@
               "id": "4.3.2",
               "text": "Welke factoren hebben de meeste invloed op de prestaties van het systeem?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "4.3.3",
               "text": "Is de testdata gescheiden voor validatie of wordt cross-validatie gebruikt?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Testdata gescheiden", "Cross-validatie", "Beide", "N.v.t."],
               "followUp": "Beschrijf de validatiemethodiek."
             },
@@ -482,7 +483,7 @@
               "id": "4.4.2",
               "text": "Past het systeem binnen de bestaande technische infrastructuur? Zo niet, welke maatregelen zijn getroffen?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee, met aanpassingen", "Nee"],
               "followUp": "Beschrijf de aanpassingen of afwijkingen."
             },
@@ -490,13 +491,13 @@
               "id": "4.4.3", "allowAttachments": true,
               "text": "Wat is de systeemarchitectuur?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "4.4.4",
               "text": "Zijn de hardware- en softwarevereisten gedocumenteerd?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Beschrijf of verwijs naar de documentatie."
             },
@@ -511,7 +512,7 @@
               "id": "4.4.6",
               "text": "Hoe is toegangsbeheer ingericht?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "4.4.7", "allowAttachments": true,
@@ -523,7 +524,7 @@
               "id": "4.4.8",
               "text": "Hoe zijn logging en monitoring ingericht?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             }
           ]
         },
@@ -544,7 +545,7 @@
               "id": "4.5.2",
               "text": "Kan de output worden gereconstrueerd met oude versies, datasets en condities?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Beschrijf hoe dit is ingericht."
             },
@@ -552,7 +553,7 @@
               "id": "4.5.3",
               "text": "Kan het model worden gereconstrueerd gegeven de parameters en een vaste seed?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "N.v.t."],
               "followUp": "Licht toe."
             },
@@ -560,7 +561,7 @@
               "id": "4.5.4",
               "text": "Kan het systeem worden gereproduceerd op basis van de documentatie?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Beschrijf eventuele lacunes in de documentatie."
             },
@@ -568,7 +569,7 @@
               "id": "4.5.5",
               "text": "Hoe worden wijzigingen gedurende de levensduur van het systeem gedocumenteerd?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             }
           ]
         },
@@ -587,7 +588,7 @@
               "id": "4.6.2",
               "text": "Hoe is uitlegbaarheid voor gebruikers meegewogen tijdens de ontwikkeling?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "4.6.3",
@@ -619,7 +620,7 @@
               "id": "5.1.3",
               "text": "Is de gebruikte data noodzakelijk voor het systeem (dataminimalisatie)?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Licht toe welke data worden gebruikt en waarom deze noodzakelijk zijn."
             },
@@ -627,19 +628,19 @@
               "id": "5.1.4",
               "text": "Hoe worden onbedoelde dataduplicaties voorkomen?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "5.1.5",
               "text": "Kunnen trainings- en testdata worden bijgewerkt indien nodig? Wanneer wordt het model opnieuw getraind, gestopt of opnieuw ontwikkeld?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "5.1.6",
               "text": "Voldoet de data aan de modelaannames?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Beschrijf de modelaannames en hoe de data hieraan voldoet."
             },
@@ -647,7 +648,7 @@
               "id": "5.1.7", "allowAttachments": true,
               "text": "Hoe wordt inputdata verzameld en gecombineerd?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "5.1.8",
@@ -659,13 +660,13 @@
               "id": "5.1.9",
               "text": "Welke factoren beïnvloeden de kwaliteit van de inputdata en wat kan hiertegen worden gedaan?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "5.1.10",
               "text": "Wordt inputdata getest op wijzigingen tijdens training, testen en gebruik?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Beschrijf hoe datatests zijn ingericht."
             },
@@ -679,7 +680,7 @@
               "id": "5.1.12",
               "text": "Hoe is de beschikbaarheid van outputdata gewaarborgd?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             }
           ]
         },
@@ -698,7 +699,7 @@
               "id": "5.2.2",
               "text": "Verwerkt het systeem persoonsgegevens (AVG van toepassing)?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee"],
               "followUp": "Beschrijf welke persoonsgegevens worden verwerkt en op welke grondslag."
             },
@@ -706,7 +707,7 @@
               "id": "5.2.3",
               "text": "Is de verwerking van persoonsgegevens proportioneel en subsidiair?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "N.v.t."],
               "followUp": "Motiveer de proportionaliteit en subsidiariteit."
             },
@@ -714,7 +715,7 @@
               "id": "5.2.4",
               "text": "Is de output herleidbaar tot individuen?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Mogelijk"],
               "followUp": "Beschrijf de risico's en maatregelen."
             },
@@ -722,7 +723,7 @@
               "id": "5.2.5",
               "text": "Zijn relevante functionarissen betrokken (Chief Privacy Officer, Functionaris Gegevensbescherming)?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "N.v.t."],
               "followUp": "Beschrijf de betrokkenheid."
             },
@@ -736,7 +737,7 @@
               "id": "5.2.7",
               "text": "Worden vertrouwelijke gegevens (niet-persoonlijk) gebruikt of opgeslagen?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee"],
               "followUp": "Beschrijf welke vertrouwelijke gegevens en hoe deze worden beschermd."
             },
@@ -744,7 +745,7 @@
               "id": "5.2.8",
               "text": "Hoe is de beveiliging van vertrouwelijke informatie gewaarborgd?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             }
           ]
         },
@@ -777,7 +778,7 @@
               "id": "6.2.2",
               "text": "Wat is de impact als het systeem uitvalt?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "6.2.3",
@@ -803,19 +804,19 @@
               "id": "6.3.2",
               "text": "Hoe wordt onbevoegde toegang voorkomen?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "6.3.3",
               "text": "Wat is de impact als er onbevoegde toegang plaatsvindt?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "6.3.4",
               "text": "Kunnen personen misbruik maken van het feit dat AI wordt gebruikt in plaats van menselijke beslissingen?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Mogelijk"],
               "followUp": "Beschrijf de risico's en maatregelen."
             },
@@ -823,7 +824,7 @@
               "id": "6.3.5",
               "text": "Hoe wordt geregistreerd wie het systeem gebruikt en gedurende hoelang?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "6.3.6",
@@ -889,7 +890,7 @@
               "id": "7.2.4",
               "text": "Wordt aan eindgebruikers en betrokkenen gecommuniceerd dat het AI-gegenereerde output betreft?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Beschrijf hoe dit gecommuniceerd wordt."
             },
@@ -897,7 +898,7 @@
               "id": "7.2.5",
               "text": "Is er een gebruikershandleiding?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "In ontwikkeling"],
               "followUp": "Geef een link of beschrijving van de handleiding."
             },
@@ -917,13 +918,13 @@
               "id": "7.2.8",
               "text": "Hoe is uitlegbaarheid specifiek voor eindgebruikers uitgewerkt?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "7.2.9",
               "text": "Is het systeem voldoende transparant voor verantwoord gebruik?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Licht toe."
             },
@@ -931,7 +932,7 @@
               "id": "7.2.10",
               "text": "Worden eindgebruikers getraind in het gebruik van het systeem?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gepland"],
               "followUp": "Beschrijf het trainingsaanbod."
             },
@@ -945,7 +946,7 @@
               "id": "7.2.12",
               "text": "Is het duidelijk welke stappen betrokkenen kunnen nemen om bezwaar te maken, te klagen of in beroep te gaan?",
               "type": "radio",
-              "importance": "mandatory",
+              "importance": "optional",
               "options": ["Ja", "Nee", "Gedeeltelijk"],
               "followUp": "Beschrijf de bezwaar- en beroepsprocedures."
             }
@@ -972,7 +973,7 @@
               "id": "7.3.3",
               "text": "Wie voert onafhankelijke controle uit en hoe?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             }
           ]
         },
@@ -983,21 +984,34 @@
           "questions": [
             {
               "id": "7.4.1",
-              "text": "Hoe wordt inputdata opgeslagen en wat is de bewaartermijn?",
+              "text": "Hoe wordt de inputdata opgeslagen?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "7.4.2",
-              "text": "Hoe wordt het model opgeslagen en versiebeheerd?",
+              "text": "Hoe wordt het model opgeslagen?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
             },
             {
               "id": "7.4.3",
-              "text": "Wat is de bewaartermijn van outputdata?",
+              "text": "Wat is de bewaartermijn van de outputdata?",
               "type": "text",
-              "importance": "mandatory"
+              "importance": "optional"
+            },
+            {
+              "id": "7.4.4",
+              "text": "Wat is de bewaartermijn van de inputdata?",
+              "type": "text",
+              "importance": "optional"
+            },
+            {
+              "id": "7.4.5",
+              "text": "Hoe is het versiebeheer ingeregeld?",
+              "guidance": "Beschrijf hoe versies van model, data en configuratie worden vastgelegd en teruggevonden.",
+              "type": "text",
+              "importance": "optional"
             }
           ]
         }

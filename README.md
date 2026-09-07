@@ -127,7 +127,7 @@ For the three **generated** forms (DPIA, Prescan DPIA, IAMA) the URN lives in `s
 | Quickscan BIO2 | `urn:nl:minfin:tr:quickscan:2.0` | — |
 | Prescan DPIA | `urn:nl:minfin:tr:prescandpia:2.0` | — |
 | DPIA | `urn:nl:minfin:tr:dpia:3.0` | — |
-| AI Impact Assessment | `urn:nl:minfin:tr:aiia:2.0` | `urn:nl:aivt:tr:aiia:1.0` |
+| AI Impact Assessment | `urn:nl:minfin:tr:aiia:2.1` | `urn:nl:aivt:tr:aiia:1.0` |
 | IAMA | `urn:nl:minfin:tr:iama:2.0` | `urn:nl:aivt:tr:iama:1.0` |
 | EU AI Act Compliance Checklist | `urn:nl:minfin:tr:euaiact:0.1` | `urn:nl:aivt:tr:ca:1.0` |
 | Data-ethiektoets | `urn:nl:minfin:tr:dataethiek:1.0` | — |

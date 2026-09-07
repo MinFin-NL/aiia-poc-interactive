@@ -129,7 +129,7 @@
     },
     {
       "id": "aiia",
-      "urn": "urn:nl:minfin:tr:aiia:2.0",
+      "urn": "urn:nl:minfin:tr:aiia:2.1",
       "registryUrn": "urn:nl:aivt:tr:aiia:1.0",
       "file": "aiia.json",
       "title": "AI Impact Assessment",
